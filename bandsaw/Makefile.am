@@ -1,9 +1,6 @@
 AUTOMAKE_OPTIONS = check-news dist-bzip2 std-options
-
-PYTHON = python
-GCONFTOOL = gconftool-2
-
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
+PYTHON = python
 
 # Python source
 bin_SCRIPTS = bandsaw
@@ -13,6 +10,10 @@ dist_scripts = src/bandsaw.py src/bandsaw_test.py
 gladedir   = $(datadir)/bandsaw/glade
 glade_DATA = $(srcdir)/src/bandsaw.glade
 
+install-exec-hook:
+	sed -i -e "s|'bandsaw.glade'|'$(gladedir)/bandsaw.glade'|" \
+		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
+
 schemadir = $(GCONF_SCHEMA_FILE_DIR)
 schema_in_files = data/bandsaw.schemas
 schema_DATA = $(schema_in_files)
@@ -20,7 +21,7 @@ schema_DATA = $(schema_in_files)
 if GCONF_SCHEMAS_INSTALL
 install-data-local:
 	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) \
-		$(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA)
+		$(GCONFTOOL) --makefile-install-rule $(schema_DATA)
 endif
 
 Desktopdir = $(datadir)/applications
@@ -30,10 +31,6 @@ Desktop_DATA = $(Desktop_in_files)
 # Run unit tests via "make check"
 TESTS_ENVIRONMENT = $(PYTHON)
 TESTS = $(srcdir)/src/bandsaw_test.py
-
-install-exec-hook:
-	sed -i -e "s|'bandsaw.glade'|'$(gladedir)/bandsaw.glade'|" \
-		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
 
 # Extra files to include in package
 EXTRA_DIST = \
