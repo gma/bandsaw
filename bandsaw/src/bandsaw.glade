@@ -439,6 +439,7 @@
 		  <child>
 		    <widget class="GtkButton" id="edit_button">
 		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
 		      <property name="can_default">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">_Edit</property>
@@ -452,6 +453,7 @@
 		  <child>
 		    <widget class="GtkButton" id="remove_button">
 		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
 		      <property name="can_default">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="label">gtk-remove</property>
@@ -465,6 +467,7 @@
 		  <child>
 		    <widget class="GtkButton" id="up_button">
 		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
 		      <property name="can_default">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="label">gtk-go-up</property>
@@ -478,6 +481,7 @@
 		  <child>
 		    <widget class="GtkButton" id="down_button">
 		      <property name="visible">True</property>
+		      <property name="sensitive">False</property>
 		      <property name="can_default">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="label">gtk-go-down</property>
