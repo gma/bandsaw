@@ -1,5 +1,10 @@
 2004-07-15  ashtong  <ashtong@users.sourceforge.net>
 
+	* Makefile.am, NEWS, autogen.sh, configure.ac, src/bandsaw.py:
+	Made more progress towards autotools support.
+
+	* ChangeLog: New file, created from CVS.
+
 	* .cvsignore: Ignore autom4te.cache.
 
 	* configure.ac, configure.in: Renamed configure.in to configure.ac.
