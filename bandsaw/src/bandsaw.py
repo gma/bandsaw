@@ -61,6 +61,7 @@ class Config(object):
         self._messages_kept = None
         self._ignore_alerts = None
         self._ignore_timeout = None
+        self._filters = None
 
     def _get_named_pipe(self):
         if self._named_pipe is None:
@@ -69,7 +70,8 @@ class Config(object):
 
     def _set_named_pipe(self, value):
         value = value.strip()
-        return self.client.set_string(Config.NAMED_PIPE, value)
+        self.client.set_string(Config.NAMED_PIPE, value)
+        self._named_pipe = None
 
     named_pipe = property(_get_named_pipe, _set_named_pipe)
     
@@ -80,6 +82,7 @@ class Config(object):
 
     def _set_messages_kept(self, value):
         self.client.set_int(Config.MESSAGES_KEPT, int(value))
+        self._messages_kept = None
 
     messages_kept = property(_get_messages_kept, _set_messages_kept)
 
@@ -90,6 +93,7 @@ class Config(object):
 
     def _set_ignore_alerts(self, value):
         self.client.set_bool(Config.IGNORE_ALERTS, value)
+        self._ignore_alerts = None
 
     ignore_alerts = property(_get_ignore_alerts, _set_ignore_alerts)
 
@@ -100,19 +104,21 @@ class Config(object):
 
     def _set_ignore_timeout(self, value):
         self.client.set_int(Config.IGNORE_TIMEOUT, int(value))
+        self._ignore_timeout = None
 
     ignore_timeout = property(_get_ignore_timeout, _set_ignore_timeout)
 
     def _get_filters(self):
-        names = self.client.get_list(Config.FILTER_NAMES, gconf.VALUE_STRING)
-        patterns = self.client.get_list(Config.FILTER_PATTERNS,
-                                        gconf.VALUE_STRING)
-        alerts = self.client.get_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL)
-        filters = FilterSet()
-        for i in range(len(names)):
-            filter = Filter(names[i], patterns[i], alerts[i])
-            filters.append(filter)
-        return filters
+        if self._filters is None:
+            names = self.client.get_list(Config.FILTER_NAMES, gconf.VALUE_STRING)
+            patterns = self.client.get_list(Config.FILTER_PATTERNS,
+                                            gconf.VALUE_STRING)
+            alerts = self.client.get_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL)
+            self._filters = FilterSet()
+            for i in range(len(names)):
+                filter = Filter(names[i], patterns[i], alerts[i])
+                self._filters.append(filter)
+        return self._filters
 
     def _set_filters(self, value):
         names = [filter.name for filter in value]
@@ -122,6 +128,7 @@ class Config(object):
         self.client.set_list(
             Config.FILTER_PATTERNS, gconf.VALUE_STRING, patterns)
         self.client.set_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL, alerts)
+        self._filters = None
 
     filters = property(_get_filters, _set_filters)
 

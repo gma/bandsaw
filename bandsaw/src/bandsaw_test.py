@@ -45,6 +45,28 @@ class GConfTest(unittest.TestCase):
         self.assertEqual(config.named_pipe, '/var/log/bandsaw.fifo')
         client.verify()
 
+    def test_read_named_pipe_once(self):
+        """Check we only read named_pipe from GConf at start up"""
+        client = self.get_named_pipe_mock()
+        config = bandsaw.Config(client)
+        config.named_pipe
+        config.named_pipe
+        client.verify()
+
+    def test_read_write_named_pipe(self):
+        """Check changes made to named_pipe are picked up by reader"""
+        new_fifo = '/home/user/.bandsaw.fifo'
+        client = self.get_named_pipe_mock()
+        config = bandsaw.Config(client)
+        self.assertEqual(config.named_pipe, '/var/log/bandsaw.fifo')
+        client.expects(once()).set_string(eq(bandsaw.Config.NAMED_PIPE),
+                                          eq(new_fifo))
+        config.named_pipe = new_fifo
+        client.expects(once()).get_string(
+            eq(bandsaw.Config.NAMED_PIPE)).will(return_value(new_fifo))
+        self.assertEqual(config.named_pipe, new_fifo)
+        client.verify()
+
     def get_messages_kept_mock(self):
         key = bandsaw.Config.MESSAGES_KEPT
         client = Mock()
@@ -58,6 +80,28 @@ class GConfTest(unittest.TestCase):
         self.assertEqual(config.messages_kept, 34)
         client.verify()
 
+    def test_read_messages_kept_once(self):
+        """Check we only read messages_kept from GConf at start up"""
+        client = self.get_messages_kept_mock()
+        config = bandsaw.Config(client)
+        config.messages_kept
+        config.messages_kept
+        client.verify()
+
+    def test_read_write_messages_kept(self):
+        """Check changes made to messages_kept are picked up by reader"""
+        new_value = 10
+        client = self.get_messages_kept_mock()
+        config = bandsaw.Config(client)
+        self.assertEqual(config.messages_kept, 34)
+        client.expects(once()).set_int(eq(bandsaw.Config.MESSAGES_KEPT),
+                                       eq(new_value))
+        config.messages_kept = new_value
+        client.expects(once()).get_int(
+            eq(bandsaw.Config.MESSAGES_KEPT)).will(return_value(new_value))
+        self.assertEqual(config.messages_kept, new_value)
+        client.verify()
+        
     def get_ignore_alerts_mock(self):
         key = bandsaw.Config.IGNORE_ALERTS
         client = Mock()
@@ -69,6 +113,14 @@ class GConfTest(unittest.TestCase):
         client = self.get_ignore_alerts_mock()
         config = bandsaw.Config(client)
         self.assertEqual(config.ignore_alerts, False)
+        client.verify()
+
+    def test_read_ignore_alerts_once(self):
+        """Check we only read ignore_alerts from GConf at start up"""
+        client = self.get_ignore_alerts_mock()
+        config = bandsaw.Config(client)
+        config.ignore_alerts
+        config.ignore_alerts
         client.verify()
 
     def get_ignore_timeout_mock(self):
@@ -84,21 +136,28 @@ class GConfTest(unittest.TestCase):
         self.assertEqual(config.ignore_timeout, 5)
         client.verify()
 
-    def get_filters_mock(self):
-        name_rval = return_value(['Name 1', 'Name 2'])
-        pat_rval = return_value(['Pattern 1', 'Pattern 2'])
-        bool_rval = return_value([True, False])
+    def test_read_ignore_timeout_once(self):
+        """Check we only read ignore_timeout from GConf at start up"""
+        client = self.get_ignore_timeout_mock()
+        config = bandsaw.Config(client)
+        config.ignore_timeout
+        config.ignore_timeout
+        client.verify()
 
+    def get_filters_mock(self):
         client = Mock()
         key = bandsaw.Config.FILTER_NAMES
+        name_rval = return_value(['Name 1', 'Name 2'])
         client.expects(once()).get_list(
             eq(key), eq(gconf.VALUE_STRING)).will(name_rval)
         key = bandsaw.Config.FILTER_PATTERNS
+        pattern_rval = return_value(['Pattern 1', 'Pattern 2'])
         client.expects(once()).get_list(
-            eq(key), eq(gconf.VALUE_STRING)).will(pat_rval)
+            eq(key), eq(gconf.VALUE_STRING)).will(pattern_rval)
         key = bandsaw.Config.FILTER_ALERTS
+        alert_rval = return_value([True, False])
         client.expects(once()).get_list(
-            eq(key), eq(gconf.VALUE_BOOL)).will(bool_rval)
+            eq(key), eq(gconf.VALUE_BOOL)).will(alert_rval)
         return client
 
     def test_get_filters(self):
@@ -115,38 +174,6 @@ class GConfTest(unittest.TestCase):
         self.assertEqual(filter2.name, 'Name 2')
         self.assert_(filter2.matches('Pattern 2'))
         self.assertEqual(filter2.alert, False)
-
-    def test_read_named_pipe_once(self):
-        """Check we only read named_pipe from GConf at start up"""
-        client = self.get_named_pipe_mock()
-        config = bandsaw.Config(client)
-        config.named_pipe
-        config.named_pipe
-        client.verify()
-
-    def test_read_messages_kept_once(self):
-        """Check we only read messages_kept from GConf at start up"""
-        client = self.get_messages_kept_mock()
-        config = bandsaw.Config(client)
-        config.messages_kept
-        config.messages_kept
-        client.verify()
-        
-    def test_read_ignore_alerts_once(self):
-        """Check we only read ignore_alerts from GConf at start up"""
-        client = self.get_ignore_alerts_mock()
-        config = bandsaw.Config(client)
-        config.ignore_alerts
-        config.ignore_alerts
-        client.verify()
-
-    def test_read_ignore_timeout_once(self):
-        """Check we only read ignore_timeout from GConf at start up"""
-        client = self.get_ignore_timeout_mock()
-        config = bandsaw.Config(client)
-        config.ignore_timeout
-        config.ignore_timeout
-        client.verify()
 
     def test_read_filters_once(self):
         """Check we only read filters from GConf at start up"""
