@@ -1,3 +1,67 @@
+2004-07-30  ashtong  <ashtong@users.sourceforge.net>
+
+	* TODO: Added TODO.
+
+	* data/.cvsignore, help/.cvsignore, help/bandsaw/.cvsignore, help/bandsaw/C/.cvsignore:
+	Ignore derived files.
+
+	* .cvsignore: Ignore more files.
+
+	* Makefile.am, src/bandsaw.py:
+	Make distcheck ignore presence of scrollkeeper's files and run unit tests.
+
+	* NEWS, configure.ac: Changed first version number from 0.1 to 0.1.0.
+
+	* help/bandsaw/C/Makefile.am, help/bandsaw/C/bandsaw-C.omf, help/bandsaw/C/bandsaw.xml, help/bandsaw/C/figures/alert-dialog.png, help/bandsaw/C/figures/main-window.png, help/bandsaw/C/figures/message-view.png, help/bandsaw/C/figures/prefs-filter-add.png, help/bandsaw/C/figures/prefs-filters.png, help/bandsaw/C/figures/prefs-general.png, help/bandsaw/C/legal.xml, help/bandsaw/Makefile.am, help/Makefile.am:
+	Moved user manual from help/C to help/bandsaw/C.
+
+	* omf.make, xmldocs.make: Shouldn't be stored in CVS.
+
+	* Makefile.am, TODO, autogen.sh, configure.ac, help/Makefile.am, omf.make, xmldocs.make:
+	Moved build process over to using gnome-common's gnome-autogen.sh.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Add fixes for managing the alert queue when alert dialogs are closed.
+
+	* src/bandsaw.glade: Added Help->Contents menu item.
+
+2004-07-22  ashtong  <ashtong@users.sourceforge.net>
+
+	* COPYING-DOCS, TODO: Completed first draft of help.
+
+2004-07-20  ashtong  <ashtong@users.sourceforge.net>
+
+	* Makefile.am: Install bandsaw.desktop not bandsaw.desktop.in.
+
+	* data/bandsaw.schemas: Added default filter to match all log messages.
+
+	* ChangeLog, TODO: Updated.
+
+	* src/bandsaw.py: Re-open FIFO on IOError.
+
+	* src/bandsaw.glade: 'Suppress' -> 'Ignore'.
+
+	* Makefile.am, configure.ac, data/bandsaw.desktop, data/bandsaw.desktop.in, src/bandsaw.py:
+	Set icon via autoconf.
+
+	* Makefile.am, pixmaps/bandsaw.png, pixmaps/bandsaw.svg, src/bandsaw.glade, src/bandsaw.py:
+	Added logo to the About dialog.
+
+	* data/bandsaw.desktop: Changed text of menu item.
+
+	* TODO: Updated.
+
+	* src/bandsaw.py: Reset filter dialog's fields when closed.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Ensure that new config param values are retrievable after they've
+	been set.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Only read config parameters from GConf at start up.
+
+	* src/bandsaw_test.py: Replaced home grown mock objects with pmock.
+
 2004-07-20  ashtong  <ashtong@users.sourceforge.net>
 
 	* src/bandsaw.py: Re-open FIFO on IOError.
