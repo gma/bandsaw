@@ -2,6 +2,6 @@
 <!DOCTYPE glade-project SYSTEM "http://glade.gnome.org/glade-project-2.0.dtd">
 
 <glade-project>
-  <name>Project4</name>
-  <program_name>project4</program_name>
+  <name>Band Saw</name>
+  <program_name>bandsaw</program_name>
 </glade-project>
