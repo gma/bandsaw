@@ -1,4 +1,63 @@
-Band Saw helps system administrators monitor large numbers of
-computers by alerting them whenever specific log messages occur. It
-runs on the desktop, popping up alert dialogs when necessary. It
-integrates well with the GNOME desktop.
+About Band Saw
+==============
+
+Band Saw is a syslog monitoring program desgined to help system
+administrators monitor many computers simultaneously. It runs on the
+desktop, displaying alerts when important log messages are received.
+
+Requirements
+============
+
+Band Saw is a GNOME application, written in Python. You will need to
+have GNOME, Python and the PyGTK and gnome-python libraries installed
+in order to run it. You will also need a syslog server.
+
+Though Band Saw has only been tested on Linux it should run on other
+Unix like operating systems without modification (feedback would be
+appreciated).
+
+GNOME, Python and PyGTK are available pre-packaged with most Linux
+distributions. Alternatively they may be obtained from the following
+sites:
+
+  http://www.gnome.org/
+  http://www.python.org/
+  http://pygtk.org/
+
+If you are unsure if you have the necessary software try running the
+configure script (see below); it will inform you if you are missing
+any of the required dependencies.
+
+Installation
+============
+
+The installation scripts are explained in detail in the INSTALL file,
+but for most users the following should suffice:
+
+  $ ./configure --prefix=/usr
+  $ make check
+  # make install
+
+You should change the /usr prefix to match the path where your GNOME
+installation has been installed. If you specify a different prefix you
+may find that the user manual and default configuration options are
+unavailable.
+
+If you are unsure where GNOME has been installed this command should
+tell you:
+
+  $ pkg-config --variable=prefix libgnome-2.0
+
+Support
+=======
+
+Check the Band Saw user manual for help configuring Band Saw once it
+is installed (choose Help->Contents from within Band Saw, or open the
+GNOME help browser and navigate to the Band Saw Manual).
+
+If you have any problems using Band Saw please post a message to the
+Band Saw forum, describing your problem:
+
+  http://sourceforge.net/forum/forum.php?forum_id=384896
+
+$Id$
