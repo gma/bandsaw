@@ -30,6 +30,24 @@ class LogMessageTest(unittest.TestCase):
         """Check we can extract the text from a log message"""
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.text, 'Hello  world')
+
+
+class FilterTest(unittest.TestCase):
+
+    def test_matches_good_string(self):
+        """Check filter matches with plain string"""
+        filter = bandsaw.Filter('Test', 'ever', False)
+        self.assert_(filter.matches('Fever Pitch'))
+
+    def test_matches_bad_string(self):
+        """Check filter doesn't match with plain string"""
+        filter = bandsaw.Filter('Test', 'ever', False)
+        self.failIf(filter.matches('Pitch a tent'))
+
+    def test_matches_good_regex(self):
+        """Check filter matches with a regex"""
+        filter = bandsaw.Filter('Test', '^\w{3} apple', False)
+        self.assert_(filter.matches('red apple'))
         
 
 if __name__ == '__main__':

@@ -1,7 +1,9 @@
 # $Id$
 
 
+import ConfigParser
 import os
+import re
 import select
 
 import pygtk; pygtk.require('2.0')
@@ -9,6 +11,27 @@ import gobject
 import gtk
 import gtk.glade
 
+
+class Config:
+
+    FILE = '../etc/bandsaw.conf'
+    PATTERN_ITEM = 'pattern'
+    ALERT_ITEM = 'alert'
+
+    def __init__(self):
+        self.parser = ConfigParser.SafeConfigParser()
+        self.parser.read(Config.FILE)
+
+    def get_filters(self):
+        filters = []
+        for section in self.parser.sections():
+            if section.startswith('Filter '):
+                name = section.split(' ', 1)[1]
+                pattern = self.parser.get(section, Config.PATTERN_ITEM)
+                alert = self.parser.getboolean(section, Config.ALERT_ITEM)
+                filters.append(Filter(name, pattern, alert))
+        return filters
+        
 
 class WidgetWrapper(object):
 
@@ -54,6 +77,23 @@ class Dialog(WidgetWrapper):
         self.root_widget.destroy()
 
 
+class Filter:
+
+    def __init__(self, name, pattern, alert):
+        self.name = name
+        self.pattern = re.compile(pattern)
+        self.alert = alert
+
+    def matches(self, text):
+        return self.pattern.search(text) is not None
+
+
+class PreferencesDialog(Dialog):
+
+    def __init__(self):
+        Dialog.__init__(self, 'filter_dialog')
+
+
 class LogMessage:
 
     def __init__(self, line):
@@ -80,6 +120,18 @@ class LogMessage:
     text = property(_get_text)
 
 
+class AlertDialog(Dialog):
+
+    def __init__(self, filter, message):
+        Dialog.__init__(self, 'alert_dialog')
+        self.set_text(filter, message)
+
+    def set_text(self, filter, message):
+        self.label1.set_markup('<span weight="bold" size="larger">'
+                               '%s message received from %s</span>\n\n%s' %
+                               (filter.name, message.hostname, message.text))
+        
+
 class LogTreeView(gtk.TreeView):
 
     DATE_COLUMN = 0
@@ -87,7 +139,9 @@ class LogTreeView(gtk.TreeView):
     PROCESS_COLUMN = 2
     MESSAGE_COLUMN = 3
 
-    FILTERS = ('WARN', 'ERROR')
+    def __init__(self, config):
+        gtk.TreeView.__init__(self)
+        self.config = config
 
     def add_column(self, title, index):
         renderer = gtk.CellRendererText()
@@ -104,26 +158,26 @@ class LogTreeView(gtk.TreeView):
         self.add_column('Message', LogTreeView.MESSAGE_COLUMN)
         self.show()
 
-    def _message_matches_filter(self, message):
-        for filter in LogTreeView.FILTERS:
-            if filter in message.text:
-                return True
-        return False
-
     def process_line(self, line):
-        message = LogMessage(line)
-        if self._message_matches_filter(message):
-            row = (message.date, message.hostname, message.process, message.text)
-            self.get_model().append(row)
+        msg = LogMessage(line)
+        for filter in self.config.get_filters():
+            if filter.matches(msg.text):
+                row = (msg.date, msg.hostname, msg.process, msg.text)
+                self.get_model().append(row)
+                if filter.alert:
+                    dialog = AlertDialog(filter, msg)
+                    dialog.run()
+                    dialog.destroy()
+                continue
 
 
 class MainWindow(Window):
 
-    def __init__(self):
+    def __init__(self, config):
         Window.__init__(self, 'window1')
         self.monitor_id = None
         self.monitor_syslog()
-        self.log_view = LogTreeView()
+        self.log_view = LogTreeView(config)
         self.log_view.setup()
         self.scrolledwindow1.add(self.log_view)
         self.log_view.show()
@@ -148,20 +202,25 @@ class MainWindow(Window):
     def quit(self):
         gtk.mainquit()
 
-    def on_clear_all1_activate(self, *args):
-        self.log_view.get_model().clear()
-        
     def on_window1_delete_event(self, *args):
         self.quit()
 
     def on_quit1_activate(self, *args):
         self.quit()
-        
+
+    def on_clear1_activate(self, *args):
+        self.log_view.get_model().clear()
+
+    def on_preferences1_activate(self, *args):
+        dialog = PreferencesDialog()
+        dialog.run()
+
 
 class App:
 
     def main(self):
-        window = MainWindow()
+        config = Config()
+        window = MainWindow(config)
         window.show()
         gtk.main()
 
