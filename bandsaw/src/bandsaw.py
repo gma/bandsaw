@@ -644,14 +644,17 @@ class SearchTools(WidgetWrapper):
         column = self.search_type.get_history()
         text = self.search_text.get_text()
         filtered_model = FilteredListStore.make(model, column, text)
+        # TODO: consider refactoring to put the following in method on view
         self.message_view.set_model(filtered_model)
         self.message_view.scroll_down()
+        self.message_view.update_message_count()
 
     def on_clear_button_clicked(self, *args):
         self.message_view.clear_filter()
         self.search_text.set_text('')
         self.search_text.grab_focus()
         self.find_button.set_sensitive(gtk.FALSE)
+        self.message_view.update_message_count()
 
 
 class MessageView(gtk.TreeView):
@@ -731,15 +734,26 @@ class MessageView(gtk.TreeView):
         upper = adjustment.get_property('upper')
         return value + page_size >= upper
 
-    def count_messages(self):
+    def count_rows_in_model(self, model):
         count = [0]
 
         def count_rows(model, iter, path):
             count[0] += 1
 
-        self.get_unfiltered_model().foreach(count_rows)
+        model.foreach(count_rows)
         return count[0]
 
+    def count_all_messages(self):
+        return self.count_rows_in_model(self.get_unfiltered_model())
+
+    def count_visible_messages(self):
+        visible_model = self.get_model()
+        total_model = self.get_unfiltered_model()
+        if visible_model == total_model:
+            return None
+        else:
+            return self.count_rows_in_model(visible_model)
+    
     def remove_first_row(self):
         list_store = self.get_model()
         iter = list_store.get_iter_first()
@@ -753,11 +767,12 @@ class MessageView(gtk.TreeView):
         self.get_model().append(row)
         
     def update_message_count(self):
-        total_messages = self.count_messages()
+        total_messages = self.count_all_messages()
+        visible_messages = self.count_visible_messages()
         if total_messages > self.config.messages_kept:
             self.remove_first_row()
             total_messages -= 1
-        self.status_bar.set_total_messages(total_messages)
+        self.status_bar.set_message_count(total_messages, visible_messages)
 
     def add_message(self, message):
         self.append_message_to_models(message)
@@ -833,10 +848,13 @@ class StatusBar(WidgetWrapper):
         self.setup()
 
     def setup(self):
-        self.set_total_messages(0)
+        self.set_message_count(0, None)
 
-    def set_total_messages(self, total):
-        self.appbar.set_status('%s messages' % total)
+    def set_message_count(self, total, visible):
+        status = '%s messages' % total
+        if visible is not None:
+            status += ' (%s visible)' % visible
+        self.appbar.set_status(status)
         
 
 class MainWindow(Window):
