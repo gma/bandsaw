@@ -106,6 +106,16 @@ class FilterSetTest(unittest.TestCase):
         set.update(self.filter2)
         self.assertEqual(set, [self.filter1, self.filter2, self.filter3])
         self.assertEqual(set[1].name, 'New name')
+
+    def test_move_filter(self):
+        """Check we can move a filter up or down"""
+        set = bandsaw.FilterSet()
+        set.append(self.filter1)
+        set.append(self.filter2)
+        set.move_up(1)
+        self.assertEqual(set, [self.filter2, self.filter1])
+        set.move_down(0)
+        self.assertEqual(set, [self.filter1, self.filter2])
         
 
 class MockGConfModule:
