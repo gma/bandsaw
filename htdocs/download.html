@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!&#68;DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
     <title>Download Band Saw</title>
@@ -21,10 +21,22 @@
       <h1>Download</h1>
 
       <p>
-	Band Saw has not yet been released, but the latest code is <a
+	Band Saw is now available for download:
+      <p>
+
+      <ul>
+	<li>
+	  <a href="http://prdownloads.sourceforge.net/bandsaw/bandsaw-0.1.0.tar.gz?download">bandsaw-0.1.0.tar.gz</a>
+	</li>
+	<li>
+	  <a href="http://prdownloads.sourceforge.net/bandsaw/bandsaw-0.1.0.tar.bz2?download">bandsaw-0.1.0.tar.bz2</a>
+	</li>
+      </ul>
+	
+      <p>
+	Alternatively, the latest code is always <a
         href="http://sourceforge.net/cvs/?group_id=34228">available
-        from CVS</a>.  Once a useful version is available a package
-        will be made available here.
+        from CVS</a>.
       </p>
 
       <h2>Requirements</h2>
@@ -37,13 +49,40 @@
 	  <a href="http://www.gtk.org/download/">GTK+</a> (2.0 or later)
 	</li>
 	<li>
-	  <a href="http://pygtk.org/downloads.html">PyGTK</a>
+	  <a href="http://pygtk.org/downloads.html">PyGTK and gnome-python</a>
 	</li>
       </ul>
 
       <p>
-	It should run on any operating system that supports Python,
-	GTK/PyGTK and FIFOs (named pipes).
+	It should run on any operating system that supports GNOME,
+	Python and named pipes (otherwise known as FIFOs).
+      </p>
+
+      <h2>Installation</h2>
+
+      <p>
+	Installation is simple, but please read the <a
+	href="http://cvs.sourceforge.net/viewcvs.py/bandsaw/bandsaw/README">README</a>
+	file included with the source code. It is important that
+	you <strong>specify the correct prefix when configuring the
+	package</strong> or you may find that some things don't work
+	correctly on your system (e.g. default configuration
+	parameters, the user manual, etc.).
+      </p>
+
+      <p>
+	<strong>Update:</strong> In the README I wrote that you should
+	run <code>make check</code> before installing, but I forgot
+	that most people won't have the <a
+	href="http://pmock.sourceforge.net/">pMock</a> Python package
+	installed, which will cause <code>make check</code> to
+	fail. Either skip <code>make check</code> or install
+	pMock. Band Saw will work without any problems even if you
+	can't run the tests; pMock is only required during
+	development. I'll be removing <code>make check</code> from the
+	README and releasing version 0.1.1 just as soon as I feel I've
+	left enough time for feedback about other similarly niggly
+	little problems.
       </p>
             
     </div>
