@@ -1272,9 +1272,7 @@ Error message details...</property>
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Band Saw reads log message from a named pipe (otherwise known as a FIFO). You will need to make the pipe with the mkfifo command and then configure your logging software to write to it.
 
-Type &quot;man mkfifo&quot; for more information on creating FIFOs.
-
-Please enter the path to your FIFO.</property>
+Type &quot;man mkfifo&quot; for more information on creating FIFOs.</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1301,7 +1299,7 @@ Please enter the path to your FIFO.</property>
 			  <child>
 			    <widget class="GtkLabel" id="label16">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">FIFO file_name</property>
+			      <property name="label" translatable="yes">Named _pipe</property>
 			      <property name="use_underline">True</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
