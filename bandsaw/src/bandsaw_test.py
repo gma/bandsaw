@@ -27,6 +27,7 @@ import unittest
 import pygtk; pygtk.require('2.0')
 import gtk
 import gconf
+import gobject
 from pmock import *
 
 import bandsaw
@@ -339,7 +340,7 @@ class AlertQueueTest(AlertTest):
         self.assertEqual(len(queue), 1)
 
     def test_append_dialog_visible_alerts_ignored(self):
-        """Check messages appended when dialog visible, alerts ignored"""
+        """Check messages queued when dialog visible, alerts ignored"""
         config = Mock()
         config.ignore_alerts = True
         config.ignore_timeout = 5
@@ -351,7 +352,7 @@ class AlertQueueTest(AlertTest):
         self.assertEqual(len(queue), 1)
 
     def test_append_dialog_visible_alerts_not_ignored(self):
-        """Check messages appended when dialog visible, alerts not ignored"""
+        """Check messages queued when dialog visible, alerts not ignored"""
         config = Mock()
         config.ignore_alerts = False
         queue = bandsaw.AlertQueue(config)
@@ -361,7 +362,7 @@ class AlertQueueTest(AlertTest):
         self.assertEqual(len(queue), 1)
 
     def test_append_no_dialog_alerts_ignored(self):
-        """Check messages not appended when no dialog, alerts ignored"""
+        """Check messages not queued when no dialog, alerts ignored"""
         config = Mock()
         config.ignore_alerts = True
         config.ignore_timeout = 5
@@ -373,7 +374,7 @@ class AlertQueueTest(AlertTest):
         self.assertEqual(queue.alert_displayed, False)
 
     def test_append_no_dialog_alerts_not_ignored(self):
-        """Check messages not appended when no dialog, alrets not ignored"""
+        """Check messages not queued when no dialog, alrets not ignored"""
         config = Mock()
         config.ignore_alerts = False
         config.ignore_timeout = 5
@@ -413,9 +414,53 @@ class AlertDialogTest(AlertTest):
         queue.verify()
 
 
+class FilteredListStoreTest(unittest.TestCase):
+
+    def setUp(self):
+        self.list_store = gtk.ListStore(gobject.TYPE_STRING)
+        self.list_store.append(('abc',))
+        self.list_store.append(('bcd',))
+        self.list_store.append(('efg',))
+
+    def count_rows(self, list_store):
+        counter = [0]
+
+        def increment_counter(*args):
+            counter[0] += 1
+
+        list_store.foreach(increment_counter)
+        return counter[0]
+        
+    def test_make_list_store(self):
+        """Check we can make a filtered list store from an unfiltered one"""
+        column = 0
+        text = 'bc'
+        list_store = bandsaw.FilteredListStore.make(
+            self.list_store, column, text)
+        self.assertEqual(self.count_rows(list_store), 2)
+        
+    def test_append_matching_message(self):
+        """Check matching messages are appended to list"""
+        column = 0
+        text = 'bc'
+        list_store = bandsaw.FilteredListStore.make(
+            self.list_store, column, text)
+        list_store.append(('bc',))
+        self.assertEqual(self.count_rows(list_store), 3)        
+
+    def test_append_non_matching_message(self):
+        """Check non matching messages are not appended to list"""
+        column = 0
+        text = 'bc'
+        list_store = bandsaw.FilteredListStore.make(
+            self.list_store, column, text)
+        list_store.append(('dc',))
+        self.assertEqual(self.count_rows(list_store), 2)
+
+
 if __name__ == '__main__':
-     if 'srcdir' in os.environ:
+     if 'srcdir' in os.environ:  # use verbose output when run from make
          sys.argv.append('-v')
-     if bandsaw.TESTING not in os.environ:
+     if bandsaw.TESTING not in os.environ:  # a hint for the GUI code
          os.environ[bandsaw.TESTING] = '1'
      unittest.main()
