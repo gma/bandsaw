@@ -34,6 +34,12 @@ class LogMessageTest(unittest.TestCase):
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.date, 'Jun 23 14:02:37')
 
+    def test_date_single_figure_day(self):
+        """Check we can extract the date when the day is a single digit"""
+        line = 'Jun  1 14:02:37 hoopoo ldap[29913]: Hello  world\n'
+        message = bandsaw.LogMessage(line)
+        self.assertEqual(message.date, 'Jun  1 14:02:37')
+
     def test_hostname(self):
         """Check we can extract the hostname from a log message"""
         message = bandsaw.LogMessage(self.line)
@@ -67,6 +73,29 @@ class FilterTest(unittest.TestCase):
         filter = bandsaw.Filter('Test', '^\w{3} apple', False)
         self.assert_(filter.matches('red apple'))
 
+
+class FilterSetTest(unittest.TestCase):
+
+    def setUp(self):
+        self.filter1 = bandsaw.Filter('Filter 1', 'Pattern 1', True)
+        self.filter2 = bandsaw.Filter('Filter 2', 'Pattern 2', True)
+        self.filter3 = bandsaw.Filter('Filter 3', 'Pattern 3', True)
+
+    def test_add_filter(self):
+        """Check we can append a filter to a filter set"""
+        set = bandsaw.FilterSet()
+        set.append(self.filter1)
+        self.assertEqual(set, [self.filter1])
+
+    def test_remove_filter(self):
+        """Check we can remove a filter from a filter set"""
+        set = bandsaw.FilterSet()
+        set.append(self.filter1)
+        set.append(self.filter2)
+        set.append(self.filter3)
+        set.pop(1)
+        self.assertEqual(set, [self.filter1, self.filter3])
+        
 
 class MockGConfModule:
 
@@ -148,11 +177,11 @@ class GConfTest(unittest.TestCase):
         client.verify()
 
         self.assertEqual(filter1.name, 'Name 1')
-        self.assert_(filter1.pattern.search('Pattern 1'))
+        self.assert_(filter1.matches('Pattern 1'))
         self.assertEqual(filter1.alert, True)
         
         self.assertEqual(filter2.name, 'Name 2')
-        self.assert_(filter2.pattern.search('Pattern 2'))
+        self.assert_(filter2.matches('Pattern 2'))
         self.assertEqual(filter2.alert, False)
         
 
