@@ -633,6 +633,9 @@ class SearchTools(WidgetWrapper):
     def setup_widgets(self):
         self.search_type.set_history(SearchTools.SEARCH_BY_MESSAGE)
 
+    def on_search_text_activate(self, *args):
+        self.find_button.activate()
+
     def on_search_text_changed(self, *args):
         self.find_button.set_sensitive(gtk.TRUE)
 
@@ -642,6 +645,7 @@ class SearchTools(WidgetWrapper):
         text = self.search_text.get_text()
         filtered_model = FilteredListStore.make(model, column, text)
         self.message_view.set_model(filtered_model)
+        self.message_view.scroll_down()
 
     def on_clear_button_clicked(self, *args):
         self.message_view.clear_filter()
@@ -657,9 +661,10 @@ class MessageView(gtk.TreeView):
     PROCESS_COLUMN = 2
     MESSAGE_COLUMN = 3
 
-    def __init__(self, config):
+    def __init__(self, config, status_bar):
         gtk.TreeView.__init__(self)
         self.config = config
+        self.status_bar = status_bar
         self.alert_queue = AlertQueue(config)
         self._observers = []
         self._unfiltered_model = None
@@ -692,7 +697,7 @@ class MessageView(gtk.TreeView):
 
     def clear_filter(self):
         self.set_model(self._unfiltered_model)
-        self.scroll_to_end()
+        self.scroll_down()
 
     def on_selection_changed(self, selection):
         selected = [False]
@@ -710,7 +715,8 @@ class MessageView(gtk.TreeView):
     def select_all(self):
         self.get_selection().select_all()
 
-    def scroll_to_end(self):
+    def scroll_down(self):
+#         if self.is_scrolled_down():
         adjustment = self.get_parent().get_vadjustment()
         upper = adjustment.get_property('upper')
         page_size = adjustment.get_property('page_size')
@@ -731,7 +737,7 @@ class MessageView(gtk.TreeView):
         def count_rows(model, iter, path):
             count[0] += 1
 
-        self.get_model().foreach(count_rows)
+        self.get_unfiltered_model().foreach(count_rows)
         return count[0]
 
     def remove_first_row(self):
@@ -740,15 +746,23 @@ class MessageView(gtk.TreeView):
         if iter:
             list_store.remove(iter)
 
-    def add_message(self, message):
-        if self.count_messages() >= self.config.messages_kept:
-            self.remove_first_row()
+    def append_message_to_models(self, message):
         row = (message.date, message.hostname, message.process, message.text)
         if self.get_model() != self.get_unfiltered_model():
             self.get_unfiltered_model().append(row)
         self.get_model().append(row)
-#         if self.is_scrolled_down():
-        self.scroll_to_end()
+        
+    def update_message_count(self):
+        total_messages = self.count_messages()
+        if total_messages > self.config.messages_kept:
+            self.remove_first_row()
+            total_messages -= 1
+        self.status_bar.set_total_messages(total_messages)
+
+    def add_message(self, message):
+        self.append_message_to_models(message)
+        self.scroll_down()
+        self.update_message_count()
         
     def process_line(self, line):
         message = LogMessage(line)
@@ -812,13 +826,27 @@ class Menu:
         dialog.show()
         
 
+class StatusBar(WidgetWrapper):
+
+    def __init__(self, main_window):
+        WidgetWrapper.__init__(self, 'appbar', main_window)
+        self.setup()
+
+    def setup(self):
+        self.set_total_messages(0)
+
+    def set_total_messages(self, total):
+        self.appbar.set_status('%s messages' % total)
+        
+
 class MainWindow(Window):
 
     def __init__(self, config):
         Window.__init__(self, 'app1')
         self.config = config
         self.monitor_id = None
-        self.message_view = MessageView(self.config)
+        status_bar = StatusBar(self)
+        self.message_view = MessageView(self.config, status_bar)
         self.setup_widgets()
 
     def setup_widgets(self):
