@@ -95,6 +95,17 @@ class FilterSetTest(unittest.TestCase):
         set.append(self.filter3)
         set.pop(1)
         self.assertEqual(set, [self.filter1, self.filter3])
+
+    def test_update_filter(self):
+        """Check we can update a filter in a filter set"""
+        set = bandsaw.FilterSet()
+        set.append(self.filter1)
+        set.append(self.filter2)
+        set.append(self.filter3)
+        self.filter2.name = 'New name'
+        set.update(self.filter2)
+        self.assertEqual(set, [self.filter1, self.filter2, self.filter3])
+        self.assertEqual(set[1].name, 'New name')
         
 
 class MockGConfModule:

@@ -165,7 +165,7 @@ class ErrorDialog(Dialog):
 
 class Filter:
 
-    def __init__(self, name, pattern, alert):
+    def __init__(self, name='', pattern='', alert=False):
         self.name = name
         self.pattern = pattern
         self.alert = alert
@@ -176,17 +176,24 @@ class Filter:
 
 class FilterSet(list):
 
-    pass
+    def update(self, filter):
+        self[self.index(filter)] = filter
 
 
 class FilterDialog(Dialog):
 
-    def __init__(self, parent, title):
+    def __init__(self, parent, title, filter=Filter()):
         Dialog.__init__(self, 'filter_dialog')
         self.root_widget.set_transient_for(parent.root_widget)
         self.root_widget.set_title(title)
-        self.filter = None
+        self.filter = filter
+        self.setup_widgets()
+
+    def setup_widgets(self):
         self.setup_size_group()
+        self.name_entry.set_text(self.filter.name)
+        self.pattern_entry.set_text(self.filter.pattern)
+        self.checkbutton1.set_active(self.filter.alert)
 
     def setup_size_group(self):
         size_group = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
@@ -214,18 +221,26 @@ class FilterDialog(Dialog):
     def on_filter_dialog_response(self, widget, event, *args):
         if event != gtk.RESPONSE_OK:
             return
-        if self.user_input_ok():
-            self.filter = Filter(self.name, self.pattern, self.raise_alert)
+        if self.name and self.pattern:
+            self.filter.name = self.name
+            self.filter.pattern = self.pattern
+            self.filter.alert = self.raise_alert
         else:
+            if not self.name:
+                message = 'Filter has no name'
+            else:
+                message = 'Filter has no pattern'
             self.root_widget.emit_stop_by_name('response')
-            dialog = ErrorDialog(self, 'Incomplete details',
-                                 'Please specify a name and a pattern.')
+            dialog = ErrorDialog(self, message,
+                                 'You must specify a name and a pattern.')
             dialog.run()
             dialog.destroy()
         
 
 class PreferencesDialog(Dialog):
 
+    NAME_COLUMN = 0
+    
     def __init__(self, config):
         Dialog.__init__(self, 'preferences_dialog')
         self.config = config
@@ -240,8 +255,7 @@ class PreferencesDialog(Dialog):
         list_store = gtk.ListStore(gobject.TYPE_STRING)
         self.treeview1.set_model(list_store)
         renderer = gtk.CellRendererText()
-        NAME_COLUMN = 0
-        column = gtk.TreeViewColumn(None, renderer, text=NAME_COLUMN)
+        column = gtk.TreeViewColumn(None, renderer, text=self.NAME_COLUMN)
         self.treeview1.append_column(column)
         self.treeview1.set_headers_visible(gtk.FALSE)
 
@@ -260,6 +274,10 @@ class PreferencesDialog(Dialog):
     def on_spinbutton1_changed(self, *args):
         self.config.messages_kept = self.spinbutton1.get_value()
 
+    def get_selected_filter_index(self):
+        list_store, iter = self.treeview1.get_selection().get_selected()
+        return list_store.get_path(iter)[0]
+
     def on_add_button_clicked(self, *args):
         dialog = FilterDialog(self, 'Add Filter')
         response = dialog.run()
@@ -271,7 +289,15 @@ class PreferencesDialog(Dialog):
         dialog.destroy()
 
     def on_edit_button_clicked(self, *args):
-        pass
+        filter = self.config.filters[self.get_selected_filter_index()]
+        dialog = FilterDialog(self, 'Edit Filter', filter)
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            filters = self.config.filters
+            filters.update(dialog.filter)
+            self.config.filters = filters
+            self.redraw_filters()
+        dialog.destroy()
 
     def on_remove_button_clicked(self, *args):
         list_store, iter = self.treeview1.get_selection().get_selected()
@@ -286,6 +312,19 @@ class PreferencesDialog(Dialog):
     
     def on_down_button_clicked(self, *args):
         pass
+
+    def on_treeview1_row_activated(self, *args):
+        self.on_edit_button_clicked()
+
+#     def on_treeview1_toggle_cursor_row(self, *args):
+#         list_store, iter = self.treeview1.get_selection().get_selected()
+#         if iter is None:
+#             sensitive = gtk.FALSE
+#         else:
+#             sensitive = gtk.TRUE
+#         for button in (self.edit_button, self.remove_button,
+#                        self.up_button, self.down_button):
+#             button.set_sensitive(gtk.FALSE)
 
 
 class LogMessage:
