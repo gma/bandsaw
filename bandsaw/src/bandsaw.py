@@ -21,7 +21,6 @@
 # $Id$
 
 
-
 import os
 import re
 import select
@@ -35,6 +34,9 @@ import gnome.ui
 import gobject
 import gtk
 import gtk.glade
+
+
+__VERSION__ = '@VERSION@'
 
 
 class Config(object):
@@ -360,9 +362,11 @@ class PreferencesDialog(Dialog):
             self.up_button.set_sensitive(sensitive)
             self.down_button.set_sensitive(sensitive)
         else:
+            sensitive = not self.first_row_selected(selection)
+            self.up_button.set_sensitive(sensitive)
+            sensitive = not self.last_row_selected(selection)
+            self.down_button.set_sensitive(sensitive)
             sensitive = gtk.TRUE
-            self.up_button.set_sensitive(not self.first_row_selected(selection))
-            self.down_button.set_sensitive(not self.last_row_selected(selection))
         self.edit_button.set_sensitive(sensitive)
         self.remove_button.set_sensitive(sensitive)
 
@@ -492,10 +496,11 @@ class FilterDialog(Dialog):
             else:
                 message = 'Filter has no pattern'
             self.root_widget.emit_stop_by_name('response')
-            dialog = ErrorDialog(message, 'Please specify a name and a pattern.')
+            dialog = ErrorDialog(message,
+                                 'Please specify a name and a pattern.')
             dialog.run()
             dialog.destroy()
-        
+
 
 class AlertDialog(Dialog):
 
@@ -681,7 +686,7 @@ class MainWindow(Window):
 
 
 def main():
-    gnome.program_init('Band Saw', '0.1')
+    gnome.program_init('Band Saw', __VERSION__)
     config = Config(gconf.client_get_default())
     if config.is_first_run():
         window = WelcomeDruid(config)

@@ -1,13 +1,13 @@
+AUTOMAKE_OPTIONS = check-news dist-bzip2 std-options
+
 PYTHON = python
 GCONFTOOL = gconftool-2
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
 
 # Python source
-main_script = src/bandsaw.py
-test_files = src/bandsaw_test.py
-
-bin_SCRIPTS = $(main_script)
+bin_SCRIPTS = bandsaw
+dist_scripts = src/bandsaw.py src/bandsaw_test.py
 
 # Other files (glade, desktop definitions, etc)
 gladedir   = $(datadir)/bandsaw/glade
@@ -31,10 +31,14 @@ Desktop_DATA = $(Desktop_in_files)
 TESTS_ENVIRONMENT = $(PYTHON)
 TESTS = $(srcdir)/src/bandsaw_test.py
 
+install-exec-hook:
+	sed -i -e "s|'bandsaw.glade'|'$(gladedir)/bandsaw.glade'|" \
+		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
+
 # Extra files to include in package
 EXTRA_DIST = \
-	$(main_script) \
-	$(test_files) \
+	$(bin_SCRIPTS) \
+	$(dist_scripts) \
 	$(glade_DATA) \
 	$(schema_in_files) \
 	$(Desktop_in_files)
