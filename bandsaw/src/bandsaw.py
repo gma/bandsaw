@@ -63,6 +63,32 @@ class SocketDialog(Dialog):
         return self.path_entry.get_text()
 
 
+class LogMessage:
+
+    def __init__(self, line):
+        self._words = line.split(' ')
+
+    def _get_date(self):
+        return ' '.join(self._words[:3])
+
+    date = property(_get_date)
+    
+    def _get_hostname(self):
+        return self._words[3]
+
+    hostname = property(_get_hostname)
+
+    def _get_process(self):
+        return self._words[4][:-1]
+
+    process = property(_get_process)
+
+    def _get_text(self):
+        return ' '.join(self._words[5:])
+
+    text = property(_get_text)
+
+
 class LogView(WidgetWrapper):
 
     DATE_COLUMN = 0
@@ -99,13 +125,10 @@ class LogView(WidgetWrapper):
             print model.get_value(iter, 0)
         self.list_store.foreach(f)
 
-    def process_message(self, message):
-        parts = message.split()
-        date = ' '.join(parts[:3])
-        hostname = parts[3]
-        process = parts[4]
-        message = ' '.join(parts[5:])
-        self.list_store.append((date, hostname, process, message))
+    def process_line(self, line):
+        message = LogMessage(line)
+        self.list_store.append(
+            (message.date, message.hostname, message.process, message.text))
         self.print_rows()
 
 
@@ -118,13 +141,13 @@ class MainWindow(Window):
         self.log_view = LogView()
 
     def on_syslog_readable(self, fifo, condition):
-        message = fifo.readline()
-        if message == '':   # fifo closed by syslog
+        line = fifo.readline()
+        if line == '':   # fifo closed by syslog
             gtk.input_remove(self.monitor_id)
             self.monitor_syslog()
             return gtk.FALSE
         else:
-            self.log_view.process_message(message)
+            self.log_view.process_line(line)
             return gtk.TRUE
 
     def monitor_syslog(self):
