@@ -25,6 +25,7 @@
 import os
 import re
 import select
+import sys
 import time
 
 import pygtk; pygtk.require('2.0')
@@ -272,13 +273,21 @@ class WelcomeDruid(Window):
 
     def on_druidpage_pipe_next(self, *args):
         filename = self.filename_entry.get_text()
-        if len(filename) > 0:
-            self.config.named_pipe = filename
-        else:
+        if len(filename) == 0:
             dialog = ErrorDialog('Please specify a filename')
             dialog.run()
             dialog.destroy()
             return gtk.TRUE
+        elif not os.path.exists(filename):
+            dialog = ErrorDialog(
+                'File not found',
+                "'%s' could not be found. Please specify the full path to "
+                "a named pipe.\n\nRun 'mkfifo /path/to/fifo' from a "
+                "terminal to create a new named pipe." % filename)
+            dialog.run()
+            dialog.destroy()
+            return gtk.TRUE
+        self.config.named_pipe = filename
 
     def on_druidpagefinish1_finish(self, *args):
         self.destroy()
@@ -653,10 +662,19 @@ class MainWindow(Window):
 
     def monitor_syslog(self):
         fifo_path = self.config.named_pipe
-        fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
-        fifo = os.fdopen(fd)
-        self.monitor_id = gtk.input_add(
-            fifo, gtk.gdk.INPUT_READ, self.on_syslog_readable)
+        try:
+            fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
+        except OSError, e:
+            dialog = ErrorDialog('Unable to open file',
+                                 "The file '%s' cannot be read. Please check "
+                                 "the permissions and try again." % fifo_path)
+            dialog.run()
+            dialog.destroy()
+            sys.exit()
+        else:
+            fifo = os.fdopen(fd)
+            self.monitor_id = gtk.input_add(
+                fifo, gtk.gdk.INPUT_READ, self.on_syslog_readable)
         
     def on_app1_delete_event(self, *args):
         gtk.mainquit()

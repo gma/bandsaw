@@ -11,6 +11,4 @@ TODO
 
   - only modify general config params when moving out of widget.
 
-  - handle IOErrors when reading named pipe.
-
 $Id$
