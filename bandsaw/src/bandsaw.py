@@ -480,7 +480,6 @@ class LogTreeView(gtk.TreeView):
             list_store.remove(iter)
 
     def add_message(self, message):
-        print self.count_messages(), self.config.messages_kept
         if self.count_messages() >= self.config.messages_kept:
             self.remove_first_row()
         row = (message.date, message.hostname, message.process, message.text)
