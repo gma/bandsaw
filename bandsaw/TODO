@@ -5,9 +5,13 @@ TODO
 
 - Redo filter prefs screenshot in help.
 
+- Replace @VERSION@ in bandsaw.xml.
+
 - Ensure that spin button changes affect GConf when value is typed.
 
 - Only modify General config params when moving out of widget.
+
+- Rename General prefs tab and move it to be after Filters.
 
 - Make sure named pipe can be changed and is checked for IOErrors.
 
