@@ -28,9 +28,10 @@ AC_SUBST(VERSION)
 AC_SUBST(iconfile, gnome-log.png)
 
 AC_OUTPUT(
-help/bandsaw/C/Makefile
-help/bandsaw/Makefile
 help/Makefile
+help/bandsaw/Makefile
+help/bandsaw/C/Makefile
+help/bandsaw/C/bandsaw.xml:help/bandsaw/C/bandsaw.xml.in
 Makefile
 bandsaw:src/bandsaw.py
 data/bandsaw.desktop
