@@ -304,7 +304,7 @@
 			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			      <property name="snap_to_ticks">False</property>
 			      <property name="wrap">False</property>
-			      <property name="adjustment">1 0 10000 50 1000 1000</property>
+			      <property name="adjustment">0 0 10000 10 100 100</property>
 			      <signal name="changed" handler="on_spinbutton1_changed" last_modification_time="Wed, 30 Jun 2004 22:31:26 GMT"/>
 			    </widget>
 			    <packing>
