@@ -1201,4 +1201,178 @@ Error message details...</property>
   </child>
 </widget>
 
+<widget class="GtkWindow" id="druid_window">
+  <property name="border_width">6</property>
+  <property name="title" translatable="yes">Setup Band Saw</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_CENTER</property>
+  <property name="modal">False</property>
+  <property name="resizable">True</property>
+  <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <signal name="delete_event" handler="on_druid_window_delete_event" last_modification_time="Tue, 13 Jul 2004 06:16:35 GMT"/>
+
+  <child>
+    <widget class="GnomeDruid" id="druid1">
+      <property name="border_width">4</property>
+      <property name="visible">True</property>
+      <property name="show_help">False</property>
+      <signal name="cancel" handler="on_druid1_cancel" last_modification_time="Tue, 13 Jul 2004 06:16:16 GMT"/>
+
+      <child>
+	<widget class="GnomeDruidPageEdge" id="druidpagestart1">
+	  <property name="border_width">6</property>
+	  <property name="visible">True</property>
+	  <property name="position">GNOME_EDGE_START</property>
+	  <property name="title" translatable="yes">Welcome to Band Saw</property>
+	  <property name="text" translatable="yes">Before you can use Band Saw for the first time you need to provide some default configuration. Please click Forward to continue.</property>
+	  <signal name="cancel" handler="on_druidpage_cancel" last_modification_time="Tue, 13 Jul 2004 12:00:38 GMT"/>
+	</widget>
+      </child>
+
+      <child>
+	<widget class="GnomeDruidPageStandard" id="druidpage_pipe">
+	  <property name="border_width">6</property>
+	  <property name="visible">True</property>
+	  <property name="title" translatable="yes">Setting the Named Pipe (FIFO)</property>
+	  <signal name="cancel" handler="on_druidpage_cancel" last_modification_time="Tue, 13 Jul 2004 12:00:54 GMT"/>
+	  <signal name="next" handler="on_druidpage_pipe_next" last_modification_time="Tue, 13 Jul 2004 12:30:07 GMT"/>
+
+	  <child internal-child="vbox">
+	    <widget class="GtkVBox" id="druid-vbox1">
+	      <property name="border_width">16</property>
+	      <property name="visible">True</property>
+	      <property name="homogeneous">False</property>
+	      <property name="spacing">6</property>
+
+	      <child>
+		<widget class="GtkAlignment" id="alignment1">
+		  <property name="visible">True</property>
+		  <property name="xalign">0.5</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xscale">0</property>
+		  <property name="yscale">1</property>
+		  <property name="top_padding">0</property>
+		  <property name="bottom_padding">0</property>
+		  <property name="left_padding">0</property>
+		  <property name="right_padding">0</property>
+
+		  <child>
+		    <widget class="GtkVBox" id="vbox7">
+		      <property name="visible">True</property>
+		      <property name="homogeneous">False</property>
+		      <property name="spacing">18</property>
+
+		      <child>
+			<widget class="GtkLabel" id="label15">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">Band Saw reads log message from a named pipe (otherwise known as a FIFO). You will need to make the pipe with the mkfifo command and then configure your logging software to write to it.
+
+Type &quot;man mkfifo&quot; for more information on creating FIFOs.
+
+Please enter the path to your FIFO.</property>
+			  <property name="use_underline">False</property>
+			  <property name="use_markup">False</property>
+			  <property name="justify">GTK_JUSTIFY_LEFT</property>
+			  <property name="wrap">True</property>
+			  <property name="selectable">False</property>
+			  <property name="xalign">0.5</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			</widget>
+			<packing>
+			  <property name="padding">0</property>
+			  <property name="expand">False</property>
+			  <property name="fill">False</property>
+			</packing>
+		      </child>
+
+		      <child>
+			<widget class="GtkHBox" id="hbox13">
+			  <property name="visible">True</property>
+			  <property name="homogeneous">False</property>
+			  <property name="spacing">12</property>
+
+			  <child>
+			    <widget class="GtkLabel" id="label16">
+			      <property name="visible">True</property>
+			      <property name="label" translatable="yes">FIFO file_name</property>
+			      <property name="use_underline">True</property>
+			      <property name="use_markup">False</property>
+			      <property name="justify">GTK_JUSTIFY_LEFT</property>
+			      <property name="wrap">False</property>
+			      <property name="selectable">False</property>
+			      <property name="xalign">0.5</property>
+			      <property name="yalign">0.5</property>
+			      <property name="xpad">0</property>
+			      <property name="ypad">0</property>
+			      <property name="mnemonic_widget">filename_entry</property>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">False</property>
+			      <property name="fill">False</property>
+			    </packing>
+			  </child>
+
+			  <child>
+			    <widget class="GtkEntry" id="filename_entry">
+			      <property name="visible">True</property>
+			      <property name="can_focus">True</property>
+			      <property name="editable">True</property>
+			      <property name="visibility">True</property>
+			      <property name="max_length">0</property>
+			      <property name="text" translatable="yes"></property>
+			      <property name="has_frame">True</property>
+			      <property name="invisible_char" translatable="yes">*</property>
+			      <property name="activates_default">False</property>
+			    </widget>
+			    <packing>
+			      <property name="padding">0</property>
+			      <property name="expand">True</property>
+			      <property name="fill">True</property>
+			    </packing>
+			  </child>
+			</widget>
+			<packing>
+			  <property name="padding">0</property>
+			  <property name="expand">False</property>
+			  <property name="fill">True</property>
+			</packing>
+		      </child>
+		    </widget>
+		  </child>
+		</widget>
+		<packing>
+		  <property name="padding">0</property>
+		  <property name="expand">True</property>
+		  <property name="fill">True</property>
+		</packing>
+	      </child>
+	    </widget>
+	  </child>
+	</widget>
+      </child>
+
+      <child>
+	<widget class="GnomeDruidPageEdge" id="druidpagefinish1">
+	  <property name="border_width">6</property>
+	  <property name="visible">True</property>
+	  <property name="position">GNOME_EDGE_FINISH</property>
+	  <property name="title" translatable="yes">Setup Complete</property>
+	  <property name="text" translatable="yes">Band Saw is now ready for use. You can customise the filters used to alert you to specific log messages in the Preferences dialog.</property>
+	  <signal name="cancel" handler="on_druidpage_cancel" last_modification_time="Tue, 13 Jul 2004 12:01:03 GMT"/>
+	  <signal name="finish" handler="on_druidpagefinish1_finish" last_modification_time="Tue, 13 Jul 2004 12:50:06 GMT"/>
+	  <signal name="prepare" handler="on_druidpagefinish1_prepare" last_modification_time="Tue, 13 Jul 2004 12:51:55 GMT"/>
+	</widget>
+      </child>
+    </widget>
+  </child>
+</widget>
+
 </glade-interface>
