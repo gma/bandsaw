@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Log File Monitor
+Name=System Log Monitor
 Comment=Monitor the system log files for interesting events
 Exec=bandsaw
 Terminal=false
