@@ -377,23 +377,29 @@ class LogMessage:
     def __init__(self, line):
         self.match = LogMessage.pattern.match(line)
 
+    def _get_message_part(self, index):
+        try:
+            return self.match.groups()[index]
+        except AttributeError:
+            return ''
+
     def _get_date(self):
-        return self.match.groups()[0]
+        return self._get_message_part(0)
 
     date = property(_get_date)
     
     def _get_hostname(self):
-        return self.match.groups()[1]
+        return self._get_message_part(1)
 
     hostname = property(_get_hostname)
 
     def _get_process(self):
-        return self.match.groups()[2]
+        return self._get_message_part(2)
 
     process = property(_get_process)
 
     def _get_text(self):
-        return self.match.groups()[3]
+        return self._get_message_part(3)
 
     text = property(_get_text)
 

@@ -56,6 +56,32 @@ class LogMessageTest(unittest.TestCase):
         self.assertEqual(message.text, 'Hello  world')
 
 
+class BadLogMessageTest(unittest.TestCase):
+
+    def setUp(self):
+        self.line = 'Jun 23 14:\n'
+
+    def test_date(self):
+        """Check date is an empty string for bad input message"""
+        message = bandsaw.LogMessage(self.line)
+        self.assertEqual(message.date, '')
+
+    def test_hostname(self):
+        """Check hostname is an empty string for bad input message"""
+        message = bandsaw.LogMessage(self.line)
+        self.assertEqual(message.hostname, '')
+
+    def test_process(self):
+        """Check the process details are an empty string for bad input message"""
+        message = bandsaw.LogMessage(self.line)
+        self.assertEqual(message.process, '')
+        
+    def test_message(self):
+        """Check the message is an empty string for bad input"""
+        message = bandsaw.LogMessage(self.line)
+        self.assertEqual(message.text, '')
+
+
 class FilterTest(unittest.TestCase):
 
     def test_matches_good_string(self):
