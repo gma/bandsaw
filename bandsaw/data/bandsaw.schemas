@@ -5,7 +5,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/filter_alerts</key>
-      <applyto>/apps/apps/bandsaw/filter_alerts</applyto>
+      <applyto>/apps/bandsaw/filter_alerts</applyto>
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>bool</list_type>
@@ -17,7 +17,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/filter_names</key>
-      <applyto>/apps/apps/bandsaw/filter_names</applyto>
+      <applyto>/apps/bandsaw/filter_names</applyto>
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>string</list_type>
@@ -29,7 +29,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/filter_patterns</key>
-      <applyto>/apps/apps/bandsaw/filter_patterns</applyto>
+      <applyto>/apps/bandsaw/filter_patterns</applyto>
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>string</list_type>
@@ -43,7 +43,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/messages_kept</key>
-      <applyto>/apps/apps/bandsaw/messages_kept</applyto>
+      <applyto>/apps/bandsaw/messages_kept</applyto>
       <owner>bandsaw</owner>
       <type>int</type>
       <default>500</default>
@@ -54,7 +54,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/named_pipe</key>
-      <applyto>/apps/apps/bandsaw/named_pipe</applyto>
+      <applyto>/apps/bandsaw/named_pipe</applyto>
       <owner>bandsaw</owner>
       <type>string</type>
       <locale name="C">
@@ -64,7 +64,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/suppress_alerts</key>
-      <applyto>/apps/apps/bandsaw/messages_kept</applyto>
+      <applyto>/apps/bandsaw/suppress_alerts</applyto>
       <owner>bandsaw</owner>
       <type>bool</type>
       <default>False</default>
@@ -75,7 +75,7 @@
 
     <schema>
       <key>/schemas/apps/bandsaw/suppress_minutes</key>
-      <applyto>/apps/apps/bandsaw/suppress_minutes_</applyto>
+      <applyto>/apps/bandsaw/suppress_minutes</applyto>
       <owner>bandsaw</owner>
       <type>int</type>
       <default>5</default>
