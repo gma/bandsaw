@@ -23,85 +23,69 @@ import os
 import sys
 import unittest
 
+import gconf
+from pmock import *
+
 import bandsaw
 
-
-class MockGConfModule:
-
-    def __init__(self, client):
-        self.client = client
-        
-    def client_get_default(self):
-        return self.client
-
-
-class Mock:
-
-    class MethodCall:
-
-        def __init__(self, rval):
-            self.rval = rval
-
-        def __call__(self, *args):
-            return self.rval
-
-    def __init__(self):
-        self.methods = []
-
-    def __getattr__(self, name):
-        method_name, return_value = self.methods.pop()
-        assert name == method_name, \
-               "expected call to '%s', not '%s'" % (method_name, name)
-        return Mock.MethodCall(return_value)
-
-    def register(self, method, value):
-        self.methods.insert(0, (method, value))
-
-    def verify(self):
-        assert len(self.methods) == 0, \
-               'uncalled methods: %s' % [name for name, value in self.methods]
-        
 
 class GConfTest(unittest.TestCase):
 
     def test_get_named_pipe(self):
         """Check we can get the path to the named pipe"""
+        fifo_path = '/var/log/bandsaw.fifo'
+        fifo_rval = return_value(fifo_path)
+        key = bandsaw.Config.NAMED_PIPE
         client = Mock()
-        client.register('get_string', '/var/log/bandsaw.fifo')
+        client.expects(once()).get_string(eq(key)).will(fifo_rval)
         config = bandsaw.Config(client)
-        self.assertEqual(config.named_pipe, '/var/log/bandsaw.fifo')
+        self.assertEqual(config.named_pipe, fifo_path)
         client.verify()
 
     def test_get_messages_kept(self):
         """Check we can get the number of messages to keep"""
+        key = bandsaw.Config.MESSAGES_KEPT
         client = Mock()
-        client.register('get_int', 34)
+        client.expects(once()).get_int(eq(key)).will(return_value(34))
         config = bandsaw.Config(client)
         self.assertEqual(config.messages_kept, 34)
         client.verify()
 
-    def test_get_suppress_alerts(self):
-        """Check we can determine whether we should suppress alerts"""
+    def test_get_ignore_alerts(self):
+        """Check we can determine whether we should ignore alerts"""
+        key = bandsaw.Config.IGNORE_ALERTS
         client = Mock()
-        client.register('get_bool', False)
+        client.expects(once()).get_bool(eq(key)).will(return_value(False))
         config = bandsaw.Config(client)
-        self.assertEqual(config.suppress_alerts, False)
+        self.assertEqual(config.ignore_alerts, False)
         client.verify()
 
-    def test_get_suppress_minutes(self):
-        """Check we can determine default minutes to suppress alerts"""
+    def test_get_ignore_timeout(self):
+        """Check we can determine default minutes to ignore alerts"""
+        key = bandsaw.Config.IGNORE_TIMEOUT
         client = Mock()
-        client.register('get_int', 5)
+        client.expects(once()).get_int(eq(key)).will(return_value(5))
         config = bandsaw.Config(client)
-        self.assertEqual(config.suppress_minutes, 5)
+        self.assertEqual(config.ignore_timeout, 5)
         client.verify()
 
     def test_get_filters(self):
         """Check we can load existing filters"""
+        name_rval = return_value(['Name 1', 'Name 2'])
+        pat_rval = return_value(['Pattern 1', 'Pattern 2'])
+        bool_rval = return_value([True, False])
+
         client = Mock()
-        client.register('get_list', ['Name 1', 'Name 2'])
-        client.register('get_list', ['Pattern 1', 'Pattern 2'])
-        client.register('get_list', [True, False])
+        key = bandsaw.Config.FILTER_NAMES
+        client.expects(once()).get_list(
+            eq(key), eq(gconf.VALUE_STRING)).will(name_rval)
+        key = bandsaw.Config.FILTER_PATTERNS
+        client.expects(once()).get_list(
+            eq(key), eq(gconf.VALUE_STRING)).will(pat_rval)
+        key = bandsaw.Config.FILTER_ALERTS
+        client.expects(once()).get_list(
+            eq(key), eq(gconf.VALUE_BOOL)).will(bool_rval)
+
         config = bandsaw.Config(client)
         filter1, filter2 = config.filters
         client.verify()
@@ -153,22 +137,22 @@ class BadLogMessageTest(unittest.TestCase):
         self.line = 'Jun 23 14:\n'
 
     def test_date(self):
-        """Check date is an empty string for bad input message"""
+        """Check date is empty string for bad input message"""
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.date, '')
 
     def test_hostname(self):
-        """Check hostname is an empty string for bad input message"""
+        """Check hostname is empty string for bad input message"""
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.hostname, '')
 
     def test_process(self):
-        """Check the process details are an empty string for bad input message"""
+        """Check the process details are empty string for bad input message"""
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.process, '')
         
     def test_message(self):
-        """Check the message is an empty string for bad input"""
+        """Check the message is empty string for bad input"""
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.text, '')
 
