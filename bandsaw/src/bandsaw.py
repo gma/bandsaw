@@ -8,6 +8,7 @@ import select
 import time
 
 import pygtk; pygtk.require('2.0')
+import gnome
 import gobject
 import gtk
 import gtk.glade
@@ -141,13 +142,13 @@ class AlertDialog(Dialog):
     def set_text(self, filter, message):
         # TODO: escape text
         self.label1.set_markup('<span weight="bold" size="larger">'
-                               '%s message received from %s</span>\n\n%s' %
+                               '%s from %s</span>\n\n%s' %
                                (filter.name, message.hostname, message.text))
 
     def on_alert_dialog_delete_event(self, *args):
         self.destroy()
 
-    def on_closebutton1_clicked(self, *args):
+    def on_okbutton1_clicked(self, *args):
         self.destroy()
         
 
@@ -238,7 +239,7 @@ class Menu:
     def on_quit1_activate(self, *args):
         gtk.mainquit()
 
-    def on_delete1_activate(self, *args):
+    def on_clear1_activate(self, *args):
         self.log_view.delete_selected()
 
     def on_select_all1_activate(self, *args):
@@ -252,7 +253,6 @@ class Menu:
     def on_about1_activate(self, *args):
         dialog = AboutDialog()
         dialog.run()
-        dialog.destroy()
 
 
 class AboutDialog(Dialog):
@@ -264,7 +264,7 @@ class AboutDialog(Dialog):
 class MainWindow(Window):
 
     def __init__(self, config):
-        Window.__init__(self, 'window1')
+        Window.__init__(self, 'app1')
         self.monitor_id = None
         self.log_view = LogTreeView(config)
         self.log_view.setup()
@@ -294,19 +294,17 @@ class MainWindow(Window):
         self.monitor_id = gtk.input_add(
             fifo, gtk.gdk.INPUT_READ, self.on_syslog_readable)
         
-    def on_window1_delete_event(self, *args):
+    def on_app1_delete_event(self, *args):
         gtk.mainquit()
 
 
-class App:
-
-    def main(self):
-        config = Config()
-        window = MainWindow(config)
-        window.show()
-        gtk.main()
+def main():
+    gnome.init('Band Saw', '0.1')
+    config = Config()
+    window = MainWindow(config)
+    window.show()
+    gtk.main()
 
 
 if __name__ == '__main__':
-    app = App()
-    app.main()
+    main()
