@@ -5,6 +5,8 @@ TODO
 
 - Redo filter prefs screenshot in help.
 
+- Make named pipe if permissions allow.
+
 - Listen for notification changes from GConf.
 
 - Re-open pipe when path changed, checking for IOErrors.
