@@ -4,8 +4,8 @@
     <!-- Filter definitions -->        
 
     <schema>
-      <key>/schemas/apps/bandsaw/filter_alerts</key>
-      <applyto>/apps/bandsaw/filter_alerts</applyto>
+      <key>/schemas/apps/bandsaw/filters/alerts</key>
+      <applyto>/apps/bandsaw/filters/alerts</applyto>
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>bool</list_type>
@@ -16,8 +16,8 @@
     </schema>
 
     <schema>
-      <key>/schemas/apps/bandsaw/filter_names</key>
-      <applyto>/apps/bandsaw/filter_names</applyto>
+      <key>/schemas/apps/bandsaw/filters/names</key>
+      <applyto>/apps/bandsaw/filters/names</applyto>
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>string</list_type>
@@ -28,8 +28,8 @@
     </schema>
 
     <schema>
-      <key>/schemas/apps/bandsaw/filter_patterns</key>
-      <applyto>/apps/bandsaw/filter_patterns</applyto>
+      <key>/schemas/apps/bandsaw/filters/patterns</key>
+      <applyto>/apps/bandsaw/filters/patterns</applyto>
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>string</list_type>
@@ -62,9 +62,11 @@
       </locale>
     </schema>
 
+    <!-- Alerts -->
+
     <schema>
-      <key>/schemas/apps/bandsaw/suppress_alerts</key>
-      <applyto>/apps/bandsaw/suppress_alerts</applyto>
+      <key>/schemas/apps/bandsaw/alerts/ignore</key>
+      <applyto>/apps/bandsaw/alerts/ignore</applyto>
       <owner>bandsaw</owner>
       <type>bool</type>
       <default>False</default>
@@ -74,8 +76,8 @@
     </schema>
 
     <schema>
-      <key>/schemas/apps/bandsaw/suppress_minutes</key>
-      <applyto>/apps/bandsaw/suppress_minutes</applyto>
+      <key>/schemas/apps/bandsaw/alerts/ignore_timeout</key>
+      <applyto>/apps/bandsaw/alerts/ignore_timeout</applyto>
       <owner>bandsaw</owner>
       <type>int</type>
       <default>5</default>
