@@ -211,7 +211,7 @@
       </para>
 
       <programlisting>
-	*.notice			|/home/user/.bandsaw.fifo
+	*.notice    |/home/user/.bandsaw.fifo
       </programlisting>
 
       <para>
