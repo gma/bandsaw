@@ -36,8 +36,14 @@ Desktop_in_files = $(srcdir)/data/bandsaw.desktop.in
 Desktop_DATA = $(Desktop_in_files:.desktop.in=.desktop)
 
 # Run unit tests via "make check"
-TESTS_ENVIRONMENT = $(PYTHON)
-TESTS = $(srcdir)/src/bandsaw_test.py
+#TESTS_ENVIRONMENT = $(PYTHON)
+#TESTS = $(srcdir)/src/bandsaw_test.py
+
+# Use makefiles in sub directories
+SUBDIRS = help
+
+# Scrollkeeper
+scrollkeeper_files = COPYING-DOCS xmldocs.make omf.make
 
 # Extra files to include in package
 EXTRA_DIST = \
@@ -45,5 +51,6 @@ EXTRA_DIST = \
 	$(dist_scripts) \
 	$(glade_DATA) \
 	$(pixmaps_DATA) \
-	$(schema_DATA) \
-	$(Desktop_DATA)
+	$(schema_in_files) \
+	$(Desktop_in_files) \
+	$(scrollkeeper_files)
