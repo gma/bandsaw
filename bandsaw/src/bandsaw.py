@@ -91,7 +91,7 @@ class Filter:
 class PreferencesDialog(Dialog):
 
     def __init__(self):
-        Dialog.__init__(self, 'filter_dialog')
+        Dialog.__init__(self, 'preferences_dialog')
 
 
 class LogMessage:
