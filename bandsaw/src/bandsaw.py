@@ -569,14 +569,14 @@ class MainWindow(Window):
         self.connect_signals(menu)
 
     def on_syslog_readable(self, fifo, condition):
-        for line in fifo:
-            if line == '':   # fifo closed by syslog
-                gtk.input_remove(self.monitor_id)
-                self.monitor_syslog()
-                return gtk.FALSE
-            else:
-                self.log_view.process_line(line)
-                return gtk.TRUE
+        line = fifo.readline()
+        if line == '':   # fifo closed by syslog
+            gtk.input_remove(self.monitor_id)
+            self.monitor_syslog()
+            return gtk.FALSE
+        else:
+            self.log_view.process_line(line)
+            return gtk.TRUE
 
     def monitor_syslog(self):
         fifo_path = self.config.named_pipe
