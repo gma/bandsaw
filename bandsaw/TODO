@@ -1,6 +1,8 @@
 TODO
 ----
 
+- Check for gnome-python when running configure.
+
 - Redo filter prefs screenshot in help.
 
 - Replace @VERSION@ in bandsaw.xml.
