@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   id="svg1"
+   sodipodi:version="0.32"
+   inkscape:version="0.39"
+   width="210mm"
+   height="297mm"
+   sodipodi:docbase="/home/gashton/data/personal/cvs/bandsaw/bandsaw/pixmaps"
+   sodipodi:docname="bandsaw.svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs
+     id="defs3">
+    <linearGradient
+       id="linearGradient1594">
+      <stop
+         style="stop-color:#000;stop-opacity:1;"
+         offset="0"
+         id="stop1595" />
+      <stop
+         style="stop-color:#fff;stop-opacity:1;"
+         offset="1"
+         id="stop1596" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.2465445"
+     inkscape:cx="262.54151"
+     inkscape:cy="478.67781"
+     inkscape:window-width="886"
+     inkscape:window-height="667"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-x="209"
+     inkscape:window-y="235">
+    <sodipodi:guide
+       orientation="vertical"
+       position="150.81692"
+       id="guide1602" />
+    <sodipodi:guide
+       orientation="vertical"
+       position="373.03122"
+       id="guide1603" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4">
+    <rdf:RDF
+       id="RDF5">
+      <cc:Work
+         rdf:about=""
+         id="Work6">
+        <dc:format
+           id="format7">image/svg+xml</dc:format>
+        <dc:type
+           id="type9"
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <text
+     xml:space="preserve"
+     style="font-size:36.000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.6178524;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr;stroke-dasharray:none;"
+     x="129.98499"
+     y="343.70596"
+     id="text934"
+     sodipodi:linespacing="100%"
+     transform="scale(1.429239,1.429489)"><tspan
+       id="tspan935"
+       style="fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-opacity:1.0000000;stroke-width:1.6178524;stroke-miterlimit:4.0000000;stroke-dasharray:none;">Band Saw</tspan></text>
+  <g
+     id="g1599">
+    <path
+       style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:3.5433071;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;stroke-dasharray:none;"
+       d="M 189.19875,436.83389 L 212.24572,436.83389 C 212.24572,436.83389 216.74269,434.04292 227.42300,425.67000 C 239.22755,417.85526 248.17909,417.74882 253.80030,417.74882 C 252.80406,422.12404 252.52570,423.84686 252.02296,426.13783 C 251.79930,428.85453 251.16714,431.38027 253.40520,436.97028"
+       id="path912"
+       sodipodi:nodetypes="cccccc" />
+    <path
+       style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:3.5433071;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;stroke-dasharray:none;"
+       d="M 252.88743,436.83389 L 275.93440,436.83389 C 275.93440,436.83389 280.43137,434.04292 291.11168,425.67000 C 302.91622,417.85526 311.86778,417.74882 317.48898,417.74882 C 316.49273,422.12404 316.21437,423.84686 315.71165,426.13783 C 315.48797,428.85453 314.85581,431.38027 317.09387,436.97028"
+       id="path920"
+       sodipodi:nodetypes="cccccc" />
+  </g>
+  <path
+     style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:3.5433071;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;stroke-dasharray:none;"
+     d="M 316.67641,436.83389 L 339.72338,436.83389 C 339.72338,436.83389 344.22035,434.04292 354.90066,425.67000 C 366.70521,417.85526 375.65675,417.74882 381.27796,417.74882 C 380.28171,422.12404 380.00335,423.84686 379.50061,426.13783 C 379.27695,428.85453 378.64479,431.38027 380.88285,436.97028"
+     id="path925"
+     sodipodi:nodetypes="cccccc" />
+  <path
+     style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:3.5433071;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;stroke-dasharray:none;"
+     d="M 380.36508,436.83389 L 403.41205,436.83389 C 403.41205,436.83389 407.90902,434.04292 418.58933,425.67000 C 430.39388,417.85526 439.34543,417.74882 444.96663,417.74882 C 443.97038,422.12404 443.69203,423.84686 443.18930,426.13783 C 442.96563,428.85453 442.33346,431.38027 444.57153,436.97028"
+     id="path926"
+     sodipodi:nodetypes="cccccc" />
+  <path
+     style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:3.5433071;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;stroke-dasharray:none;"
+     d="M 444.10807,436.97028 L 467.15502,436.97028"
+     id="path942"
+     sodipodi:nodetypes="cc" />
+  <path
+     style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:3.5374999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;"
+     d="M 190.28990,508.85971 L 467.43558,508.85971"
+     id="path1604" />
+</svg>

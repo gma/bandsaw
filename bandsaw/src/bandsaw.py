@@ -327,12 +327,6 @@ class WelcomeDruid(Window):
         gtk.mainquit()
         
 
-class AboutDialog(Dialog):
-    
-    def __init__(self):
-        Dialog.__init__(self, 'about_dialog')
-        
-
 class ErrorDialog(Dialog):
 
     def __init__(self, primary, secondary=''):
@@ -688,9 +682,17 @@ class Menu:
         dialog.destroy()
 
     def on_about1_activate(self, *args):
-        dialog = AboutDialog()
-        dialog.run()
-
+        copyright = u'Copyright \xa9 2004 Graham Ashton'
+        comments = 'A log monitoring and alerting tool'
+        authors = ['Graham Ashton <ashtong@users.sourceforge.net>']
+        documenters = []
+        translators = None
+        logo = gtk.gdk.pixbuf_new_from_file('../pixmaps/bandsaw.png')
+        dialog = gnome.ui.About('Band Saw', __VERSION__,
+                                copyright, comments, authors, documenters,
+                                translators, logo)
+        dialog.show()
+        
 
 class MainWindow(Window):
 
