@@ -247,7 +247,19 @@ class Menu:
     def on_preferences1_activate(self, *args):
         dialog = PreferencesDialog()
         dialog.run()
+        dialog.destroy()
 
+    def on_about1_activate(self, *args):
+        dialog = AboutDialog()
+        dialog.run()
+        dialog.destroy()
+
+
+class AboutDialog(Dialog):
+    
+    def __init__(self):
+        Dialog.__init__(self, 'about_dialog')
+        
 
 class MainWindow(Window):
 
@@ -262,8 +274,6 @@ class MainWindow(Window):
         self.monitor_syslog()
 
     def setup_menu(self):
-        self.copy1.set_sensitive(gtk.FALSE)
-        self.about1.set_sensitive(gtk.FALSE)
         menu = Menu(self.log_view)
         self.connect_signals(menu)
 
