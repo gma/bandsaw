@@ -16,5 +16,6 @@ AC_SUBST(PYGTK_LIBS)
 
 AC_SUBST(VERSION)
 
-AC_CONFIG_FILES(bandsaw:src/bandsaw.py)
-AC_OUTPUT(Makefile)
+AC_SUBST(iconfile, gnome-log.png)
+
+AC_OUTPUT([Makefile bandsaw:src/bandsaw.py data/bandsaw.desktop])

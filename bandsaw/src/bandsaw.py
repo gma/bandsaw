@@ -33,6 +33,7 @@ import gnome
 import gnome.ui
 import gobject
 import gtk
+import gtk.gdk
 import gtk.glade
 
 
@@ -268,7 +269,18 @@ class WidgetWrapper(object):
                     self._xml.signal_connect(name, candidate_callback)
 
 
+def set_icon(window):
+    icon_file = os.path.join('@pixmapsdir@', '@iconfile@')
+    if os.path.exists(icon_file):
+        pixbuf = gtk.gdk.pixbuf_new_from_file(icon_file)
+        window.set_icon(pixbuf)
+
+
 class Window(WidgetWrapper):
+
+    def __init__(self, root_widget):
+        WidgetWrapper.__init__(self, root_widget)
+        set_icon(self.root_widget)
 
     def show(self):
         self.root_widget.show_all()
@@ -688,9 +700,9 @@ class Menu:
         documenters = []
         translators = None
         logo = gtk.gdk.pixbuf_new_from_file('../pixmaps/bandsaw.png')
-        dialog = gnome.ui.About('Band Saw', __VERSION__,
-                                copyright, comments, authors, documenters,
-                                translators, logo)
+        dialog = gnome.ui.About('Band Saw', __VERSION__, copyright, comments,
+                                authors, documenters, translators, logo)
+        set_icon(dialog)
         dialog.show()
         
 

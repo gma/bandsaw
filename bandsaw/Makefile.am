@@ -18,6 +18,8 @@ install-exec-hook:
 		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
 	sed -i -e "s|../pixmaps|$(pixmapsdir)|" \
 		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
+	sed -i -e "s|@pixmapsdir@|$(pixmapsdir)|" \
+		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
 
 schemadir = $(GCONF_SCHEMA_FILE_DIR)
 schema_in_files = data/bandsaw.schemas
@@ -30,7 +32,7 @@ install-data-local:
 endif
 
 Desktopdir = $(datadir)/applications
-Desktop_in_files = $(srcdir)/data/bandsaw.desktop
+Desktop_in_files = $(srcdir)/data/bandsaw.desktop.in
 Desktop_DATA = $(Desktop_in_files)
 
 # Run unit tests via "make check"
@@ -42,5 +44,6 @@ EXTRA_DIST = \
 	$(bin_SCRIPTS) \
 	$(dist_scripts) \
 	$(glade_DATA) \
-	$(schema_in_files) \
-	$(Desktop_in_files)
+	$(pixmaps_DATA) \
+	$(schema_DATA) \
+	$(Desktop_DATA)
