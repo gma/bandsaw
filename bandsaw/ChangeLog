@@ -1,0 +1,173 @@
+2004-07-15  ashtong  <ashtong@users.sourceforge.net>
+
+	* .cvsignore: Ignore autom4te.cache.
+
+	* configure.ac, configure.in: Renamed configure.in to configure.ac.
+
+	* Makefile.am: Disable gconf schema install during distcheck.
+
+	* .cvsignore, install-sh, missing, mkinstalldirs:
+	Removed derived files.
+
+	* autogen.sh: New file.
+
+	* INSTALL, Makefile.in, configure: Removed derived files.
+
+	* .cvsignore: Ignore packages.
+
+	* .cvsignore, data/bandsaw.desktop, data/bandsaw.schemas: New file.
+
+	* TODO: Added note about auto scrolling performance.
+
+	* Makefile.am, configure.in:
+	Run tests via "make check", install desktop, schema and glade files.
+
+	* src/bandsaw_test.py: Run tests via "make check".
+
+2004-07-13  ashtong  <ashtong@users.sourceforge.net>
+
+	* TODO, src/bandsaw.glade, src/bandsaw.py:
+	Catch IO errors when reading fifo.
+
+	* src/bandsaw.py: Removed unused method.
+
+	* src/bandsaw.glade: Modified text in the welcome druid.
+
+	* src/bandsaw_test.py: Re-ordered test cases.
+
+	* src/bandsaw.py:
+	Prevent multiple alert dialogs from being displayed simultaneously.
+
+	* src/bandsaw.glade, src/bandsaw.py: Added druid to set path to fifo.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Ensure message parsing can cope with bad input.
+
+2004-07-08  ashtong  <ashtong@users.sourceforge.net>
+
+	* Makefile.in, configure, ChangeLog, NEWS, COPYING, INSTALL, install-sh, missing, mkinstalldirs:
+	New file, initial support for autotools.
+
+	* TODO: New file.
+
+	* Makefile.am, configure.in: Initial autotools support.
+
+	* src/bandsaw.py:
+	Only read a single line at a time inside gtk.input_add callback.
+
+	* AUTHORS, README: New file.
+
+2004-07-05  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.py: Removed debugging print statement.
+
+	* src/bandsaw.glade, src/bandsaw.py:
+	Implemented "Keep no more than X messages" functionality.
+
+2004-07-02  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Moved filter movement methods onto FilterSet.
+
+	* src/bandsaw.py:
+	Implemented Up and Down buttons on filter preferences tab.
+
+	* src/bandsaw.glade, src/bandsaw.py:
+	Set filter button sensitivity in preferences according to selection.
+
+	* src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py:
+	Enabled editing of filters.
+
+2004-07-01  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade, src/bandsaw_test.py:
+	Can now add and remove filters via the Preferences dialog.
+
+	* src/bandsaw.py:
+	Can now add and remove filters via the Preferences dialog.
+	Fixed log message parsing for dates whose day are only a single digit.
+
+	* src/bandsaw.gladep: Corrected program name.
+
+2004-06-30  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade, src/bandsaw.py:
+	Hooked up the General preferences tab and the alert dialog settings.
+
+	* src/bandsaw.py, src/bandsaw_test.py: Added GPL headers.
+
+	* src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py:
+	Moved configuration from ConfigParser config file to GConf.
+
+	* src/bandsaw.glade, src/bandsaw.gladep, src/bandsaw.py:
+	Converted to a GNOME app.
+
+2004-06-29  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade, src/bandsaw.py: Added About dialog.
+
+	* src/bandsaw.py:
+	Read all available lines from FIFO when it becomes readable.
+
+2004-06-28  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade: Wrap long lines in the alert dialog.
+
+2004-06-26  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.py:
+	Added General config parameters, limit frequency of alerts, auto
+	scrolling.
+
+	* src/bandsaw.glade: Renamed Edit->Clear to Edit->Delete.
+
+2004-06-25  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.py: Bind preferences dialog to menu item.
+
+	* src/bandsaw.glade: Setup General tab in Preferences dialog.
+
+	* src/bandsaw.glade: Started new Preferences dialog.
+
+	* src/bandsaw.py: Added method to LogTreeView for clearing all rows.
+
+2004-06-24  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py:
+	Added configuration file, real filters, and an alert dialog.
+
+	* src/bandsaw.py:
+	Added View->Clear All menu item, and added Edit menu stubs.
+	Added basic filters (WARNING, ERROR).
+	Made default FIFO name more sensible.
+
+	* src/bandsaw.glade:
+	Added View->Clear All menu item, and added Edit menu stubs.
+
+	* src/bandsaw.glade:
+	Added dialog for adding/modifying an individual filter.
+
+2004-06-23  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade: Added filter dialog.
+
+	* src/bandsaw.py: Converted LogView into a TreeView widget.
+	Strip new lines from end of log messages.
+	Removed SocketDialog.
+
+	* src/bandsaw.glade: Removed TreeView widget, now created in code.
+	Removed File->Open menu item.
+
+	* src/bandsaw_test.py: Strip new line from end of log messages.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Added LogMessage class for parsing lines in the log file.
+
+2004-06-22  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade, src/bandsaw.gladep, src/bandsaw.py, src/pixmaps/gnome-log.png:
+	Imported from source.
+
+	* src/bandsaw.glade, src/bandsaw.gladep, src/bandsaw.py, src/pixmaps/gnome-log.png:
+	New file.
+
