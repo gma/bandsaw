@@ -31,46 +31,60 @@ import bandsaw
 
 class GConfTest(unittest.TestCase):
 
-    def test_get_named_pipe(self):
-        """Check we can get the path to the named pipe"""
-        fifo_path = '/var/log/bandsaw.fifo'
-        fifo_rval = return_value(fifo_path)
+    def get_named_pipe_mock(self):
         key = bandsaw.Config.NAMED_PIPE
+        fifo_rval = return_value('/var/log/bandsaw.fifo')
         client = Mock()
         client.expects(once()).get_string(eq(key)).will(fifo_rval)
+        return client
+
+    def test_get_named_pipe(self):
+        """Check we can get the path to the named pipe"""
+        client = self.get_named_pipe_mock()
         config = bandsaw.Config(client)
-        self.assertEqual(config.named_pipe, fifo_path)
+        self.assertEqual(config.named_pipe, '/var/log/bandsaw.fifo')
         client.verify()
 
-    def test_get_messages_kept(self):
-        """Check we can get the number of messages to keep"""
+    def get_messages_kept_mock(self):
         key = bandsaw.Config.MESSAGES_KEPT
         client = Mock()
         client.expects(once()).get_int(eq(key)).will(return_value(34))
+        return client
+
+    def test_get_messages_kept(self):
+        """Check we can get the number of messages to keep"""
+        client = self.get_messages_kept_mock()
         config = bandsaw.Config(client)
         self.assertEqual(config.messages_kept, 34)
         client.verify()
 
-    def test_get_ignore_alerts(self):
-        """Check we can determine whether we should ignore alerts"""
+    def get_ignore_alerts_mock(self):
         key = bandsaw.Config.IGNORE_ALERTS
         client = Mock()
         client.expects(once()).get_bool(eq(key)).will(return_value(False))
+        return client
+
+    def test_get_ignore_alerts(self):
+        """Check we can determine whether we should ignore alerts"""
+        client = self.get_ignore_alerts_mock()
         config = bandsaw.Config(client)
         self.assertEqual(config.ignore_alerts, False)
         client.verify()
 
-    def test_get_ignore_timeout(self):
-        """Check we can determine default minutes to ignore alerts"""
+    def get_ignore_timeout_mock(self):
         key = bandsaw.Config.IGNORE_TIMEOUT
         client = Mock()
         client.expects(once()).get_int(eq(key)).will(return_value(5))
+        return client
+    
+    def test_get_ignore_timeout(self):
+        """Check we can determine default minutes to ignore alerts"""
+        client = self.get_ignore_timeout_mock()
         config = bandsaw.Config(client)
         self.assertEqual(config.ignore_timeout, 5)
         client.verify()
 
-    def test_get_filters(self):
-        """Check we can load existing filters"""
+    def get_filters_mock(self):
         name_rval = return_value(['Name 1', 'Name 2'])
         pat_rval = return_value(['Pattern 1', 'Pattern 2'])
         bool_rval = return_value([True, False])
@@ -85,7 +99,11 @@ class GConfTest(unittest.TestCase):
         key = bandsaw.Config.FILTER_ALERTS
         client.expects(once()).get_list(
             eq(key), eq(gconf.VALUE_BOOL)).will(bool_rval)
+        return client
 
+    def test_get_filters(self):
+        """Check we can load existing filters"""
+        client = self.get_filters_mock()
         config = bandsaw.Config(client)
         filter1, filter2 = config.filters
         client.verify()
@@ -97,7 +115,47 @@ class GConfTest(unittest.TestCase):
         self.assertEqual(filter2.name, 'Name 2')
         self.assert_(filter2.matches('Pattern 2'))
         self.assertEqual(filter2.alert, False)
+
+    def test_read_named_pipe_once(self):
+        """Check we only read named_pipe from GConf at start up"""
+        client = self.get_named_pipe_mock()
+        config = bandsaw.Config(client)
+        config.named_pipe
+        config.named_pipe
+        client.verify()
+
+    def test_read_messages_kept_once(self):
+        """Check we only read messages_kept from GConf at start up"""
+        client = self.get_messages_kept_mock()
+        config = bandsaw.Config(client)
+        config.messages_kept
+        config.messages_kept
+        client.verify()
         
+    def test_read_ignore_alerts_once(self):
+        """Check we only read ignore_alerts from GConf at start up"""
+        client = self.get_ignore_alerts_mock()
+        config = bandsaw.Config(client)
+        config.ignore_alerts
+        config.ignore_alerts
+        client.verify()
+
+    def test_read_ignore_timeout_once(self):
+        """Check we only read ignore_timeout from GConf at start up"""
+        client = self.get_ignore_timeout_mock()
+        config = bandsaw.Config(client)
+        config.ignore_timeout
+        config.ignore_timeout
+        client.verify()
+
+    def test_read_filters_once(self):
+        """Check we only read filters from GConf at start up"""
+        client = self.get_filters_mock()
+        config = bandsaw.Config(client)
+        config.filters
+        config.filters
+        client.verify()
+
 
 class LogMessageTest(unittest.TestCase):
 
