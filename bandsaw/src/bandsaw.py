@@ -170,6 +170,9 @@ class LogTreeView(gtk.TreeView):
                     dialog.destroy()
                 continue
 
+    def clear_all(self):
+        self.get_model().clear()
+
 
 class MainWindow(Window):
 
@@ -209,7 +212,7 @@ class MainWindow(Window):
         self.quit()
 
     def on_clear1_activate(self, *args):
-        self.log_view.get_model().clear()
+        self.log_view.clear_all()
 
     def on_preferences1_activate(self, *args):
         dialog = PreferencesDialog()
