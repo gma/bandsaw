@@ -253,7 +253,8 @@ class WidgetWrapper(object):
 
     def __init__(self, root_widget):
         self._root_widget_name = root_widget
-        self._xml = gtk.glade.XML('bandsaw.glade',
+        gladedir = os.path.dirname(sys.argv[0])
+        self._xml = gtk.glade.XML(os.path.join(gladedir, 'bandsaw.glade'),
                                   root_widget)
         self.connect_signals(self)
 
