@@ -1,3 +1,24 @@
+2004-08-01  ashtong  <ashtong@users.sourceforge.net>
+
+	* README: Removed "make check".
+
+2004-07-31  ashtong  <ashtong@users.sourceforge.net>>
+
+	* configure.ac, help/bandsaw/C/bandsaw.xml:
+	Automatically substitute version number into user manual.
+
+	* TODO: Updated.
+
+	* help/bandsaw/C/bandsaw.xml: Fixed example syslog line width.
+
+	* README:
+	Heavily fleshed out, including installation instructions and support info.
+
+	* configure.ac: Check for gnome-python-2.0.
+
+	* data/bandsaw.desktop.in:
+	Renamed desktop entry to "Band Saw Log Monitor".
+
 2004-07-30  ashtong  <ashtong@users.sourceforge.net>
 
 	* TODO: Added TODO.
