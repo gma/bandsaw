@@ -33,7 +33,7 @@ endif
 
 Desktopdir = $(datadir)/applications
 Desktop_in_files = $(srcdir)/data/bandsaw.desktop.in
-Desktop_DATA = $(Desktop_in_files)
+Desktop_DATA = $(Desktop_in_files:.desktop.in=.desktop)
 
 # Run unit tests via "make check"
 TESTS_ENVIRONMENT = $(PYTHON)
