@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+_Name=Log File Monitor
+_Comment=Monitor log files for interesting events
+Exec=bandsaw.py
+Terminal=false
+Type=Application
+Icon=logviewer
+StartupNotify=true
+Categories=GNOME;Application;System;
