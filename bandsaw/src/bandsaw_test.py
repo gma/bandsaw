@@ -9,7 +9,7 @@ import bandsaw
 class LogMessageTest(unittest.TestCase):
 
     def setUp(self):
-        self.line = 'Jun 23 14:02:37 hoopoo ldap[29913]: Hello  world'
+        self.line = 'Jun 23 14:02:37 hoopoo ldap[29913]: Hello  world\n'
 
     def test_date(self):
         """Check we can extract the date from a log message"""
