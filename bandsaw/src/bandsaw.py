@@ -72,6 +72,7 @@ class Config(object):
         return self._named_pipe
 
     def _set_named_pipe(self, value):
+        print 'setting pipe to %s' % value
         value = value.strip()
         self.client.set_string(Config.NAMED_PIPE, value)
         self._named_pipe = None
@@ -84,6 +85,7 @@ class Config(object):
         return self._messages_kept
 
     def _set_messages_kept(self, value):
+        print 'setting to', value
         self.client.set_int(Config.MESSAGES_KEPT, int(value))
         self._messages_kept = None
 
@@ -230,7 +232,6 @@ class AlertQueue(list):
 
     def append(self, filter, message):
         if self.alert_displayed:
-            print 'appending %s' % message.text
             list.append(self, (filter, message))
         elif self.should_raise_alert(filter):
             self.raise_alert(filter, message)
@@ -239,14 +240,12 @@ class AlertQueue(list):
         self.alert_displayed = False
         try:
             filter, message = list.pop(self, 0)
-            print 'popping', message.text
             if self.should_raise_alert(filter):
                 self.raise_alert(filter, message)
         except IndexError:
             pass
 
     def clear(self):
-        print 'clearing'
         while len(self) > 0:
             self.pop()
         
@@ -381,7 +380,7 @@ class PreferencesDialog(Dialog):
 
     def setup_general(self):
         self.named_pipe_entry.set_text(self.config.named_pipe)
-        self.spinbutton1.set_value(self.config.messages_kept)
+        self.messages_kept.set_value(self.config.messages_kept)
 
     def setup_filter_treeview(self):
         list_store = gtk.ListStore(gobject.TYPE_STRING)
@@ -416,7 +415,6 @@ class PreferencesDialog(Dialog):
             sensitive = gtk.TRUE
         self.edit_button.set_sensitive(sensitive)
         self.remove_button.set_sensitive(sensitive)
-
             
     def redraw_filters(self):
         self.treeview1.get_model().clear()
@@ -430,8 +428,8 @@ class PreferencesDialog(Dialog):
     def on_named_pipe_entry_changed(self, *args):
         self.config.named_pipe = self.named_pipe_entry.get_text()
 
-    def on_spinbutton1_changed(self, *args):
-        self.config.messages_kept = self.spinbutton1.get_value()
+    def on_messages_kept_value_changed(self, *args):
+        self.config.messages_kept = self.messages_kept.get_value()
 
     def get_selected_filter_index(self):
         list_store, iter = self.treeview1.get_selection().get_selected()
@@ -571,7 +569,7 @@ class AlertDialog(Dialog):
                                '%s from %s</span>\n\n%s' %
                                (filter.name, message.hostname, message.text))
         self.checkbutton1.set_active(self.config.ignore_alerts)
-        self.spinbutton1.set_value(self.config.ignore_timeout)
+        self.ignore_timeout.set_value(self.config.ignore_timeout)
 
     def destroy(self):
         Dialog.destroy(self)
@@ -580,9 +578,11 @@ class AlertDialog(Dialog):
         self.alert_queue.pop()
         self.destroy()
 
+    def on_ignore_timeout_value_changed(self, *args):
+        self.config.ignore_timeout = self.ignore_timeout.get_value()
+
     def on_okbutton1_clicked(self, *args):
         self.config.ignore_alerts = self.checkbutton1.get_active()
-        self.config.ignore_timeout = self.spinbutton1.get_value()
         if self.checkbutton1.get_active():
             self.alert_queue.clear()
         else:
