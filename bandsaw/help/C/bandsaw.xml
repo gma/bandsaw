@@ -321,7 +321,7 @@
   <!-- ================ Usage ================================ -->
   <!-- Use this section to describe how to use the application to perform the tasks for 
   which the application is designed. -->
-  <sect1 id="myapp-usage"> 
+  <sect1 id="bandsaw-usage"> 
     <title>Usage</title>
     <para>
 
@@ -656,7 +656,7 @@
 	</listitem>
 	<listitem>
 	  <para>
-	    To remove a filter select it in and click the
+	    To remove a filter select it and click the
 	    <guibutton>Remove</guibutton> button.
 	  </para>
 	</listitem>
