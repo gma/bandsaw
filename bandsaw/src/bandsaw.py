@@ -113,10 +113,12 @@ class Config(object):
 
     def _get_filters(self):
         if self._filters is None:
-            names = self.client.get_list(Config.FILTER_NAMES, gconf.VALUE_STRING)
+            names = self.client.get_list(Config.FILTER_NAMES,
+                                         gconf.VALUE_STRING)
             patterns = self.client.get_list(Config.FILTER_PATTERNS,
                                             gconf.VALUE_STRING)
-            alerts = self.client.get_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL)
+            alerts = self.client.get_list(Config.FILTER_ALERTS,
+                                          gconf.VALUE_BOOL)
             self._filters = FilterSet()
             for i in range(len(names)):
                 filter = Filter(names[i], patterns[i], alerts[i])
@@ -250,11 +252,14 @@ class AlertQueue(list):
 
 class WidgetWrapper(object):
 
-    def __init__(self, root_widget):
+    def __init__(self, root_widget, wrapper=None):
         self._root_widget_name = root_widget
         gladedir = os.path.dirname(sys.argv[0])
-        self._xml = gtk.glade.XML(os.path.join(gladedir, 'bandsaw.glade'),
-                                  root_widget)
+        if wrapper is None:
+            self._xml = gtk.glade.XML(os.path.join(gladedir, 'bandsaw.glade'),
+                                      root_widget)
+        else:
+            self._xml = wrapper._xml
         self.connect_signals(self)
 
     def _get_root_widget(self):
@@ -586,12 +591,69 @@ class AlertDialog(Dialog):
         else:
             self.alert_queue.pop()
         self.destroy()
-        
+
+
+class FilteredListStore(gtk.ListStore):
+
+    def __init__(self, list_store, column, text):
+        num_cols = list_store.get_n_columns()
+        col_types = [list_store.get_column_type(n) for n in range(num_cols)]
+        gtk.ListStore.__init__(self, *col_types)
+        self.filter_column = column
+        self.filter_text = text
+
+    def append(self, row):
+        if self.filter_text in row[self.filter_column]:
+            gtk.ListStore.append(self, row)
+
+    def make(list_store, column, text):
+        new_store = FilteredListStore(list_store, column, text)
+        iter = list_store.get_iter_first()
+        while iter is not None:
+            if text in list_store.get_value(iter, column):
+                row = []
+                for i in range(list_store.get_n_columns()):
+                    row.append(list_store.get_value(iter, i))
+                new_store.append(row)
+            iter = list_store.iter_next(iter)
+        return new_store
+
+    make = staticmethod(make)
+
+
+class SearchTools(WidgetWrapper):
+
+    SEARCH_BY_MESSAGE = 3
+
+    def __init__(self, main_window, message_view):
+        WidgetWrapper.__init__(self, 'search_tools', main_window)
+        self.message_view = message_view
+        self.setup_widgets()
+
+    def setup_widgets(self):
+        self.search_type.set_history(SearchTools.SEARCH_BY_MESSAGE)
+
+    def on_search_text_changed(self, *args):
+        self.find_button.set_sensitive(gtk.TRUE)
+
+    def on_find_button_clicked(self, *args):
+        model = self.message_view.get_unfiltered_model()
+        column = self.search_type.get_history()
+        text = self.search_text.get_text()
+        filtered_model = FilteredListStore.make(model, column, text)
+        self.message_view.set_model(filtered_model)
+
+    def on_clear_button_clicked(self, *args):
+        self.message_view.clear_filter()
+        self.search_text.set_text('')
+        self.search_text.grab_focus()
+        self.find_button.set_sensitive(gtk.FALSE)
+
 
 class MessageView(gtk.TreeView):
 
     DATE_COLUMN = 0
-    HOSTNAME_COLUMN = 1
+    HOST_COLUMN = 1
     PROCESS_COLUMN = 2
     MESSAGE_COLUMN = 3
 
@@ -600,24 +662,37 @@ class MessageView(gtk.TreeView):
         self.config = config
         self.alert_queue = AlertQueue(config)
         self._observers = []
+        self._unfiltered_model = None
+
+    def get_unfiltered_model(self):
+        return self._unfiltered_model
 
     def add_column(self, title, index):
         renderer = gtk.CellRendererText()
         column = gtk.TreeViewColumn(title, renderer, text=index)
         self.append_column(column)
 
+    def set_unfiltered_model(self, model):
+        self.set_model(model)
+        self._unfiltered_model = model
+
     def setup(self):
         model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                               gobject.TYPE_STRING, gobject.TYPE_STRING)
-        self.set_model(model)
+        self.set_unfiltered_model(model)
         self.add_column('Date', MessageView.DATE_COLUMN)
-        self.add_column('Hostname', MessageView.HOSTNAME_COLUMN)
+        self.add_column('Host', MessageView.HOST_COLUMN)
         self.add_column('Process', MessageView.PROCESS_COLUMN)
         self.add_column('Message', MessageView.MESSAGE_COLUMN)
         selection = self.get_selection()
         selection.set_mode(gtk.SELECTION_MULTIPLE)
         selection.connect('changed', self.on_selection_changed)
+        
         self.show()
+
+    def clear_filter(self):
+        self.set_model(self._unfiltered_model)
+        self.scroll_to_end()
 
     def on_selection_changed(self, selection):
         selected = [False]
@@ -637,7 +712,11 @@ class MessageView(gtk.TreeView):
 
     def scroll_to_end(self):
         adjustment = self.get_parent().get_vadjustment()
-        adjustment.set_value(adjustment.get_property('upper'))
+        upper = adjustment.get_property('upper')
+        page_size = adjustment.get_property('page_size')
+        bottom = upper - page_size
+        adjustment.set_value(upper)
+        adjustment.changed()
 
     def is_scrolled_down(self):
         adjustment = self.get_parent().get_vadjustment()
@@ -665,9 +744,11 @@ class MessageView(gtk.TreeView):
         if self.count_messages() >= self.config.messages_kept:
             self.remove_first_row()
         row = (message.date, message.hostname, message.process, message.text)
+        if self.get_model() != self.get_unfiltered_model():
+            self.get_unfiltered_model().append(row)
         self.get_model().append(row)
-        if self.is_scrolled_down():
-            self.scroll_to_end()
+#         if self.is_scrolled_down():
+        self.scroll_to_end()
         
     def process_line(self, line):
         message = LogMessage(line)
@@ -693,21 +774,21 @@ class MessageView(gtk.TreeView):
 
 class Menu:
 
-    def __init__(self, config, log_view):
+    def __init__(self, config, message_view):
         self.config = config
-        self.log_view = log_view
+        self.message_view = message_view
 
     def on_quit1_activate(self, *args):
         gtk.mainquit()
 
     def on_delete_selected1_activate(self, *args):
-        self.log_view.delete_selected()
+        self.message_view.delete_selected()
 
     def on_clear1_activate(self, *args):
-        self.log_view.clear()
+        self.message_view.clear()
 
     def on_select_all1_activate(self, *args):
-        self.log_view.select_all()
+        self.message_view.select_all()
 
     def on_preferences1_activate(self, *args):
         dialog = PreferencesDialog(self.config)
@@ -737,19 +818,23 @@ class MainWindow(Window):
         Window.__init__(self, 'app1')
         self.config = config
         self.monitor_id = None
-        self.log_view = MessageView(self.config)
-        self.log_view.setup()
-        self.scrolledwindow1.add(self.log_view)
-        self.log_view.show()
+        self.message_view = MessageView(self.config)
+        self.setup_widgets()
+
+    def setup_widgets(self):
+        self.message_view.setup()
+        self.scrolledwindow1.add(self.message_view)
+        self.message_view.show()
         self.setup_menu()
-        self.log_view.observe_selection(self)
+        self.message_view.observe_selection(self)
+        SearchTools(self, self.message_view)
         self.monitor_syslog()
 
     def selection_changed(self, have_selection):
         self.delete_selected1.set_sensitive(have_selection)
 
     def setup_menu(self):
-        menu = Menu(self.config, self.log_view)
+        menu = Menu(self.config, self.message_view)
         self.delete_selected1.set_sensitive(gtk.FALSE)
         self.connect_signals(menu)
 
@@ -763,7 +848,7 @@ class MainWindow(Window):
             self.monitor_syslog()
             return gtk.FALSE
         else:
-            self.log_view.process_line(line)
+            self.message_view.process_line(line)
             return gtk.TRUE
 
     def monitor_syslog(self):
