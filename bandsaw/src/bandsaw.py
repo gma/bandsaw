@@ -80,12 +80,14 @@ class LogMessage:
     text = property(_get_text)
 
 
-class LogView(gtk.TreeView):
+class LogTreeView(gtk.TreeView):
 
     DATE_COLUMN = 0
     HOSTNAME_COLUMN = 1
     PROCESS_COLUMN = 2
     MESSAGE_COLUMN = 3
+
+    FILTERS = ('WARN', 'ERROR')
 
     def add_column(self, title, index):
         renderer = gtk.CellRendererText()
@@ -96,16 +98,23 @@ class LogView(gtk.TreeView):
         model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                               gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.set_model(model)
-        self.add_column('Date', LogView.DATE_COLUMN)
-        self.add_column('Hostname', LogView.HOSTNAME_COLUMN)
-        self.add_column('Process', LogView.PROCESS_COLUMN)
-        self.add_column('Message', LogView.MESSAGE_COLUMN)
+        self.add_column('Date', LogTreeView.DATE_COLUMN)
+        self.add_column('Hostname', LogTreeView.HOSTNAME_COLUMN)
+        self.add_column('Process', LogTreeView.PROCESS_COLUMN)
+        self.add_column('Message', LogTreeView.MESSAGE_COLUMN)
         self.show()
+
+    def _message_matches_filter(self, message):
+        for filter in LogTreeView.FILTERS:
+            if filter in message.text:
+                return True
+        return False
 
     def process_line(self, line):
         message = LogMessage(line)
-        row = (message.date, message.hostname, message.process, message.text)
-        self.get_model().append(row)
+        if self._message_matches_filter(message):
+            row = (message.date, message.hostname, message.process, message.text)
+            self.get_model().append(row)
 
 
 class MainWindow(Window):
@@ -114,7 +123,7 @@ class MainWindow(Window):
         Window.__init__(self, 'window1')
         self.monitor_id = None
         self.monitor_syslog()
-        self.log_view = LogView()
+        self.log_view = LogTreeView()
         self.log_view.setup()
         self.scrolledwindow1.add(self.log_view)
         self.log_view.show()
@@ -130,7 +139,7 @@ class MainWindow(Window):
             return gtk.TRUE
 
     def monitor_syslog(self):
-        fifo_path = '/var/log/conductor/messages.fifo'
+        fifo_path = '/var/log/bandsaw.fifo'
         fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
         fifo = os.fdopen(fd)
         self.monitor_id = gtk.input_add(
@@ -138,6 +147,9 @@ class MainWindow(Window):
         
     def quit(self):
         gtk.mainquit()
+
+    def on_clear_all1_activate(self, *args):
+        self.log_view.get_model().clear()
         
     def on_window1_delete_event(self, *args):
         self.quit()
