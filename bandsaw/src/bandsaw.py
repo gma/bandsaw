@@ -72,7 +72,6 @@ class Config(object):
         return self._named_pipe
 
     def _set_named_pipe(self, value):
-        print 'setting pipe to %s' % value
         value = value.strip()
         self.client.set_string(Config.NAMED_PIPE, value)
         self._named_pipe = None
@@ -85,7 +84,6 @@ class Config(object):
         return self._messages_kept
 
     def _set_messages_kept(self, value):
-        print 'setting to', value
         self.client.set_int(Config.MESSAGES_KEPT, int(value))
         self._messages_kept = None
 
@@ -425,7 +423,7 @@ class PreferencesDialog(Dialog):
         self.setup_filter_treeview()
         self.redraw_filters()
 
-    def on_named_pipe_entry_changed(self, *args):
+    def on_closebutton1_clicked(self, *args):
         self.config.named_pipe = self.named_pipe_entry.get_text()
 
     def on_messages_kept_value_changed(self, *args):
@@ -717,7 +715,8 @@ class Menu:
         dialog.destroy()
 
     def on_contents1_activate(self, *args):
-        gnome.help_display('bandsaw', 'bandsaw-introduction')
+        global program
+        gnome.help_display_desktop(program, 'bandsaw', 'bandsaw.xml', 'index')
 
     def on_about1_activate(self, *args):
         copyright = u'Copyright \xa9 2004 Graham Ashton'
@@ -788,7 +787,6 @@ class MainWindow(Window):
 
 
 def main():
-    gnome.program_init('Band Saw', __VERSION__)
     config = Config(gconf.client_get_default())
     if config.is_first_run():
         window = WelcomeDruid(config)
@@ -799,4 +797,5 @@ def main():
 
 
 if __name__ == '__main__':
+    program = gnome.program_init('bandsaw', __VERSION__)
     main()

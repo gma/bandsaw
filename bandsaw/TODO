@@ -5,12 +5,11 @@ TODO
 
 - Replace @VERSION@ in bandsaw.xml.
 
-- Only modify path to named pipe after user has finished
-  typing. Re-open pipe, checking for IOErrors.
+- Listen for notification changes from GConf.
+
+- Re-open pipe when path changed, checking for IOErrors.
 
 - Fix auto scrolling performance issues.
-
-- Listen for notification changes from GConf.
 
 - Add ability to restrict which messages are displayed in the message view.
 
