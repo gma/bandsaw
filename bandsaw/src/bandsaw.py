@@ -746,13 +746,13 @@ class MessageView(gtk.TreeView):
     def count_all_messages(self):
         return self.count_rows_in_model(self.get_unfiltered_model())
 
-    def count_visible_messages(self):
-        visible_model = self.get_model()
+    def count_shown_messages(self):
+        shown_model = self.get_model()
         total_model = self.get_unfiltered_model()
-        if visible_model == total_model:
+        if shown_model == total_model:
             return None
         else:
-            return self.count_rows_in_model(visible_model)
+            return self.count_rows_in_model(shown_model)
     
     def remove_first_row(self):
         list_store = self.get_model()
@@ -768,11 +768,11 @@ class MessageView(gtk.TreeView):
         
     def update_message_count(self):
         total_messages = self.count_all_messages()
-        visible_messages = self.count_visible_messages()
+        shown_messages = self.count_shown_messages()
         if total_messages > self.config.messages_kept:
             self.remove_first_row()
             total_messages -= 1
-        self.status_bar.set_message_count(total_messages, visible_messages)
+        self.status_bar.set_message_count(total_messages, shown_messages)
 
     def add_message(self, message):
         self.append_message_to_models(message)
@@ -850,10 +850,10 @@ class StatusBar(WidgetWrapper):
     def setup(self):
         self.set_message_count(0, None)
 
-    def set_message_count(self, total, visible):
+    def set_message_count(self, total, shown):
         status = '%s messages' % total
-        if visible is not None:
-            status += ' (%s visible)' % visible
+        if shown is not None:
+            status += ' (%s shown)' % shown
         self.appbar.set_status(status)
         
 
