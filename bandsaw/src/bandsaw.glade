@@ -181,6 +181,7 @@
 			      <property name="has_frame">True</property>
 			      <property name="invisible_char" translatable="yes">*</property>
 			      <property name="activates_default">False</property>
+			      <signal name="changed" handler="on_named_pipe_entry_changed" last_modification_time="Wed, 30 Jun 2004 22:31:36 GMT"/>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -284,7 +285,7 @@
 			      <property name="yalign">0.5</property>
 			      <property name="xpad">0</property>
 			      <property name="ypad">0</property>
-			      <property name="mnemonic_widget">spinbutton2</property>
+			      <property name="mnemonic_widget">spinbutton1</property>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -294,7 +295,7 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkSpinButton" id="spinbutton2">
+			    <widget class="GtkSpinButton" id="spinbutton1">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="climb_rate">1</property>
@@ -303,7 +304,8 @@
 			      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			      <property name="snap_to_ticks">False</property>
 			      <property name="wrap">False</property>
-			      <property name="adjustment">1 0 100 1 10 10</property>
+			      <property name="adjustment">1 0 10000 50 1000 1000</property>
+			      <signal name="changed" handler="on_spinbutton1_changed" last_modification_time="Wed, 30 Jun 2004 22:31:26 GMT"/>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -788,7 +790,7 @@ Error message details...</property>
 		  </child>
 
 		  <child>
-		    <widget class="GtkSpinButton" id="spinbutton3">
+		    <widget class="GtkSpinButton" id="spinbutton1">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="climb_rate">1</property>
@@ -819,7 +821,7 @@ Error message details...</property>
 		      <property name="yalign">0.5</property>
 		      <property name="xpad">0</property>
 		      <property name="ypad">0</property>
-		      <property name="mnemonic_widget">spinbutton3</property>
+		      <property name="mnemonic_widget">spinbutton1</property>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>

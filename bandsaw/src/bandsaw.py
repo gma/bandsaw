@@ -36,7 +36,7 @@ import gtk
 import gtk.glade
 
 
-class Config:
+class Config(object):
 
     BASE_KEY = '/apps/bandsaw'
 
@@ -57,22 +57,35 @@ class Config:
     def _get_named_pipe(self):
         return self.client.get_string(self.make_key(Config.NAMED_PIPE))
 
-    named_pipe = property(_get_named_pipe)
+    def _set_named_pipe(self, value):
+        value = value.strip()
+        return self.client.set_string(self.make_key(Config.NAMED_PIPE), value)
+
+    named_pipe = property(_get_named_pipe, _set_named_pipe)
     
     def _get_messages_kept(self):
         return self.client.get_int(self.make_key(Config.MESSAGES_KEPT))
 
-    messages_kept = property(_get_messages_kept)
+    def _set_messages_kept(self, value):
+        self.client.set_int(self.make_key(Config.MESSAGES_KEPT), value)
+
+    messages_kept = property(_get_messages_kept, _set_messages_kept)
 
     def _get_suppress_alerts(self):
         return self.client.get_bool(self.make_key(Config.SUPPRESS_ALERTS))
 
-    suppress_alerts = property(_get_suppress_alerts)
+    def _set_suppress_alerts(self, value):
+        self.client.set_bool(self.make_key(Config.SUPPRESS_ALERTS), value)
+
+    suppress_alerts = property(_get_suppress_alerts, _set_suppress_alerts)
 
     def _get_suppress_minutes(self):
         return self.client.get_int(self.make_key(Config.SUPPRESS_MINUTES))
 
-    suppress_minutes = property(_get_suppress_minutes)
+    def _set_suppress_minutes(self, value):
+        self.client.set_int(self.make_key(Config.SUPPRESS_MINUTES), int(value))
+
+    suppress_minutes = property(_get_suppress_minutes, _set_suppress_minutes)
 
     def _get_filters(self):
         names = self.client.get_list(
@@ -144,8 +157,20 @@ class Filter:
 
 class PreferencesDialog(Dialog):
 
-    def __init__(self):
+    def __init__(self, config):
         Dialog.__init__(self, 'preferences_dialog')
+        self.config = config
+        self.setup_general()
+
+    def setup_general(self):
+        self.named_pipe_entry.set_text(self.config.named_pipe)
+        self.spinbutton1.set_value(self.config.messages_kept)
+
+    def on_named_pipe_entry_changed(self, *args):
+        self.config.named_pipe = self.named_pipe_entry.get_text()
+
+    def on_spinbutton1_changed(self, *args):
+        self.config.messages_kept = self.spinbutton1.get_value()
 
 
 class LogMessage:
@@ -176,20 +201,25 @@ class LogMessage:
 
 class AlertDialog(Dialog):
 
-    def __init__(self, filter, message):
+    def __init__(self, config, filter, message):
         Dialog.__init__(self, 'alert_dialog')
-        self.set_text(filter, message)
+        self.config = config
+        self.setup_widgets(filter, message)
 
-    def set_text(self, filter, message):
+    def setup_widgets(self, filter, message):
         # TODO: escape text
         self.label1.set_markup('<span weight="bold" size="larger">'
                                '%s from %s</span>\n\n%s' %
                                (filter.name, message.hostname, message.text))
+        self.checkbutton1.set_active(self.config.suppress_alerts)
+        self.spinbutton1.set_value(self.config.suppress_minutes)
 
     def on_alert_dialog_delete_event(self, *args):
         self.destroy()
 
     def on_okbutton1_clicked(self, *args):
+        self.config.suppress_alerts = self.checkbutton1.get_active()
+        self.config.suppress_minutes = self.spinbutton1.get_value()
         self.destroy()
         
 
@@ -245,13 +275,16 @@ class LogTreeView(gtk.TreeView):
     def should_raise_alert(self, filter, message):
         if not filter.alert:
             return False
-        seconds_per_minute = 60
-        minutes = (time.time() - self.last_alert_time) / seconds_per_minute
-        return minutes >= self.config.suppress_minutes
+        elif not self.config.suppress_alerts:
+            return True
+        else:
+            seconds_per_minute = 60
+            minutes = (time.time() - self.last_alert_time) / seconds_per_minute
+            return minutes >= self.config.suppress_minutes
 
     def raise_alert(self, filter, message):
         self.last_alert_time = time.time()
-        dialog = AlertDialog(filter, message)
+        dialog = AlertDialog(self.config, filter, message)
         dialog.show()
         
     def process_line(self, line):
@@ -274,7 +307,8 @@ class LogTreeView(gtk.TreeView):
 
 class Menu:
 
-    def __init__(self, log_view):
+    def __init__(self, config, log_view):
+        self.config = config
         self.log_view = log_view
 
     def on_quit1_activate(self, *args):
@@ -287,7 +321,7 @@ class Menu:
         self.log_view.select_all()
 
     def on_preferences1_activate(self, *args):
-        dialog = PreferencesDialog()
+        dialog = PreferencesDialog(self.config)
         dialog.run()
         dialog.destroy()
 
@@ -316,7 +350,7 @@ class MainWindow(Window):
         self.monitor_syslog()
 
     def setup_menu(self):
-        menu = Menu(self.log_view)
+        menu = Menu(self.config, self.log_view)
         self.connect_signals(menu)
 
     def on_syslog_readable(self, fifo, condition):
