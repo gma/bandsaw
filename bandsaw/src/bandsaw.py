@@ -39,6 +39,8 @@ import gtk.glade
 
 __VERSION__ = '@VERSION@'
 
+TESTING = 'TESTING'
+
 
 class Config(object):
 
@@ -207,8 +209,9 @@ class AlertQueue(list):
         self.config = config
         self.alert_displayed = False
         self.last_alert_time = 0
+        self.alert_dialog = None  # to make it available to tests
     
-    def suppress_timeout_elapsed(self):
+    def ignore_timeout_elapsed(self):
         seconds_per_minute = 60
         minutes = (time.time() - self.last_alert_time) / seconds_per_minute
         return minutes >= self.config.ignore_timeout
@@ -217,15 +220,15 @@ class AlertQueue(list):
         if not filter.alert or self.alert_displayed:
             return False
         else:
-            suppressed = self.config.ignore_alerts
-            return not (suppressed and not self.suppress_timeout_elapsed())
+            ignored = self.config.ignore_alerts
+            return not (ignored and not self.ignore_timeout_elapsed())
 
     def raise_alert(self, filter, message):
         if self.should_raise_alert(filter):
             self.last_alert_time = time.time()
             self.alert_displayed = True
-            dialog = AlertDialog(self, self.config, filter, message)
-            dialog.show()
+            self.alert_dialog = AlertDialog(self, self.config, filter, message)
+            self.alert_dialog.show()
 
     def append(self, filter, message):
         if self.alert_displayed:
@@ -240,6 +243,10 @@ class AlertQueue(list):
             self.raise_alert(filter, message)
         except IndexError:
             pass
+
+    def clear(self):
+        while len(self) > 0:
+            self.pop()
         
 
 class WidgetWrapper(object):
@@ -282,8 +289,14 @@ class Window(WidgetWrapper):
         WidgetWrapper.__init__(self, root_widget)
         set_icon(self.root_widget)
 
+    def _are_running_tests(self):
+        return TESTING in os.environ
+
+    testing = property(_are_running_tests)
+
     def show(self):
-        self.root_widget.show_all()
+        if not self.testing:
+            self.root_widget.show_all()
 
     def destroy(self):
         self.root_widget.destroy()
@@ -292,7 +305,8 @@ class Window(WidgetWrapper):
 class Dialog(Window):
 
     def run(self):
-        return self.root_widget.run()
+        if not self.testing:
+            return self.root_widget.run()
 
 
 class WelcomeDruid(Window):
@@ -558,7 +572,6 @@ class AlertDialog(Dialog):
 
     def destroy(self):
         Dialog.destroy(self)
-        self.alert_queue.pop()
         
     def on_alert_dialog_delete_event(self, *args):
         self.destroy()
@@ -566,10 +579,14 @@ class AlertDialog(Dialog):
     def on_okbutton1_clicked(self, *args):
         self.config.ignore_alerts = self.checkbutton1.get_active()
         self.config.ignore_timeout = self.spinbutton1.get_value()
+        if self.checkbutton1.get_active():
+            self.alert_queue.clear()
+        else:
+            self.alert_queue.pop()
         self.destroy()
         
 
-class LogTreeView(gtk.TreeView):
+class MessageView(gtk.TreeView):
 
     DATE_COLUMN = 0
     HOSTNAME_COLUMN = 1
@@ -591,10 +608,10 @@ class LogTreeView(gtk.TreeView):
         model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                               gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.set_model(model)
-        self.add_column('Date', LogTreeView.DATE_COLUMN)
-        self.add_column('Hostname', LogTreeView.HOSTNAME_COLUMN)
-        self.add_column('Process', LogTreeView.PROCESS_COLUMN)
-        self.add_column('Message', LogTreeView.MESSAGE_COLUMN)
+        self.add_column('Date', MessageView.DATE_COLUMN)
+        self.add_column('Hostname', MessageView.HOSTNAME_COLUMN)
+        self.add_column('Process', MessageView.PROCESS_COLUMN)
+        self.add_column('Message', MessageView.MESSAGE_COLUMN)
         selection = self.get_selection()
         selection.set_mode(gtk.SELECTION_MULTIPLE)
         selection.connect('changed', self.on_selection_changed)
@@ -694,6 +711,9 @@ class Menu:
         dialog.run()
         dialog.destroy()
 
+    def on_contents1_activate(self, *args):
+        gnome.help_display('bandsaw', 'bandsaw-introduction')
+
     def on_about1_activate(self, *args):
         copyright = u'Copyright \xa9 2004 Graham Ashton'
         comments = 'A log monitoring and alerting tool'
@@ -713,7 +733,7 @@ class MainWindow(Window):
         Window.__init__(self, 'app1')
         self.config = config
         self.monitor_id = None
-        self.log_view = LogTreeView(self.config)
+        self.log_view = MessageView(self.config)
         self.log_view.setup()
         self.scrolledwindow1.add(self.log_view)
         self.log_view.show()

@@ -21,8 +21,11 @@
 
 import os
 import sys
+import time
 import unittest
 
+import pygtk; pygtk.require('2.0')
+import gtk
 import gconf
 from pmock import *
 
@@ -304,7 +307,68 @@ class FilterSetTest(unittest.TestCase):
         self.assertEqual(set, [self.filter1, self.filter2])
 
 
+class AlertTest(unittest.TestCase):
+
+    def setUp(self):
+        self.filter = bandsaw.Filter('Everything', '.', True)
+        self.message = bandsaw.LogMessage('Jul 19 08:55:50 host proc[1]: foo')
+
+
+class AlertQueueTest(AlertTest):
+      
+    def test_clear(self):
+        """Check we can clear the alert queue"""
+        config = Mock()
+        queue = bandsaw.AlertQueue(config)
+        queue.alert_displayed = True
+        queue.append(self.filter, self.message)
+        queue.append(self.filter, self.message)
+        self.assertEqual(len(queue), 2)
+        queue.clear()
+        self.assertEqual(len(queue), 0)
+
+    def test_pop(self):
+        """Check pop removes an alert from the queue"""
+        config = Mock()
+        queue = bandsaw.AlertQueue(config)
+        queue.alert_displayed = True
+        queue.append(self.filter, self.message)
+        queue.append(self.filter, self.message)
+        self.assertEqual(len(queue), 2)
+        queue.pop()
+        self.assertEqual(len(queue), 1)
+        
+
+class AlertDialogTest(AlertTest):
+
+    def test_queue_cleared_if_ignored(self):
+        """Check that the queue is cleared if alerts are ignored"""
+        queue = Mock()
+        queue.expects(once()).clear()
+        config = Mock()
+        config.ignore_alerts = False
+        config.ignore_timeout = 5
+        dialog = bandsaw.AlertDialog(queue, config, self.filter, self.message)
+        dialog.checkbutton1.set_active(gtk.TRUE)
+        dialog.on_okbutton1_clicked()
+        queue.verify()        
+
+    def test_show_next_alert(self):
+        """Check next alert displayed if alerts not ignored"""
+        queue = Mock()
+        queue.expects(once()).pop()
+        config = Mock()
+        config.ignore_alerts = False
+        config.ignore_timeout = 5
+        dialog = bandsaw.AlertDialog(queue, config, self.filter, self.message)
+        dialog.checkbutton1.set_active(gtk.FALSE)
+        dialog.on_okbutton1_clicked()
+        queue.verify()
+
+
 if __name__ == '__main__':
      if 'srcdir' in os.environ:
          sys.argv.append('-v')
+     if bandsaw.TESTING not in os.environ:
+         os.environ[bandsaw.TESTING] = '1'
      unittest.main()
