@@ -1,19 +1,12 @@
 TODO
 ----
 
-- Prevent second alert from opening when 2 queued up and second ignored.
-
 - Redo filter prefs screenshot in help.
 
 - Replace @VERSION@ in bandsaw.xml.
 
-- Ensure that spin button changes affect GConf when value is typed.
-
-- Only modify General config params when moving out of widget.
-
-- Rename General prefs tab and move it to be after Filters.
-
-- Make sure named pipe can be changed and is checked for IOErrors.
+- Only modify path to named pipe after user has finished
+  typing. Re-open pipe, checking for IOErrors.
 
 - Fix auto scrolling performance issues.
 
