@@ -1,11 +1,14 @@
 TODO
 ----
 
+  - prevent second alert from opening when 2 queued up and second ignored.
+
   - ensure that spin button changes affect GConf when value is typed.
 
   - only modify General config params when moving out of widget.
 
   - fix auto scrolling performance issues.
 
+  - listen for notification changes from GConf.
 
 $Id$

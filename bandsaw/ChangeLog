@@ -1,3 +1,83 @@
+2004-07-20  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.py: Re-open FIFO on IOError.
+
+	* src/bandsaw.glade: 'Suppress' -> 'Ignore'.
+
+	* Makefile.am, configure.ac, data/bandsaw.desktop, data/bandsaw.desktop.in, src/bandsaw.py:
+	Set icon via autoconf.
+
+	* Makefile.am, pixmaps/bandsaw.png, pixmaps/bandsaw.svg, src/bandsaw.glade, src/bandsaw.py:
+	Added logo to the About dialog.
+
+	* data/bandsaw.desktop: Changed text of menu item.
+
+	* TODO: Updated.
+
+	* src/bandsaw.py: Reset filter dialog's fields when closed.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Ensure that new config param values are retrievable after they've been set.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Only read config parameters from GConf at start up.
+
+	* src/bandsaw_test.py: Replaced home grown mock objects with pmock.
+
+2004-07-19  ashtong  <ashtong@users.sourceforge.net>
+
+	* data/bandsaw.schemas, src/bandsaw.py:
+	Re-named and re-organised gconf keys (hierarchically).
+
+	* .cvsignore: Added bandsaw.
+
+2004-07-18  ashtong  <ashtong@users.sourceforge.net>
+
+	* data/bandsaw.desktop: Corrected name, comment and executable.
+
+2004-07-16  ashtong  <ashtong@users.sourceforge.net>
+
+	* data/bandsaw.schemas: Fixed typos and paths to keys.
+
+	* Makefile.am: Minor tweaks, no significant changes.
+
+	* src/bandsaw.glade, src/bandsaw.py:
+	Edit->Clear clears all messages. Added Edit->Delete Selected to delete
+	current selection.
+
+2004-07-15  ashtong  <ashtong@users.sourceforge.net>
+
+	* ChangeLog: Updated.
+
+	* Makefile.am, NEWS, autogen.sh, configure.ac, src/bandsaw.py:
+	Made more progress towards autotools support.
+
+	* ChangeLog: New file, created from CVS.
+
+	* .cvsignore: Ignore autom4te.cache.
+
+	* configure.ac, configure.in: Renamed configure.in to configure.ac.
+
+	* Makefile.am: Disable gconf schema install during distcheck.
+
+	* .cvsignore, install-sh, missing, mkinstalldirs:
+	Removed derived files.
+
+	* autogen.sh: New file.
+
+	* INSTALL, Makefile.in, configure: Removed derived files.
+
+	* .cvsignore: Ignore packages.
+
+	* .cvsignore, data/bandsaw.desktop, data/bandsaw.schemas: New file.
+
+	* TODO: Added note about auto scrolling performance.
+
+	* Makefile.am, configure.in:
+	Run tests via "make check", install desktop, schema and glade files.
+
+	* src/bandsaw_test.py: - run tests via "make check".
+
 2004-07-15  ashtong  <ashtong@users.sourceforge.net>
 
 	* Makefile.am, NEWS, autogen.sh, configure.ac, src/bandsaw.py:
