@@ -507,13 +507,21 @@ class FilterDialog(Dialog):
     def user_input_ok(self):
         return self.name and self.pattern
 
+    def reset(self):
+        self.name_entry.set_text('')
+        self.name_entry.grab_focus()
+        self.pattern_entry.set_text('')
+        self.checkbutton1.set_active(gtk.FALSE)
+
     def on_filter_dialog_response(self, widget, event, *args):
         if event != gtk.RESPONSE_OK:
+            self.reset()
             return
-        if self.name and self.pattern:
+        if self.user_input_ok():
             self.filter.name = self.name
             self.filter.pattern = self.pattern
             self.filter.alert = self.raise_alert
+            self.reset()
         else:
             if not self.name:
                 message = 'Filter has no name'
