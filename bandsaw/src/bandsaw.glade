@@ -59,20 +59,33 @@
 		<widget class="GtkMenu" id="edit1_menu">
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="clear1">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-clear</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="on_clear1_activate" last_modification_time="Thu, 24 Jun 2004 22:25:46 GMT"/>
-		    </widget>
-		  </child>
-
-		  <child>
 		    <widget class="GtkImageMenuItem" id="copy1">
 		      <property name="visible">True</property>
 		      <property name="label">gtk-copy</property>
 		      <property name="use_stock">True</property>
 		      <signal name="activate" handler="on_copy1_activate" last_modification_time="Thu, 24 Jun 2004 12:09:54 GMT"/>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkImageMenuItem" id="delete1">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">_Delete</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="on_delete1_activate" last_modification_time="Sat, 26 Jun 2004 08:09:05 GMT"/>
+		      <accelerator key="Delete" modifiers="0" signal="activate"/>
+
+		      <child internal-child="image">
+			<widget class="GtkImage" id="image2">
+			  <property name="visible">True</property>
+			  <property name="stock">gtk-delete</property>
+			  <property name="icon_size">1</property>
+			  <property name="xalign">0.5</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			</widget>
+		      </child>
 		    </widget>
 		  </child>
 
@@ -252,7 +265,7 @@
 		<widget class="GtkVBox" id="vbox4">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
-		  <property name="spacing">6</property>
+		  <property name="spacing">12</property>
 
 		  <child>
 		    <widget class="GtkLabel" id="label5">
@@ -387,7 +400,7 @@
 		<widget class="GtkVBox" id="vbox6">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
-		  <property name="spacing">6</property>
+		  <property name="spacing">12</property>
 
 		  <child>
 		    <widget class="GtkLabel" id="label7">
@@ -983,11 +996,12 @@
   <property name="border_width">6</property>
   <property name="title" translatable="yes"></property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
-  <property name="window_position">GTK_WIN_POS_CENTER</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
   <property name="resizable">False</property>
   <property name="destroy_with_parent">True</property>
   <property name="has_separator">False</property>
+  <signal name="delete_event" handler="on_alert_dialog_delete_event" last_modification_time="Sat, 26 Jun 2004 07:38:09 GMT"/>
 
   <child internal-child="vbox">
     <widget class="GtkVBox" id="dialog-vbox3">
