@@ -1,3 +1,5 @@
+*.tar.bz2
+*.tar.gz
 INSTALL
 Makefile
 Makefile.in
