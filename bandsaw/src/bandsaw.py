@@ -36,10 +36,6 @@ import gtk
 import gtk.glade
 
 
-def make_key(key):
-    return '/'.join((Config.BASE_KEY, key))
-
-
 class Config(object):
 
     BASE_KEY = '/apps/bandsaw'
