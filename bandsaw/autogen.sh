@@ -1,7 +1,12 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 # This was lifted from the Gimp, and adapted slightly by
-# Raph Levien .
+# Raph Levien.
+#
+# Adapted (very slightly further) by Graham Ashton.
+
+# Band Saw may build with older versions, I have problems with 1.8.
+WANT_AUTOMAKE=1.7
 
 DIE=0
 
