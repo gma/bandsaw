@@ -1,11 +1,9 @@
 TODO
 ----
 
-- Check for gnome-python when running configure.
+- Add Help button to welcome druid and preferences dialog.
 
 - Redo filter prefs screenshot in help.
-
-- Replace @VERSION@ in bandsaw.xml.
 
 - Listen for notification changes from GConf.
 
@@ -13,6 +11,8 @@ TODO
 
 - Fix auto scrolling performance issues.
 
-- Add ability to restrict which messages are displayed in the message view.
+- Restrict which messages are displayed in the message view (i.e. search).
+
+- Add notification area support.
 
 $Id$
