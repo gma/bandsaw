@@ -139,6 +139,7 @@ class AlertDialog(Dialog):
         self.set_text(filter, message)
 
     def set_text(self, filter, message):
+        # TODO: escape text
         self.label1.set_markup('<span weight="bold" size="larger">'
                                '%s message received from %s</span>\n\n%s' %
                                (filter.name, message.hostname, message.text))
@@ -267,14 +268,14 @@ class MainWindow(Window):
         self.connect_signals(menu)
 
     def on_syslog_readable(self, fifo, condition):
-        line = fifo.readline()
-        if line == '':   # fifo closed by syslog
-            gtk.input_remove(self.monitor_id)
-            self.monitor_syslog()
-            return gtk.FALSE
-        else:
-            self.log_view.process_line(line)
-            return gtk.TRUE
+        for line in fifo:
+            if line == '':   # fifo closed by syslog
+                gtk.input_remove(self.monitor_id)
+                self.monitor_syslog()
+                return gtk.FALSE
+            else:
+                self.log_view.process_line(line)
+                return gtk.TRUE
 
     def monitor_syslog(self):
         fifo_path = '/var/log/bandsaw.fifo'
