@@ -177,6 +177,48 @@ class FilterSet(list):
         self[self.index(filter)] = filter
 
 
+class AlertQueue(list):
+
+    def __init__(self, config):
+        list.__init__(self)
+        self.config = config
+        self.alert_displayed = False
+        self.last_alert_time = 0
+    
+    def suppress_timeout_elapsed(self):
+        seconds_per_minute = 60
+        minutes = (time.time() - self.last_alert_time) / seconds_per_minute
+        return minutes >= self.config.suppress_minutes
+
+    def should_raise_alert(self, filter):
+        if not filter.alert or self.alert_displayed:
+            return False
+        else:
+            suppressed = self.config.suppress_alerts
+            return not (suppressed and not self.suppress_timeout_elapsed())
+
+    def raise_alert(self, filter, message):
+        if self.should_raise_alert(filter):
+            self.last_alert_time = time.time()
+            self.alert_displayed = True
+            dialog = AlertDialog(self, self.config, filter, message)
+            dialog.show()
+
+    def append(self, filter, message):
+        if self.alert_displayed:
+            list.append(self, (filter, message))
+        else:
+            self.raise_alert(filter, message)
+
+    def pop(self):
+        self.alert_displayed = False
+        try:
+            filter, message = list.pop(self, 0)
+            self.raise_alert(filter, message)
+        except IndexError:
+            pass
+        
+
 class WidgetWrapper(object):
 
     def __init__(self, root_widget):
@@ -452,8 +494,9 @@ class FilterDialog(Dialog):
 
 class AlertDialog(Dialog):
 
-    def __init__(self, config, filter, message):
+    def __init__(self, queue, config, filter, message):
         Dialog.__init__(self, 'alert_dialog')
+        self.alert_queue = queue
         self.config = config
         self.setup_widgets(filter, message)
 
@@ -465,6 +508,10 @@ class AlertDialog(Dialog):
         self.checkbutton1.set_active(self.config.suppress_alerts)
         self.spinbutton1.set_value(self.config.suppress_minutes)
 
+    def destroy(self):
+        Dialog.destroy(self)
+        self.alert_queue.pop()
+        
     def on_alert_dialog_delete_event(self, *args):
         self.destroy()
 
@@ -484,7 +531,7 @@ class LogTreeView(gtk.TreeView):
     def __init__(self, config):
         gtk.TreeView.__init__(self)
         self.config = config
-        self.last_alert_time = 0
+        self.alert_queue = AlertQueue(config)
 
     def add_column(self, title, index):
         renderer = gtk.CellRendererText()
@@ -539,28 +586,12 @@ class LogTreeView(gtk.TreeView):
         if self.is_scrolled_down():
             self.scroll_to_end()
         
-    def should_raise_alert(self, filter, message):
-        if not filter.alert:
-            return False
-        elif not self.config.suppress_alerts:
-            return True
-        else:
-            seconds_per_minute = 60
-            minutes = (time.time() - self.last_alert_time) / seconds_per_minute
-            return minutes >= self.config.suppress_minutes
-
-    def raise_alert(self, filter, message):
-        self.last_alert_time = time.time()
-        dialog = AlertDialog(self.config, filter, message)
-        dialog.show()
-        
     def process_line(self, line):
         message = LogMessage(line)
         for filter in self.config.filters:
             if filter.matches(message.text):
                 self.add_message(message)
-                if self.should_raise_alert(filter, message):
-                    self.raise_alert(filter, message)
+                self.alert_queue.append(filter, message)
         
     def delete_selected(self):
         selected = []
