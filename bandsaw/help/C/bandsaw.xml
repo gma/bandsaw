@@ -1,0 +1,804 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+  <!ENTITY legal SYSTEM "legal.xml">
+  <!ENTITY appversion "@VERSION@">
+  <!ENTITY manrevision "2.0">
+  <!ENTITY date "July 2004">
+  <!ENTITY app "<application>Band Saw</application>">
+  <!-- Information about the entities
+       The legal.xml file contains legal information, there is no need to edit the file. 
+       Use the appversion entity to specify the version of the application.
+       Use the manrevision entity to specify the revision number of this manual.
+       Use the date entity to specify the release date of this manual.
+       Use the app entity to specify the name of the application. -->
+]>
+<!-- 
+      (Do not remove this comment block.)
+  Maintained by the GNOME Documentation Project
+  http://developer.gnome.org/projects/gdp
+  Template version: 2.0 beta
+  Template last modified Apr 11, 2002
+-->
+<!-- =============Document Header ============================= -->
+<article id="index" lang="en">
+  <!-- please do not change the id; for translations, change lang to -->
+  <!-- appropriate code -->
+  <articleinfo> 
+    <title>&app; Manual V&manrevision;</title>       
+
+    <copyright> 
+      <year>2004</year> 
+      <holder>Graham Ashton</holder> 
+    </copyright> 
+    <!-- translators: uncomment this:
+
+    <copyright>
+    <year>2002</year>
+    <holder>ME-THE-TRANSLATOR (Latin translation)</holder>
+  </copyright>
+
+    -->
+    <!-- An address can be added to the publisher information.  If a role is 
+    not specified, the publisher/author is the same for all versions of the 
+    document.  -->
+    <publisher> 
+      <publishername> GNOME Documentation Project </publishername> 
+    </publisher> 
+
+    &legal;
+    <!-- This file  contains link to license for the documentation (GNU FDL), and 
+    other legal stuff such as "NO WARRANTY" statement. Please do not change 
+    any of this. -->
+
+    <authorgroup> 
+      <author> 
+	<firstname>Graham</firstname> 
+	<surname>Ashton</surname> 
+	<affiliation> 
+	  <orgname>Band Saw Development Team</orgname> 
+	  <address><email>ashtong@users.sourceforge.net</email></address> 
+	</affiliation> 
+      </author> 
+      
+      <!-- This is appropriate place for other contributors: translators,
+      maintainers,  etc. Commented out by default.
+      
+      <othercredit role="translator">
+      <firstname>Latin</firstname> 
+      <surname>Translator 1</surname> 
+      <affiliation> 
+      <orgname>Latin Translation Team</orgname> 
+      <address> <email>translator@gnome.org</email> </address> 
+    </affiliation>
+      <contrib>Latin translation</contrib>
+    </othercredit>
+      -->
+    </authorgroup>
+
+
+    <!-- According to GNU FDL, revision history is mandatory if you are -->
+    <!-- modifying/reusing someone else's document.  If not, you can omit it. -->
+    <!-- Remember to remove the &manrevision; entity from the revision entries other
+    -->
+    <!-- than the current revision. -->
+    <!-- The revision numbering system for GNOME manuals is as follows: -->
+    <!-- * the revision number consists of two components -->
+    <!-- * the first component of the revision number reflects the release version of the GNOME desktop. -->
+    <!-- * the second component of the revision number is a decimal unit that is incremented with each revision of the manual. -->
+    <!-- For example, if the GNOME desktop release is V2.x, the first version of the manual that -->
+    <!-- is written in that desktop timeframe is V2.0, the second version of the manual is V2.1, etc. -->
+    <!-- When the desktop release version changes to V3.x, the revision number of the manual changes -->
+    <!-- to V3.0, and so on. -->  
+    <!--
+    <revhistory>
+    <revision> 
+    <revnumber>MY-GNOME-APPLICATION Manual V&manrevision;</revnumber> 
+    <date>&date;</date> 
+    <revdescription> 
+    <para role="author">Documentation Writer 2
+    <email>docwriter2@gnome.org</email>
+  </para>
+    <para role="publisher">GNOME Documentation Project</para>
+  </revdescription> 
+  </revision> 
+    <revision> 
+    <revnumber>Full title of previous manual.</revnumber> 
+    <date>Release date of previous manual.</date> 
+    <revdescription> 
+    <para role="author">Documentation Writer 1 
+    <email>docwriter1@gnome.org</email>
+  </para>
+    <para role="publisher">GNOME Documentation Project</para>
+  </revdescription> 
+  </revision> 
+  </revhistory> 
+    -->
+    <releaseinfo>
+      This manual describes version &appversion; of Band Saw.
+    </releaseinfo> 
+    <legalnotice> 
+      <title>Feedback</title> 
+      <para>
+
+	<!--
+	To report a bug or make a suggestion regarding the &app;
+	application or this manual, follow the directions in the
+	<ulink url="ghelp:gnome-feedback" type="help">GNOME Feedback
+	Page</ulink>.
+	-->
+
+	To report a bug or make a suggestion regarding the &app;
+	application or this manual, please post a message to the
+	<ulink
+	url="http://sourceforge.net/forum/forum.php?forum_id=384896"
+	type="http">&app; Forum</ulink>.
+
+      </para>
+      <!-- Translators may also add here feedback address for translations -->
+    </legalnotice> 
+  </articleinfo> 
+
+  <indexterm zone="index"> 
+    <primary>Band Saw</primary> 
+  </indexterm> 
+  <indexterm zone="index"> 
+    <primary>bandsaw</primary> 
+  </indexterm>
+
+  <!-- ============= Document Body ============================= -->
+  <!-- ============= Introduction ============================== -->
+  <sect1 id="bandsaw-introduction"> 
+    <title>Introduction</title> 
+    <para>
+
+      &app; is designed to help you monitor the system log files for
+      messages that interest you, alerting you when interesting events
+      occur. You can define filters to control which messages are
+      displayed on screen, and which ones display alerts.
+
+    </para>
+    <para>
+
+      The system log files are written by a syslog server (available
+      in all Linux distributions and UNIX variants). Syslog can be
+      configured to forward messages to other computers; by <link
+      linkend="bandsaw-config-syslog">configuring syslog</link>
+      appropriately you can monitor multiple computers from a single
+      instance of &app;.
+
+    </para>
+    
+  </sect1>
+
+  <!-- =========== Getting Started ============================== -->
+  <!-- Use the Getting Started section to describe the steps required
+  to start the application and to describe the user interface components
+  of the application. If there is other information that it is important
+  for readers to know before they start using the application, you should
+  also include this information here. 
+  If the information about how to get started is very short, you can 
+  include it in the Introduction and omit this section. -->
+
+  <sect1 id="bandsaw-getting-started"> 
+    <title>Getting Started</title> 
+
+    <sect2 id="bandsaw-config-syslog">
+      <title>Configuring Syslog</title>
+      <para>
+
+	Before running &app; for the first time you will need to
+	create a named pipe (otherwise known as a FIFO) for it to
+	monitor. The default path is
+	<filename>~/.bandsaw.fifo</filename>, but you may change it to
+	anything you wish. To make the named pipe, type the following
+	command at the command line, then press <keycap>Return</keycap>:
+
+      </para>
+
+      <screen>
+	<prompt>bash$</prompt> <userinput>mkfifo ~/.bandsaw.fifo</userinput>
+      </screen>
+
+      <para>
+
+	Once you have made the FIFO you will need to configure your
+	syslog server accordingly. The configuration commands vary
+	between different servers (and you should refer to your
+	server's documentation for full details), but here is an
+	example for <application>sysklogd</application>. It specifies
+	that all messages of priority notice and higher should be
+	written to &app;'s FIFO.
+
+      </para>
+
+      <programlisting>
+	*.notice			|/home/user/.bandsaw.fifo
+      </programlisting>
+
+      <para>
+	
+	Much more complicated configurations are possible, and it can
+	pay to become familiar with the server's configuration file.
+
+      </para>
+
+    </sect2>
+
+    <sect2 id="bandsaw-start">
+      <title>To Start &app;</title>
+      <para>
+
+	You can start <application>&app;</application> in the
+	following ways:
+
+      </para> 
+      <variablelist>
+    	<varlistentry>
+	  <term><guimenu>Applications</guimenu> menu</term>
+	  <listitem>
+	    <para>Choose 
+	      <menuchoice>
+    		<guisubmenu>System Tools</guisubmenu>
+    		<guimenuitem>System Log Monitor</guimenuitem>
+	      </menuchoice>.
+	    </para>
+	  </listitem>
+    	</varlistentry>
+    	<varlistentry>
+	  <term>Command line</term>
+	  <listitem>
+	    <para>
+	      To start <application>&app;</application> from a command
+	      line, type the following command, then press
+	      <keycap>Return</keycap>:
+	    </para>
+	    <para>
+	      <command>bandsaw</command> 
+	    </para>
+	  </listitem>
+    	</varlistentry>
+      </variablelist>
+    </sect2>
+
+    <sect2 id="bandsaw-when-start">
+      <title>When You Start &app;</title>
+      <para>
+
+	The first time you start <application>&app;</application> you
+	will be asked to specify the location to the named pipe that
+	you have configured syslog to write to (see <xref
+	linkend="bandsaw-config-syslog"/>). You may either accept the
+	default (<filename>~/.bandsaw.fifo</filename>) or specify a
+	different path entirely.
+
+      </para>
+
+      <note>
+	<para>
+	  
+	  If the path that you specify does not exist, or is not
+	  readable by your user account, you will not be able to
+	  proceed until you have corrected the problem.
+
+	</para>
+      </note>
+
+      <figure id="main-window-fig"> 
+	<title>&app; Start Up Window</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/main-window.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows &app; main window. Contains titlebar, menubar,
+		and log message view.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+
+      <!-- Include any descriptions of the GUI immediately after the screenshot of the main UI, -->
+      <!-- for example, the items on the menubar and on the toolbar. This section is optional. -->
+
+      <para>
+	The main area of the &app; window is used to display all the
+	log messages that match any of the filters that you
+	define. New messages are added to the bottom of the view as
+	they arrive from syslog. If the <link
+	linkend="bandsaw-prefs-general">maximum number of
+	messages</link> is exceeded then the old messages will be
+	automatically removed from the top of the view.
+      </para>
+    </sect2>
+  </sect1>
+  <!-- ================ Usage ================================ -->
+  <!-- Use this section to describe how to use the application to perform the tasks for 
+  which the application is designed. -->
+  <sect1 id="myapp-usage"> 
+    <title>Usage</title>
+    <para>
+
+      For each log message that is received from syslog, &app; checks
+      whether or not it should:
+
+      <itemizedlist>
+	<listitem> 
+	  <para>Ignore the message</para>
+	</listitem>
+	<listitem>
+	  <para>Show the message in the message view</para>
+	</listitem>
+	<listitem> 
+	  <para>
+	    Show the message in the message view
+	    <emphasis>and</emphasis> display an alert dialog
+	  </para>
+	</listitem> 
+      </itemizedlist> 
+    </para>
+
+    <para>
+
+      By default all messages will just be shown in the main window,
+      but you may control the behaviour by <link
+      linkend="bandsaw-prefs-filters">configuring your own
+      filters</link>.
+
+    </para>
+
+    <!-- ================ Usage Subsection ================================ -->
+    <sect2 id="bandsaw-message-view"> 
+      <title>Managing the Message View</title>
+      
+      <para>
+	Log messages are added to the message view as they arrive from
+	syslog.
+      </para>
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    To remove all the messages from the message view, choose
+	    <menuchoice>
+	      <guimenu>Edit</guimenu>
+	      <guimenuitem>Clear</guimenuitem>
+	    </menuchoice>.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    You may also remove individual messages by selecting them
+	    with the mouse or cursor keys and choosing
+	    <menuchoice>
+	      <shortcut>
+		<keycap>Delete</keycap>
+	      </shortcut>
+	      <guimenu>Edit</guimenu>
+	      <guimenuitem>Delete Selected</guimenuitem>
+	    </menuchoice>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <figure id="message-view-fig"> 
+	<title>Managing the Message View</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/message-view.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows &app; main window, with <guimenu>Edit</guimenu>
+		menu selected for removing messages from the view.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+
+      <tip>
+	<para>
+	  You can quickly select a continous group of messages by left
+	  clicking on the first message in the group, scrolling down,
+	  holding down the <keycap>Shift</keycap> key and left
+	  clicking on the last message in the group.
+
+	  You may also navigate and select messages with the
+	  <keycap>Home</keycap>, <keycap>End</keycap> and cursor keys,
+	  in combination with the <keycap>Shift</keycap> key.
+	</para>
+      </tip>
+
+    </sect2> 
+    <!-- ================ Usage Subsection ================================ -->
+    <sect2 id="bandsaw-alert-dialogs"> 
+      <title>Alert Dialogs</title> 
+
+      <para>
+	When an incoming message matches a filter that has been
+	configured to raise alerts &app; will display an alert dialog.
+      </para>
+
+      <figure id="alert-fig"> 
+	<title>An Alert Dialog</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/alert-dialog.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows a &app; alert dialog, including the log message
+		text, the host where the messages was generated, and
+		options to ignore forthcoming alerts.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+
+      <para>
+	The alert dialog displays:
+      </para>
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <emphasis>
+	      The name of the filter that matched the message
+	    </emphasis>
+	    &mdash;
+	    "Error" in this example.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    <emphasis>
+	      The name of the host that created the message
+	    </emphasis>
+	    &mdash;
+	    "hoopoo" in this example.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    <emphasis>
+	      The text of the log message
+	    </emphasis>
+	    &mdash;
+	    "ERROR: Something has gone wrong!" above.
+	  </para>
+	</listitem>
+      </itemizedlist>
+      <para>
+	Click the <guibutton>OK</guibutton> button to dismiss the alert.
+      </para>
+      <para>
+	The dialog also provides the option to <guilabel>Ignore
+	alerts</guilabel> for a configurable number of minutes. This
+	feature allows you to resolve problems uninterrupted if you
+	are unfortunate enough to be receiving a continuous stream of
+	log messages!
+      </para>
+    </sect2> 
+  </sect1>
+  <!-- ============= Customization ============================= -->
+  <!-- Use this section to describe how to customize the application. -->
+  <sect1 id="bandsaw-prefs"> 
+    <title>Preferences</title> 
+    <para>To configure &app;, choose 
+      <menuchoice> 
+	<guimenu>Edit</guimenu> 
+	<guimenuitem>Preferences</guimenuitem> 
+      </menuchoice>. The 
+      <guilabel>Preferences</guilabel> dialog contains the following tabbed
+      sections:</para> 
+    <itemizedlist> 
+      <listitem>
+	<para> 
+	  <xref linkend="bandsaw-prefs-general"/></para> 
+      </listitem> 
+      <listitem> 
+	<para> 
+	  <xref linkend="bandsaw-prefs-filters"/></para> 
+      </listitem> 
+    </itemizedlist>
+    <!-- =============== Customization Subsection ================ -->
+    <!-- Use a new section to describe different tabbed sections on the Settings or Preferences
+    dialog. -->
+    <sect2 id="bandsaw-prefs-general"> 
+      <title>General</title>
+      <figure id="prefs-general-fig"> 
+	<title>General Preferences</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/prefs-general.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows the General Preferences.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+      <variablelist> 
+	<varlistentry> 
+	  <term> 
+	    <guilabel>Named pipe</guilabel>
+	  </term> 
+	  <listitem> 
+	    <para>
+	      Use this setting to modify the path to the named pipe
+	      (or FIFO) that is being written to by your syslog server.
+	      The FIFO must exist, and be accessible by the user account 
+	      that is running &app;.
+	    </para>
+	  </listitem>
+	</varlistentry> 
+	<varlistentry> 
+	  <term> 
+	    <guilabel>Maximum messages kept</guilabel>
+	  </term> 
+	  <listitem> 
+	    <para>
+	      Use this spin button to control the maximum number of
+	      log messages that can be kept in the message view. The
+	      larger the number the greater the resources required.
+	    </para>
+	  </listitem> 
+	</varlistentry> 
+      </variablelist> 
+    </sect2>
+    <!-- ============= Customization Subsection ===================== -->
+    <!-- Another tabbed section on the Preferences dialog. -->
+    <sect2 id="bandsaw-prefs-filters">
+      <title>Filters</title> 
+      <figure id="prefs-filters-fig"> 
+	<title>Filter Preferences</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/prefs-filters.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows the Filter Preferences.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+<!--       <variablelist>  -->
+<!-- 	<varlistentry>  -->
+<!-- 	  <term>  -->
+<!-- 	    <guilabel>Named pipe</guilabel> -->
+<!-- 	  </term>  -->
+
+
+
+      <para>You can set the following viewer preferences: 
+	<itemizedlist> 
+	  <listitem> 
+	    <para> 
+	      <xref linkend="myapp-viewer-prefs-image-window"/></para> 
+	  </listitem> 
+	  <listitem> 
+	    <para> 
+	      <xref linkend="myapp-viewer-prefs-full-screen"/></para> 
+	  </listitem> 
+	</itemizedlist>
+      </para> 
+      <sect3 id="myapp-viewer-prefs-image-window"> 
+	<title>Image Windows</title> 
+	<para>The 
+	  <guilabel>Image Windows</guilabel> group contains the preferences
+	  that you can set to view images in image windows.</para> 
+	<variablelist> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Use scrollbars</guilabel> </term> 
+	    <listitem> 
+	      <para>Use this drop-down list box to specify when to use
+		scrollbars to scroll through an image. Select one of
+		the following options:</para> 
+	      <itemizedlist> 
+		<listitem> 
+		  <para> 
+		    <guilabel>Never</guilabel> </para> 
+		  <para>This option never displays scrollbars. You can use the
+		    arrow keys on the keyboard or the mouse to scroll
+		    through the image. </para>  
+		</listitem> 
+		<listitem> 
+		  <para> 
+		    <guilabel>Only if image does not fit</guilabel> </para> 
+		  <para>This option displays scrollbars when the image is
+		    larger than the image window.</para> 
+		</listitem> 
+	      </itemizedlist> 
+	      <para>Default: 
+		<guilabel>Never</guilabel>.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Pick window size and zoom factor
+		automatically</guilabel> </term> 
+	    <listitem> 
+	      <para>Select this option to resize the image window to fit the
+		image or to resize the image to fit the image
+		window. If the image is small, 
+		&app; resizes the image window to fit the image. If
+		the image is large, &app; resizes the image to fit
+		the image window. </para> 
+	      <para>Default: unselected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Open images in a new window</guilabel> </term> 
+	    <listitem> 
+	      <para>Select this option to open a new
+		&app; window each time you open an image. If you do
+		not select this option, &app; replaces the existing
+		image with the new image when you open an image. </para> 
+	      <para>Default: unselected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	</variablelist> 
+      </sect3> 
+      <sect3 id="myapp-viewer-prefs-full-screen"> 
+	<title>Full Screen</title> 
+	<para>The 
+	  <guilabel>Full Screen</guilabel> group contains the preferences that
+	  you can set to view images in full screen mode.</para> 
+	<variablelist> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Use scrollbars</guilabel> </term> 
+	    <listitem> 
+	      <para>Use this drop-down list box to specify when to use
+		scrollbars to scroll through an image. Select one of the following
+		options:</para> 
+	      <itemizedlist> 
+		<listitem> 
+		  <para> 
+		    <guilabel>Never</guilabel> </para> 
+		  <para>This option never displays scrollbars. You can use the
+		    arrow keys on the keyboard or the mouse to scroll
+		    through the image. </para>  
+		</listitem> 
+		<listitem> 
+		  <para> 
+		    <guilabel>Only if image does not fit</guilabel> </para> 
+		  <para>This option displays scrollbars when the image is
+		    larger than the full screen. </para> 
+		</listitem> 
+	      </itemizedlist> 
+	      <para>Default: 
+		<guilabel>Never</guilabel>.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Use 1:1 zoom factor</guilabel> </term> 
+	    <listitem> 
+	      <para>Select this option to use the 1:1 zoom factor when you open
+		an image. The 1:1 zoom factor displays the image at
+		its actual size. </para>  
+	      <para>Default: selected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Use same zoom factor as image window</guilabel> </term>
+	    
+	    <listitem> 
+	      <para>Select this option to use the same zoom factor that the
+		application uses to display the image in an image
+		window. </para>  
+	      <para>Default: unselected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Fit all images to screen</guilabel> </term> 
+	    <listitem> 
+	      <para>Select this option to resize images to fill the full screen
+		when you open the images in full screen mode. </para> 
+	      <para>Default: unselected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Fit standard-sized images to screen</guilabel> </term> 
+	    <listitem> 
+	      <para>Select this option to automatically resize images
+		that are the same size as standard screens so that the
+		images fill the full screen when you open them in full
+		screen mode. If you select this option, &app; ignores
+		the settings for the previous three options when you
+		open an image that is the same size as a standard
+		screen.  Examples of standard screen sizes are 640 x
+		480 pixels, 1024 x 768 pixels, and so on. </para>
+	      <para>Default: unselected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	  <varlistentry> 
+	    <term> 
+	      <guilabel>Put a bevel around the edge of the screen</guilabel>
+	    </term> 
+	    <listitem> 
+	      <para>Select this option to display a 3D beveled border around
+		the full screen view of an image. </para> 
+	      <para>Default: unselected.</para> 
+	    </listitem> 
+	  </varlistentry> 
+	</variablelist> 
+      </sect3> 
+    </sect2> 
+  </sect1>
+  <!-- ============= Bugs ================================== -->
+  <!-- This section is optional and is commented out by default. 
+  You can use it to describe known bugs and limitations of the 
+  program if there are any - please be frank and list all
+  problems you know of. 
+  
+  <sect1 id="bandsaw-bugs">
+  <title>Known Bugs and Limitations</title>
+  <para> </para>
+ </sect1>
+  -->
+  <!-- ============= About ================================== -->
+  <sect1 id="bandsaw-about"> 
+    <title>About &app;</title> 
+    <para>
+      &app; was written by Graham Ashton
+      (<email>ashtong@users.sourceforge.net</email>). To find more
+      information about &app;, please visit the <ulink
+      url="http://bandsaw.sourceforge.net/" type="http">Band Saw Web
+      page</ulink>.
+    </para>
+
+    <!--
+    <para>
+      To report a bug or make a suggestion regarding this application or
+      this manual, follow the directions in this 
+      <ulink url="ghelp:gnome-feedback"   type="help">document</ulink>.
+    </para>
+    -->
+
+    <para>
+      To report a bug or make a suggestion regarding the &app;
+      application or this manual, please post a message to the
+      <ulink
+	url="http://sourceforge.net/forum/forum.php?forum_id=384896"
+	type="http">&app; Forum</ulink>.
+    </para>
+
+    <para>
+      This program is distributed under the terms of the GNU General
+      Public license as published by the Free Software Foundation;
+      either version 2 of the License, or (at your option) any later
+      version. A copy of this license can be found at this <ulink
+      url="ghelp:gpl" type="help">link</ulink>, or in the file COPYING
+      included with the source code of this program.
+    </para>
+
+  </sect1> 
+</article>
