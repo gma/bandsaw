@@ -258,7 +258,19 @@ class PreferencesDialog(Dialog):
         column = gtk.TreeViewColumn(None, renderer, text=self.NAME_COLUMN)
         self.treeview1.append_column(column)
         self.treeview1.set_headers_visible(gtk.FALSE)
+        selection = self.treeview1.get_selection()
+        selection.connect('changed', self.on_filter_selection_changed)
 
+    def on_filter_selection_changed(self, selection, *args):
+        list_store, iter = selection.get_selected()
+        if iter is None:
+            sensitive = gtk.FALSE
+        else:
+            sensitive = gtk.TRUE
+        for button in (self.edit_button, self.remove_button,
+                       self.up_button, self.down_button):
+            button.set_sensitive(sensitive)
+            
     def redraw_filters(self):
         self.treeview1.get_model().clear()
         for filter in self.config.filters:
@@ -314,17 +326,9 @@ class PreferencesDialog(Dialog):
         pass
 
     def on_treeview1_row_activated(self, *args):
-        self.on_edit_button_clicked()
-
-#     def on_treeview1_toggle_cursor_row(self, *args):
-#         list_store, iter = self.treeview1.get_selection().get_selected()
-#         if iter is None:
-#             sensitive = gtk.FALSE
-#         else:
-#             sensitive = gtk.TRUE
-#         for button in (self.edit_button, self.remove_button,
-#                        self.up_button, self.down_button):
-#             button.set_sensitive(gtk.FALSE)
+        list_store, iter = self.treeview1.get_selection().get_selected()
+        if iter is not None:
+            self.on_edit_button_clicked()
 
 
 class LogMessage:
