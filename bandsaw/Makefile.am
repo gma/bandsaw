@@ -10,8 +10,13 @@ dist_scripts = src/bandsaw.py src/bandsaw_test.py
 gladedir   = $(datadir)/bandsaw/glade
 glade_DATA = $(srcdir)/src/bandsaw.glade
 
+pixmapsdir = $(datadir)/pixmaps
+pixmaps_DATA = pixmaps/bandsaw.png
+
 install-exec-hook:
 	sed -i -e "s|'bandsaw.glade'|'$(gladedir)/bandsaw.glade'|" \
+		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
+	sed -i -e "s|../pixmaps|$(pixmapsdir)|" \
 		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
 
 schemadir = $(GCONF_SCHEMA_FILE_DIR)
