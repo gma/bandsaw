@@ -656,6 +656,7 @@ class LogTreeView(gtk.TreeView):
             if filter.matches(message.text):
                 self.add_message(message)
                 self.alert_queue.append(filter, message)
+                break
 
     def clear(self):
         self.get_model().clear()
@@ -729,8 +730,11 @@ class MainWindow(Window):
         self.connect_signals(menu)
 
     def on_syslog_readable(self, fifo, condition):
-        line = fifo.readline()
-        if line == '':   # fifo closed by syslog
+        try:
+            line = fifo.readline()
+            if line == '':  # fifo closed by syslog
+                raise IOError
+        except IOError:
             gtk.input_remove(self.monitor_id)
             self.monitor_syslog()
             return gtk.FALSE
