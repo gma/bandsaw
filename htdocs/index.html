@@ -25,10 +25,11 @@
       <h1>What is Band Saw?</h1>
 
       <p>
-        Band Saw helps system administrators monitor large numbers of 
-        computers by alerting them whenever specific log messages occur. 
-        It runs in the background, popping up alert dialogs when 
-        necessary. It integrates well with the GNOME desktop."
+        Band Saw helps system administrators monitor large numbers of
+        computers by monitoring <a href="syslog.html">syslog</a> and
+        alerting the administrator whenever interesting log messages
+        arrive. The administrator has complete control over what
+        constitutes an "interesting message".
       </p>
       
       <p>
@@ -37,10 +38,21 @@
 	License</a>.
       </p>
 
-      <h2>How does it work?</h2>
+      <h1>How does it work?</h1>
             
       <p>
-	TODO: Write this section...
+	Band Saw is really quite simple; it monitors messages that are
+	fed to it from a suitably configured syslog server, looking
+	out for messages that contain text that the administrator is
+	interested in. Any log message that matches the
+	administrator's filters will be brought to the user's
+	attention via a dialog box that pops up on screen.
+      </p>
+
+      <p>
+	Because syslog itself supports propagating messages between
+	seperate computers, with syslog and Band Saw you can easily
+	monitor a large number of computers for critical errors.
       </p>
 
       <!--#include virtual="ssi/copyright.html" -->
