@@ -19,4 +19,6 @@ TODO
 
 - Listen for notification changes from GConf.
 
+- Add ability to restrict which messages are displayed in the message view.
+
 $Id$
