@@ -109,6 +109,19 @@ class Config(object):
         self.client.set_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL, alerts)
 
     filters = property(_get_filters, _set_filters)
+
+    def move_filter(self, index, offset):
+        filters = self.filters
+        selected_filter = filters[index]
+        filters.remove(selected_filter)
+        filters.insert(index + offset, selected_filter)
+        self.filters = filters
+
+    def move_filter_up(self, index):
+        self.move_filter(index, -1)
+
+    def move_filter_down(self, index):
+        self.move_filter(index, +1)
         
 
 class WidgetWrapper(object):
@@ -261,15 +274,26 @@ class PreferencesDialog(Dialog):
         selection = self.treeview1.get_selection()
         selection.connect('changed', self.on_filter_selection_changed)
 
+    def first_row_is_selected(self, selection):
+        list_store, iter = selection.get_selected()
+        first_iter = list_store.get_iter_first()
+        return list_store.get_path(iter) == list_store.get_path(first_iter)
+
+    def last_row_is_selected(self, selection):
+        list_store, iter = selection.get_selected()
+        return list_store.iter_next(iter) is None
+
     def on_filter_selection_changed(self, selection, *args):
         list_store, iter = selection.get_selected()
         if iter is None:
             sensitive = gtk.FALSE
         else:
             sensitive = gtk.TRUE
-        for button in (self.edit_button, self.remove_button,
-                       self.up_button, self.down_button):
-            button.set_sensitive(sensitive)
+        self.edit_button.set_sensitive(sensitive)
+        self.remove_button.set_sensitive(sensitive)
+
+        self.up_button.set_sensitive(not self.first_row_is_selected(selection))
+        self.down_button.set_sensitive(not self.last_row_is_selected(selection))
             
     def redraw_filters(self):
         self.treeview1.get_model().clear()
@@ -312,18 +336,28 @@ class PreferencesDialog(Dialog):
         dialog.destroy()
 
     def on_remove_button_clicked(self, *args):
-        list_store, iter = self.treeview1.get_selection().get_selected()
-        row_index = list_store.get_path(iter)[0]
         filters = self.config.filters
-        filters.pop(row_index)
+        filters.pop(self.get_selected_filter_index())
         self.config.filters = filters
         self.redraw_filters()
-    
+
     def on_up_button_clicked(self, *args):
-        pass
+        index = self.get_selected_filter_index()
+        self.config.move_filter_up(index)
+        list_store, iter = self.treeview1.get_selection().get_selected()
+        name = list_store.get_value(iter, self.NAME_COLUMN)
+        list_store.remove(iter)
+        list_store.insert(index - 1, (name,))
+        self.treeview1.get_selection().select_path((index - 1,))
     
     def on_down_button_clicked(self, *args):
-        pass
+        index = self.get_selected_filter_index()
+        self.config.move_filter_down(index)
+        list_store, iter = self.treeview1.get_selection().get_selected()
+        name = list_store.get_value(iter, self.NAME_COLUMN)
+        list_store.remove(iter)
+        list_store.insert(index + 1, (name,))
+        self.treeview1.get_selection().select_path((index + 1,))
 
     def on_treeview1_row_activated(self, *args):
         list_store, iter = self.treeview1.get_selection().get_selected()
