@@ -337,7 +337,54 @@ class AlertQueueTest(AlertTest):
         self.assertEqual(len(queue), 2)
         queue.pop()
         self.assertEqual(len(queue), 1)
-        
+
+    def test_append_dialog_visible_alerts_ignored(self):
+        """Check messages appended when dialog visible, alerts ignored"""
+        config = Mock()
+        config.ignore_alerts = True
+        config.ignore_timeout = 5
+        queue = bandsaw.AlertQueue(config)
+        queue.alert_displayed = True
+        queue.last_alert_time = time.time() - 10  # last alert very recent
+        self.assertEqual(len(queue), 0)
+        queue.append(self.filter, self.message)
+        self.assertEqual(len(queue), 1)
+
+    def test_append_dialog_visible_alerts_not_ignored(self):
+        """Check messages appended when dialog visible, alerts not ignored"""
+        config = Mock()
+        config.ignore_alerts = False
+        queue = bandsaw.AlertQueue(config)
+        queue.alert_displayed = True
+        self.assertEqual(len(queue), 0)
+        queue.append(self.filter, self.message)
+        self.assertEqual(len(queue), 1)
+
+    def test_append_no_dialog_alerts_ignored(self):
+        """Check messages not appended when no dialog, alerts ignored"""
+        config = Mock()
+        config.ignore_alerts = True
+        config.ignore_timeout = 5
+        queue = bandsaw.AlertQueue(config)
+        queue.last_alert_time = time.time() - 10  # last alert very recent
+        self.assertEqual(len(queue), 0)
+        queue.append(self.filter, self.message)
+        self.assertEqual(len(queue), 0)
+        self.assertEqual(queue.alert_displayed, False)
+
+    def test_append_no_dialog_alerts_not_ignored(self):
+        """Check messages not appended when no dialog, alrets not ignored"""
+        config = Mock()
+        config.ignore_alerts = False
+        config.ignore_timeout = 5
+        queue = bandsaw.AlertQueue(config)
+        queue.alert_displayed = False
+        self.assertEqual(len(queue), 0)
+        self.assertEqual(queue.alert_displayed, False)
+        queue.append(self.filter, self.message)
+        self.assertEqual(len(queue), 0)
+        self.assertEqual(queue.alert_displayed, True)
+
 
 class AlertDialogTest(AlertTest):
 

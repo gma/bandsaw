@@ -217,34 +217,36 @@ class AlertQueue(list):
         return minutes >= self.config.ignore_timeout
 
     def should_raise_alert(self, filter):
-        if not filter.alert or self.alert_displayed:
-            return False
-        else:
+        if not self.alert_displayed:
             ignored = self.config.ignore_alerts
             return not (ignored and not self.ignore_timeout_elapsed())
+        return False
 
     def raise_alert(self, filter, message):
-        if self.should_raise_alert(filter):
-            self.last_alert_time = time.time()
-            self.alert_displayed = True
-            self.alert_dialog = AlertDialog(self, self.config, filter, message)
-            self.alert_dialog.show()
+        self.last_alert_time = time.time()
+        self.alert_displayed = True
+        self.alert_dialog = AlertDialog(self, self.config, filter, message)
+        self.alert_dialog.show()
 
     def append(self, filter, message):
         if self.alert_displayed:
+            print 'appending %s' % message.text
             list.append(self, (filter, message))
-        else:
+        elif self.should_raise_alert(filter):
             self.raise_alert(filter, message)
 
     def pop(self):
         self.alert_displayed = False
         try:
             filter, message = list.pop(self, 0)
-            self.raise_alert(filter, message)
+            print 'popping', message.text
+            if self.should_raise_alert(filter):
+                self.raise_alert(filter, message)
         except IndexError:
             pass
 
     def clear(self):
+        print 'clearing'
         while len(self) > 0:
             self.pop()
         
@@ -575,6 +577,7 @@ class AlertDialog(Dialog):
         Dialog.destroy(self)
         
     def on_alert_dialog_delete_event(self, *args):
+        self.alert_queue.pop()
         self.destroy()
 
     def on_okbutton1_clicked(self, *args):
@@ -673,7 +676,8 @@ class MessageView(gtk.TreeView):
         for filter in self.config.filters:
             if filter.matches(message.text):
                 self.add_message(message)
-                self.alert_queue.append(filter, message)
+                if filter.alert:
+                    self.alert_queue.append(filter, message)
                 break
 
     def clear(self):
