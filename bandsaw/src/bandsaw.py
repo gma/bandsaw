@@ -222,7 +222,8 @@ class WidgetWrapper(object):
 
     def __init__(self, root_widget):
         self._root_widget_name = root_widget
-        self._xml = gtk.glade.XML('bandsaw.glade', root_widget)
+        self._xml = gtk.glade.XML('bandsaw.glade',
+                                  root_widget)
         self.connect_signals(self)
 
     def _get_root_widget(self):
@@ -542,6 +543,7 @@ class LogTreeView(gtk.TreeView):
         gtk.TreeView.__init__(self)
         self.config = config
         self.alert_queue = AlertQueue(config)
+        self._observers = []
 
     def add_column(self, title, index):
         renderer = gtk.CellRendererText()
@@ -556,9 +558,24 @@ class LogTreeView(gtk.TreeView):
         self.add_column('Hostname', LogTreeView.HOSTNAME_COLUMN)
         self.add_column('Process', LogTreeView.PROCESS_COLUMN)
         self.add_column('Message', LogTreeView.MESSAGE_COLUMN)
-        self.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        selection = self.get_selection()
+        selection.set_mode(gtk.SELECTION_MULTIPLE)
+        selection.connect('changed', self.on_selection_changed)
         self.show()
 
+    def on_selection_changed(self, selection):
+        selected = [False]
+
+        def check_if_selected(model, path, iter):
+            selected[0] = True
+
+        selection.selected_foreach(check_if_selected)
+        for observer in self._observers:
+            observer.selection_changed(selected[0])
+
+    def observe_selection(self, observer):
+        self._observers.append(observer)
+        
     def select_all(self):
         self.get_selection().select_all()
 
@@ -602,6 +619,9 @@ class LogTreeView(gtk.TreeView):
             if filter.matches(message.text):
                 self.add_message(message)
                 self.alert_queue.append(filter, message)
+
+    def clear(self):
+        self.get_model().clear()
         
     def delete_selected(self):
         selected = []
@@ -611,7 +631,7 @@ class LogTreeView(gtk.TreeView):
         for iter in selected:
             self.get_model().remove(iter)
 #         self.get_selection().select_iter(selected[-1])
-        
+
 
 class Menu:
 
@@ -622,8 +642,11 @@ class Menu:
     def on_quit1_activate(self, *args):
         gtk.mainquit()
 
-    def on_clear1_activate(self, *args):
+    def on_delete_selected1_activate(self, *args):
         self.log_view.delete_selected()
+
+    def on_clear1_activate(self, *args):
+        self.log_view.clear()
 
     def on_select_all1_activate(self, *args):
         self.log_view.select_all()
@@ -649,10 +672,15 @@ class MainWindow(Window):
         self.scrolledwindow1.add(self.log_view)
         self.log_view.show()
         self.setup_menu()
+        self.log_view.observe_selection(self)
         self.monitor_syslog()
+
+    def selection_changed(self, have_selection):
+        self.delete_selected1.set_sensitive(have_selection)
 
     def setup_menu(self):
         menu = Menu(self.config, self.log_view)
+        self.delete_selected1.set_sensitive(gtk.FALSE)
         self.connect_signals(menu)
 
     def on_syslog_readable(self, fifo, condition):

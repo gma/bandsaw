@@ -603,6 +603,16 @@
 		      </child>
 
 		      <child>
+			<widget class="GtkMenuItem" id="delete_selected1">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">_Delete Selected</property>
+			  <property name="use_underline">True</property>
+			  <signal name="activate" handler="on_delete_selected1_activate" last_modification_time="Fri, 16 Jul 2004 11:44:08 GMT"/>
+			  <accelerator key="Delete" modifiers="0" signal="activate"/>
+			</widget>
+		      </child>
+
+		      <child>
 			<widget class="GtkSeparatorMenuItem" id="separator4">
 			  <property name="visible">True</property>
 			</widget>
