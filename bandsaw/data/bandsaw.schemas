@@ -1,0 +1,88 @@
+<gconfschemafile>
+  <schemalist>
+
+    <!-- Filter definitions -->        
+
+    <schema>
+      <key>/schemas/apps/bandsaw/filter_alerts</key>
+      <applyto>/apps/apps/bandsaw/filter_alerts</applyto>
+      <owner>bandsaw</owner>
+      <type>list</type>
+      <list_type>bool</list_type>
+      <default>[]</default>
+      <locale name="C">
+         <short>Whether the filters raise alerts</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/filter_names</key>
+      <applyto>/apps/apps/bandsaw/filter_names</applyto>
+      <owner>bandsaw</owner>
+      <type>list</type>
+      <list_type>string</list_type>
+      <default>[]</default>
+      <locale name="C">
+         <short>The names of the filters</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/filter_patterns</key>
+      <applyto>/apps/apps/bandsaw/filter_patterns</applyto>
+      <owner>bandsaw</owner>
+      <type>list</type>
+      <list_type>string</list_type>
+      <default>[]</default>
+      <locale name="C">
+         <short>The regular expressions that define the filters</short>
+      </locale>
+    </schema>
+
+    <!-- Behaviour settings -->
+
+    <schema>
+      <key>/schemas/apps/bandsaw/messages_kept</key>
+      <applyto>/apps/apps/bandsaw/messages_kept</applyto>
+      <owner>bandsaw</owner>
+      <type>int</type>
+      <default>500</default>
+      <locale name="C">
+         <short>The maximum number of log messages kept</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/named_pipe</key>
+      <applyto>/apps/apps/bandsaw/named_pipe</applyto>
+      <owner>bandsaw</owner>
+      <type>string</type>
+      <locale name="C">
+         <short>Path to named pipe from which log messages should be read</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/suppress_alerts</key>
+      <applyto>/apps/apps/bandsaw/messages_kept</applyto>
+      <owner>bandsaw</owner>
+      <type>bool</type>
+      <default>False</default>
+      <locale name="C">
+         <short>Whether alerts should be ignored for a period</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/suppress_minutes</key>
+      <applyto>/apps/apps/bandsaw/suppress_minutes_</applyto>
+      <owner>bandsaw</owner>
+      <type>int</type>
+      <default>5</default>
+      <locale name="C">
+         <short>The number of minutes to ignore alerts for</short>
+      </locale>
+    </schema>
+
+</schemalist>
+</gconfschemafile>
