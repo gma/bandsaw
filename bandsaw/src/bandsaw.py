@@ -46,20 +46,26 @@ class Config(object):
     MESSAGES_KEPT = '/'.join((BASE_KEY, 'messages_kept'))
     NAMED_PIPE = '/'.join((BASE_KEY, 'named_pipe'))
 
-    FILTERS_KEY = 'filters'
-    FILTER_ALERTS = '/'.join((BASE_KEY, FILTERS_KEY, 'alerts'))
-    FILTER_NAMES = '/'.join((BASE_KEY, FILTERS_KEY, 'names'))
-    FILTER_PATTERNS = '/'.join((BASE_KEY, FILTERS_KEY, 'patterns'))
-
-    ALERTS_KEY = 'alerts'
-    IGNORE_ALERTS = '/'.join((BASE_KEY, ALERTS_KEY, 'ignore'))
-    IGNORE_TIMEOUT = '/'.join((BASE_KEY, ALERTS_KEY, 'ignore_timeout'))
+    ALERTS_KEY = '/'.join((BASE_KEY, 'alerts'))
+    IGNORE_ALERTS = '/'.join((ALERTS_KEY, 'ignore'))
+    IGNORE_TIMEOUT = '/'.join((ALERTS_KEY, 'ignore_timeout'))
     
+    FILTERS_KEY = '/'.join((BASE_KEY, 'filters'))
+    FILTER_ALERTS = '/'.join((FILTERS_KEY, 'alerts'))
+    FILTER_NAMES = '/'.join((FILTERS_KEY, 'names'))
+    FILTER_PATTERNS = '/'.join((FILTERS_KEY, 'patterns'))
+
     def __init__(self, client):
         self.client = client
+        self._named_pipe = None
+        self._messages_kept = None
+        self._ignore_alerts = None
+        self._ignore_timeout = None
 
     def _get_named_pipe(self):
-        return self.client.get_string(Config.NAMED_PIPE)
+        if self._named_pipe is None:
+            self._named_pipe = self.client.get_string(Config.NAMED_PIPE)
+        return self._named_pipe
 
     def _set_named_pipe(self, value):
         value = value.strip()
@@ -68,7 +74,9 @@ class Config(object):
     named_pipe = property(_get_named_pipe, _set_named_pipe)
     
     def _get_messages_kept(self):
-        return self.client.get_int(Config.MESSAGES_KEPT)
+        if self._messages_kept is None:
+            self._messages_kept = self.client.get_int(Config.MESSAGES_KEPT)
+        return self._messages_kept
 
     def _set_messages_kept(self, value):
         self.client.set_int(Config.MESSAGES_KEPT, int(value))
@@ -76,7 +84,9 @@ class Config(object):
     messages_kept = property(_get_messages_kept, _set_messages_kept)
 
     def _get_ignore_alerts(self):
-        return self.client.get_bool(Config.IGNORE_ALERTS)
+        if self._ignore_alerts is None:
+            self._ignore_alerts = self.client.get_bool(Config.IGNORE_ALERTS)
+        return self._ignore_alerts
 
     def _set_ignore_alerts(self, value):
         self.client.set_bool(Config.IGNORE_ALERTS, value)
@@ -84,7 +94,9 @@ class Config(object):
     ignore_alerts = property(_get_ignore_alerts, _set_ignore_alerts)
 
     def _get_ignore_timeout(self):
-        return self.client.get_int(Config.IGNORE_TIMEOUT)
+        if self._ignore_timeout is None:
+            self._ignore_timeout = self.client.get_int(Config.IGNORE_TIMEOUT)
+        return self._ignore_timeout
 
     def _set_ignore_timeout(self, value):
         self.client.set_int(Config.IGNORE_TIMEOUT, int(value))
@@ -92,7 +104,6 @@ class Config(object):
     ignore_timeout = property(_get_ignore_timeout, _set_ignore_timeout)
 
     def _get_filters(self):
-        print 'loading filers from gconf'
         names = self.client.get_list(Config.FILTER_NAMES, gconf.VALUE_STRING)
         patterns = self.client.get_list(Config.FILTER_PATTERNS,
                                         gconf.VALUE_STRING)
@@ -156,7 +167,6 @@ class LogMessage:
 class Filter:
 
     def __init__(self, name='', pattern='', alert=False):
-        print 'making new filter: %s' % self
         self.name = name
         self.pattern = pattern
         self.alert = alert
@@ -179,7 +189,6 @@ class FilterSet(list):
         self.move_filter(index, +1)
 
     def update(self, filter):
-        print self, filter
         self[self.index(filter)] = filter
 
 
@@ -410,7 +419,6 @@ class PreferencesDialog(Dialog):
 
     def on_edit_button_clicked(self, *args):
         filter = self.config.filters[self.get_selected_filter_index()]
-        print 'passing filter %s to dialog' % filter
         dialog = FilterDialog(self, 'Edit Filter', filter)
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
