@@ -19,6 +19,8 @@
 # $Id$
 
 
+import os
+import sys
 import unittest
 
 import bandsaw
@@ -234,4 +236,6 @@ class FilterSetTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+     if 'srcdir' in os.environ:
+         sys.argv.append('-v')
+     unittest.main()
