@@ -54,15 +54,6 @@ class Dialog(WidgetWrapper):
         self.root_widget.destroy()
 
 
-class SocketDialog(Dialog):
-
-    def __init__(self):
-        Dialog.__init__(self, 'socket_dialog')
-
-    def get_path_to_socket(self):
-        return self.path_entry.get_text()
-
-
 class LogMessage:
 
     def __init__(self, line):
@@ -84,52 +75,37 @@ class LogMessage:
     process = property(_get_process)
 
     def _get_text(self):
-        return ' '.join(self._words[5:])
+        return ' '.join(self._words[5:]).strip()
 
     text = property(_get_text)
 
 
-class LogView(WidgetWrapper):
+class LogView(gtk.TreeView):
 
     DATE_COLUMN = 0
     HOSTNAME_COLUMN = 1
     PROCESS_COLUMN = 2
     MESSAGE_COLUMN = 3
 
-    def __init__(self):
-        WidgetWrapper.__init__(self, 'scrolledwindow1')
-        self.list_store = self.create_list_store()
-        self.setup_treeview()
-
-    def create_list_store(self):
-        return gtk.ListStore(gobject.TYPE_STRING,
-                             gobject.TYPE_STRING,
-                             gobject.TYPE_STRING,
-                             gobject.TYPE_STRING)
-
     def add_column(self, title, index):
         renderer = gtk.CellRendererText()
         column = gtk.TreeViewColumn(title, renderer, text=index)
-        self.treeview1.append_column(column)
-        self.treeview1.hide()
+        self.append_column(column)
 
-    def setup_treeview(self):
-        self.treeview1.set_model(self.list_store)
+    def setup(self):
+        model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
+                              gobject.TYPE_STRING, gobject.TYPE_STRING)
+        self.set_model(model)
         self.add_column('Date', LogView.DATE_COLUMN)
         self.add_column('Hostname', LogView.HOSTNAME_COLUMN)
         self.add_column('Process', LogView.PROCESS_COLUMN)
         self.add_column('Message', LogView.MESSAGE_COLUMN)
-
-    def print_rows(self):
-        def f(model, path, iter):
-            print model.get_value(iter, 0)
-        self.list_store.foreach(f)
+        self.show()
 
     def process_line(self, line):
         message = LogMessage(line)
-        self.list_store.append(
-            (message.date, message.hostname, message.process, message.text))
-        self.print_rows()
+        row = (message.date, message.hostname, message.process, message.text)
+        self.get_model().append(row)
 
 
 class MainWindow(Window):
@@ -139,6 +115,9 @@ class MainWindow(Window):
         self.monitor_id = None
         self.monitor_syslog()
         self.log_view = LogView()
+        self.log_view.setup()
+        self.scrolledwindow1.add(self.log_view)
+        self.log_view.show()
 
     def on_syslog_readable(self, fifo, condition):
         line = fifo.readline()
@@ -157,10 +136,6 @@ class MainWindow(Window):
         self.monitor_id = gtk.input_add(
             fifo, gtk.gdk.INPUT_READ, self.on_syslog_readable)
         
-    def on_open1_activate(self, *args):
-        dialog = SocketDialog()
-        response = dialog.run()
-
     def quit(self):
         gtk.mainquit()
         
