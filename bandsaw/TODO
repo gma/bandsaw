@@ -11,4 +11,6 @@ TODO
 
   - only modify general config params when moving out of widget.
 
+  - improve auto scrolling performance.
+
 $Id$
