@@ -1,0 +1,4 @@
+Band Saw helps system administrators monitor large numbers of
+computers by alerting them whenever specific log messages occur. It
+runs on the desktop, popping up alert dialogs when necessary. It
+integrates well with the GNOME desktop.
