@@ -464,11 +464,28 @@ class LogTreeView(gtk.TreeView):
         upper = adjustment.get_property('upper')
         return value + page_size >= upper
 
+    def count_messages(self):
+        count = [0]
+
+        def count_rows(model, iter, path):
+            count[0] += 1
+
+        self.get_model().foreach(count_rows)
+        return count[0]
+
+    def remove_first_row(self):
+        list_store = self.get_model()
+        iter = list_store.get_iter_first()
+        if iter:
+            list_store.remove(iter)
+
     def add_message(self, message):
-        should_scroll_down = self.is_scrolled_down()
+        print self.count_messages(), self.config.messages_kept
+        if self.count_messages() >= self.config.messages_kept:
+            self.remove_first_row()
         row = (message.date, message.hostname, message.process, message.text)
         self.get_model().append(row)
-        if should_scroll_down:
+        if self.is_scrolled_down():
             self.scroll_to_end()
         
     def should_raise_alert(self, filter, message):
