@@ -6,7 +6,8 @@ REMOTE_DIR=/home/groups/b/ba/bandsaw/htdocs
 REMOTE_USER=ashtong
 
 
-upload: .upload-root .upload-news .upload-ssi .upload-images
+upload: .upload-root .upload-news .upload-ssi .upload-images \
+	.upload-screenshots
 
 
 .upload-root: *.html .htaccess default.css
@@ -32,7 +33,7 @@ upload: .upload-root .upload-news .upload-ssi .upload-images
 	@touch .upload-images
 
 
-#.upload-screenshots: images/ss/*.png images/ss/*.gif
+.upload-screenshots: images/ss/*.png
 	#ssh $(REMOTE_USER)@$(REMOTE_HOST) mkdir -p $(REMOTE_DIR)/images/ss
-	#scp $? $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_DIR)/images/ss
-	#@touch .upload-screenshots
+	scp $? $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_DIR)/images/ss
+	@touch .upload-screenshots
