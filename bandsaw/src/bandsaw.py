@@ -43,13 +43,17 @@ class Config(object):
 
     BASE_KEY = '/apps/bandsaw'
 
-    FILTER_ALERTS = '/'.join((BASE_KEY, 'filter_alerts'))
-    FILTER_NAMES = '/'.join((BASE_KEY, 'filter_names'))
-    FILTER_PATTERNS = '/'.join((BASE_KEY, 'filter_patterns'))
     MESSAGES_KEPT = '/'.join((BASE_KEY, 'messages_kept'))
     NAMED_PIPE = '/'.join((BASE_KEY, 'named_pipe'))
-    SUPPRESS_ALERTS = '/'.join((BASE_KEY, 'suppress_alerts'))
-    SUPPRESS_MINUTES = '/'.join((BASE_KEY, 'suppress_minutes'))
+
+    FILTERS_KEY = 'filters'
+    FILTER_ALERTS = '/'.join((BASE_KEY, FILTERS_KEY, 'alerts'))
+    FILTER_NAMES = '/'.join((BASE_KEY, FILTERS_KEY, 'names'))
+    FILTER_PATTERNS = '/'.join((BASE_KEY, FILTERS_KEY, 'patterns'))
+
+    ALERTS_KEY = 'alerts'
+    IGNORE_ALERTS = '/'.join((BASE_KEY, ALERTS_KEY, 'ignore'))
+    IGNORE_TIMEOUT = '/'.join((BASE_KEY, ALERTS_KEY, 'ignore_timeout'))
     
     def __init__(self, client):
         self.client = client
@@ -71,23 +75,24 @@ class Config(object):
 
     messages_kept = property(_get_messages_kept, _set_messages_kept)
 
-    def _get_suppress_alerts(self):
-        return self.client.get_bool(Config.SUPPRESS_ALERTS)
+    def _get_ignore_alerts(self):
+        return self.client.get_bool(Config.IGNORE_ALERTS)
 
-    def _set_suppress_alerts(self, value):
-        self.client.set_bool(Config.SUPPRESS_ALERTS, value)
+    def _set_ignore_alerts(self, value):
+        self.client.set_bool(Config.IGNORE_ALERTS, value)
 
-    suppress_alerts = property(_get_suppress_alerts, _set_suppress_alerts)
+    ignore_alerts = property(_get_ignore_alerts, _set_ignore_alerts)
 
-    def _get_suppress_minutes(self):
-        return self.client.get_int(Config.SUPPRESS_MINUTES)
+    def _get_ignore_timeout(self):
+        return self.client.get_int(Config.IGNORE_TIMEOUT)
 
-    def _set_suppress_minutes(self, value):
-        self.client.set_int(Config.SUPPRESS_MINUTES, int(value))
+    def _set_ignore_timeout(self, value):
+        self.client.set_int(Config.IGNORE_TIMEOUT, int(value))
 
-    suppress_minutes = property(_get_suppress_minutes, _set_suppress_minutes)
+    ignore_timeout = property(_get_ignore_timeout, _set_ignore_timeout)
 
     def _get_filters(self):
+        print 'loading filers from gconf'
         names = self.client.get_list(Config.FILTER_NAMES, gconf.VALUE_STRING)
         patterns = self.client.get_list(Config.FILTER_PATTERNS,
                                         gconf.VALUE_STRING)
@@ -151,6 +156,7 @@ class LogMessage:
 class Filter:
 
     def __init__(self, name='', pattern='', alert=False):
+        print 'making new filter: %s' % self
         self.name = name
         self.pattern = pattern
         self.alert = alert
@@ -173,6 +179,7 @@ class FilterSet(list):
         self.move_filter(index, +1)
 
     def update(self, filter):
+        print self, filter
         self[self.index(filter)] = filter
 
 
@@ -187,13 +194,13 @@ class AlertQueue(list):
     def suppress_timeout_elapsed(self):
         seconds_per_minute = 60
         minutes = (time.time() - self.last_alert_time) / seconds_per_minute
-        return minutes >= self.config.suppress_minutes
+        return minutes >= self.config.ignore_timeout
 
     def should_raise_alert(self, filter):
         if not filter.alert or self.alert_displayed:
             return False
         else:
-            suppressed = self.config.suppress_alerts
+            suppressed = self.config.ignore_alerts
             return not (suppressed and not self.suppress_timeout_elapsed())
 
     def raise_alert(self, filter, message):
@@ -403,6 +410,7 @@ class PreferencesDialog(Dialog):
 
     def on_edit_button_clicked(self, *args):
         filter = self.config.filters[self.get_selected_filter_index()]
+        print 'passing filter %s to dialog' % filter
         dialog = FilterDialog(self, 'Edit Filter', filter)
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
@@ -516,8 +524,8 @@ class AlertDialog(Dialog):
         self.label1.set_markup('<span weight="bold" size="larger">'
                                '%s from %s</span>\n\n%s' %
                                (filter.name, message.hostname, message.text))
-        self.checkbutton1.set_active(self.config.suppress_alerts)
-        self.spinbutton1.set_value(self.config.suppress_minutes)
+        self.checkbutton1.set_active(self.config.ignore_alerts)
+        self.spinbutton1.set_value(self.config.ignore_timeout)
 
     def destroy(self):
         Dialog.destroy(self)
@@ -527,8 +535,8 @@ class AlertDialog(Dialog):
         self.destroy()
 
     def on_okbutton1_clicked(self, *args):
-        self.config.suppress_alerts = self.checkbutton1.get_active()
-        self.config.suppress_minutes = self.spinbutton1.get_value()
+        self.config.ignore_alerts = self.checkbutton1.get_active()
+        self.config.ignore_timeout = self.spinbutton1.get_value()
         self.destroy()
         
 
