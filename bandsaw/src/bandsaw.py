@@ -36,71 +36,79 @@ import gtk
 import gtk.glade
 
 
+def make_key(key):
+    return '/'.join((Config.BASE_KEY, key))
+
+
 class Config(object):
 
     BASE_KEY = '/apps/bandsaw'
 
-    FILTER_ALERTS = 'filter_alerts'
-    FILTER_NAMES = 'filter_names'
-    FILTER_PATTERNS = 'filter_patterns'
-    MESSAGES_KEPT = 'messages_kept'
-    NAMED_PIPE = 'named_pipe'
-    SUPPRESS_ALERTS = 'suppress_alerts'
-    SUPPRESS_MINUTES = 'suppress_minutes'
+    FILTER_ALERTS = '/'.join((BASE_KEY, 'filter_alerts'))
+    FILTER_NAMES = '/'.join((BASE_KEY, 'filter_names'))
+    FILTER_PATTERNS = '/'.join((BASE_KEY, 'filter_patterns'))
+    MESSAGES_KEPT = '/'.join((BASE_KEY, 'messages_kept'))
+    NAMED_PIPE = '/'.join((BASE_KEY, 'named_pipe'))
+    SUPPRESS_ALERTS = '/'.join((BASE_KEY, 'suppress_alerts'))
+    SUPPRESS_MINUTES = '/'.join((BASE_KEY, 'suppress_minutes'))
     
     def __init__(self, client):
         self.client = client
 
-    def make_key(self, key):
-        return '/'.join((Config.BASE_KEY, key))
-
     def _get_named_pipe(self):
-        return self.client.get_string(self.make_key(Config.NAMED_PIPE))
+        return self.client.get_string(Config.NAMED_PIPE)
 
     def _set_named_pipe(self, value):
         value = value.strip()
-        return self.client.set_string(self.make_key(Config.NAMED_PIPE), value)
+        return self.client.set_string(Config.NAMED_PIPE, value)
 
     named_pipe = property(_get_named_pipe, _set_named_pipe)
     
     def _get_messages_kept(self):
-        return self.client.get_int(self.make_key(Config.MESSAGES_KEPT))
+        return self.client.get_int(Config.MESSAGES_KEPT)
 
     def _set_messages_kept(self, value):
-        self.client.set_int(self.make_key(Config.MESSAGES_KEPT), value)
+        self.client.set_int(Config.MESSAGES_KEPT, int(value))
 
     messages_kept = property(_get_messages_kept, _set_messages_kept)
 
     def _get_suppress_alerts(self):
-        return self.client.get_bool(self.make_key(Config.SUPPRESS_ALERTS))
+        return self.client.get_bool(Config.SUPPRESS_ALERTS)
 
     def _set_suppress_alerts(self, value):
-        self.client.set_bool(self.make_key(Config.SUPPRESS_ALERTS), value)
+        self.client.set_bool(Config.SUPPRESS_ALERTS, value)
 
     suppress_alerts = property(_get_suppress_alerts, _set_suppress_alerts)
 
     def _get_suppress_minutes(self):
-        return self.client.get_int(self.make_key(Config.SUPPRESS_MINUTES))
+        return self.client.get_int(Config.SUPPRESS_MINUTES)
 
     def _set_suppress_minutes(self, value):
-        self.client.set_int(self.make_key(Config.SUPPRESS_MINUTES), int(value))
+        self.client.set_int(Config.SUPPRESS_MINUTES, int(value))
 
     suppress_minutes = property(_get_suppress_minutes, _set_suppress_minutes)
 
     def _get_filters(self):
-        names = self.client.get_list(
-            self.make_key(Config.FILTER_NAMES), gconf.VALUE_STRING)
-        patterns = self.client.get_list(
-            self.make_key(Config.FILTER_PATTERNS), gconf.VALUE_STRING)
-        alerts = self.client.get_list(
-            self.make_key(Config.FILTER_ALERTS), gconf.VALUE_BOOL)
+        names = self.client.get_list(Config.FILTER_NAMES, gconf.VALUE_STRING)
+        patterns = self.client.get_list(Config.FILTER_PATTERNS,
+                                        gconf.VALUE_STRING)
+        alerts = self.client.get_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL)
         filters = []
         for i in range(len(names)):
             filter = Filter(names[i], patterns[i], alerts[i])
             filters.append(filter)
         return filters
 
-    filters = property(_get_filters)
+    def _set_filters(self, value):
+        names = [filter.name for filter in value]
+        patterns = [filter.pattern for filter in value]
+        alerts = [filter.alert for filter in value]
+        self.client.set_list(Config.FILTER_NAMES, gconf.VALUE_STRING, names)
+        self.client.set_list(
+            Config.FILTER_PATTERNS, gconf.VALUE_STRING, patterns)
+        self.client.set_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL, alerts)
+
+    filters = property(_get_filters, _set_filters)
         
 
 class WidgetWrapper(object):
@@ -141,19 +149,80 @@ class Window(WidgetWrapper):
 class Dialog(Window):
 
     def run(self):
-        self.root_widget.run()
+        return self.root_widget.run()
+
+
+class ErrorDialog(Dialog):
+
+    def __init__(self, parent, primary, secondary):
+        Dialog.__init__(self, 'error_dialog')
+        self.label1.set_markup(self.get_markup(primary, secondary))
+
+    def get_markup(self, primary, secondary):
+        return '<span weight="bold" size="larger">%s</span>\n\n%s' % \
+               (primary, secondary)
 
 
 class Filter:
 
     def __init__(self, name, pattern, alert):
         self.name = name
-        self.pattern = re.compile(pattern)
+        self.pattern = pattern
         self.alert = alert
 
     def matches(self, text):
-        return self.pattern.search(text) is not None
+        return re.search(self.pattern, text) is not None
 
+
+class FilterSet(list):
+
+    pass
+
+
+class FilterDialog(Dialog):
+
+    def __init__(self, parent, title):
+        Dialog.__init__(self, 'filter_dialog')
+        self.root_widget.set_transient_for(parent.root_widget)
+        self.root_widget.set_title(title)
+        self.filter = None
+        self.setup_size_group()
+
+    def setup_size_group(self):
+        size_group = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        size_group.add_widget(self.name_label)
+        size_group.add_widget(self.pattern_label)
+
+    def _get_name(self):
+        return self.name_entry.get_text().strip()
+
+    name = property(_get_name)
+
+    def _get_pattern(self):
+        return self.pattern_entry.get_text().strip()
+
+    pattern = property(_get_pattern)
+
+    def _get_raise_alert(self):
+        return self.checkbutton1.get_active()
+
+    raise_alert = property(_get_raise_alert)
+
+    def user_input_ok(self):
+        return self.name and self.pattern
+
+    def on_filter_dialog_response(self, widget, event, *args):
+        if event != gtk.RESPONSE_OK:
+            return
+        if self.user_input_ok():
+            self.filter = Filter(self.name, self.pattern, self.raise_alert)
+        else:
+            self.root_widget.emit_stop_by_name('response')
+            dialog = ErrorDialog(self, 'Incomplete details',
+                                 'Please specify a name and a pattern.')
+            dialog.run()
+            dialog.destroy()
+        
 
 class PreferencesDialog(Dialog):
 
@@ -161,10 +230,29 @@ class PreferencesDialog(Dialog):
         Dialog.__init__(self, 'preferences_dialog')
         self.config = config
         self.setup_general()
+        self.setup_filters()
 
     def setup_general(self):
         self.named_pipe_entry.set_text(self.config.named_pipe)
         self.spinbutton1.set_value(self.config.messages_kept)
+
+    def setup_filter_treeview(self):
+        list_store = gtk.ListStore(gobject.TYPE_STRING)
+        self.treeview1.set_model(list_store)
+        renderer = gtk.CellRendererText()
+        NAME_COLUMN = 0
+        column = gtk.TreeViewColumn(None, renderer, text=NAME_COLUMN)
+        self.treeview1.append_column(column)
+        self.treeview1.set_headers_visible(gtk.FALSE)
+
+    def redraw_filters(self):
+        self.treeview1.get_model().clear()
+        for filter in self.config.filters:
+            self.treeview1.get_model().append((filter.name,))
+        
+    def setup_filters(self):
+        self.setup_filter_treeview()
+        self.redraw_filters()
 
     def on_named_pipe_entry_changed(self, *args):
         self.config.named_pipe = self.named_pipe_entry.get_text()
@@ -172,29 +260,59 @@ class PreferencesDialog(Dialog):
     def on_spinbutton1_changed(self, *args):
         self.config.messages_kept = self.spinbutton1.get_value()
 
+    def on_add_button_clicked(self, *args):
+        dialog = FilterDialog(self, 'Add Filter')
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            filters = self.config.filters
+            filters.append(dialog.filter)
+            self.config.filters = filters
+            self.redraw_filters()
+        dialog.destroy()
+
+    def on_edit_button_clicked(self, *args):
+        pass
+
+    def on_remove_button_clicked(self, *args):
+        list_store, iter = self.treeview1.get_selection().get_selected()
+        row_index = list_store.get_path(iter)[0]
+        filters = self.config.filters
+        filters.pop(row_index)
+        self.config.filters = filters
+        self.redraw_filters()
+    
+    def on_up_button_clicked(self, *args):
+        pass
+    
+    def on_down_button_clicked(self, *args):
+        pass
+
 
 class LogMessage:
 
+    regex = r'([^\s]+\s+[^\s]+\s+[^\s]+)\s+([^\s]+)\s+([^\s]+):\s(.*)'
+    pattern = re.compile(regex)
+    
     def __init__(self, line):
-        self._words = line.split(' ')
+        self.match = LogMessage.pattern.match(line)
 
     def _get_date(self):
-        return ' '.join(self._words[:3])
+        return self.match.groups()[0]
 
     date = property(_get_date)
     
     def _get_hostname(self):
-        return self._words[3]
+        return self.match.groups()[1]
 
     hostname = property(_get_hostname)
 
     def _get_process(self):
-        return self._words[4][:-1]
+        return self.match.groups()[2]
 
     process = property(_get_process)
 
     def _get_text(self):
-        return ' '.join(self._words[5:]).strip()
+        return self.match.groups()[3]
 
     text = property(_get_text)
 
