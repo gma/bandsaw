@@ -1,7 +1,27 @@
+#!/usr/bin/env python
+#
+# bandsaw.py - A log monitoring and alerting tool for GNOME.
+#
+# Copyright (C) 2004 Graham Ashton <ashtong@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Library General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
 # $Id$
 
 
-import ConfigParser
+
 import os
 import re
 import select
@@ -20,14 +40,13 @@ class Config:
 
     BASE_KEY = '/apps/bandsaw'
 
-    MESSAGES_KEPT = 'messages_kept'
-    SUPPRESS_ALERTS = 'suppress_alerts'
-    SUPPRESS_MINUTES = 'suppress_minutes'
-    NAMED_PIPE = 'named_pipe'
-
+    FILTER_ALERTS = 'filter_alerts'
     FILTER_NAMES = 'filter_names'
     FILTER_PATTERNS = 'filter_patterns'
-    FILTER_ALERTS = 'filter_alerts'
+    MESSAGES_KEPT = 'messages_kept'
+    NAMED_PIPE = 'named_pipe'
+    SUPPRESS_ALERTS = 'suppress_alerts'
+    SUPPRESS_MINUTES = 'suppress_minutes'
     
     def __init__(self, client):
         self.client = client
