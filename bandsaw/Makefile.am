@@ -14,7 +14,7 @@ pixmapsdir = $(datadir)/pixmaps
 pixmaps_DATA = pixmaps/bandsaw.png
 
 install-exec-hook:
-	sed -i -e "s|'bandsaw.glade'|'$(gladedir)/bandsaw.glade'|" \
+	sed -i -e "s|gladedir = .*|gladedir = '$(gladedir)'|" \
 		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
 	sed -i -e "s|../pixmaps|$(pixmapsdir)|" \
 		$(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
@@ -36,14 +36,17 @@ Desktop_in_files = $(srcdir)/data/bandsaw.desktop.in
 Desktop_DATA = $(Desktop_in_files:.desktop.in=.desktop)
 
 # Run unit tests via "make check"
-#TESTS_ENVIRONMENT = $(PYTHON)
-#TESTS = $(srcdir)/src/bandsaw_test.py
+TESTS_ENVIRONMENT = $(PYTHON)
+TESTS = $(srcdir)/src/bandsaw_test.py
 
 # Use makefiles in sub directories
 SUBDIRS = help
 
 # Scrollkeeper
 scrollkeeper_files = COPYING-DOCS xmldocs.make omf.make
+
+distuninstallcheck_listfiles = find . -type f -print | \
+	grep -v '^\./var/scrollkeeper'
 
 # Extra files to include in package
 EXTRA_DIST = \
