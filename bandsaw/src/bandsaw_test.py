@@ -48,6 +48,94 @@ class FilterTest(unittest.TestCase):
         """Check filter matches with a regex"""
         filter = bandsaw.Filter('Test', '^\w{3} apple', False)
         self.assert_(filter.matches('red apple'))
+
+
+class MockGConfModule:
+
+    def __init__(self, client):
+        self.client = client
+        
+    def client_get_default(self):
+        return self.client
+
+
+class Mock:
+
+    class MethodCall:
+
+        def __init__(self, rval):
+            self.rval = rval
+
+        def __call__(self, *args):
+            return self.rval
+
+    def __init__(self):
+        self.methods = []
+
+    def __getattr__(self, name):
+        method_name, return_value = self.methods.pop()
+        assert name == method_name, \
+               "expected call to '%s', not '%s'" % (method_name, name)
+        return Mock.MethodCall(return_value)
+
+    def register(self, method, value):
+        self.methods.insert(0, (method, value))
+
+    def verify(self):
+        assert len(self.methods) == 0
+        
+
+class GConfTest(unittest.TestCase):
+
+    def test_get_named_pipe(self):
+        """Check we can get the path to the named pipe"""
+        client = Mock()
+        client.register('get_string', '/var/log/bandsaw.fifo')
+        config = bandsaw.Config(client)
+        self.assertEqual(config.named_pipe, '/var/log/bandsaw.fifo')
+        client.verify()
+
+    def test_get_messages_kept(self):
+        """Check we can get the number of messages to keep"""
+        client = Mock()
+        client.register('get_int', 34)
+        config = bandsaw.Config(client)
+        self.assertEqual(config.messages_kept, 34)
+        client.verify()
+
+    def test_get_suppress_alerts(self):
+        """Check we can determine whether we should suppress alerts"""
+        client = Mock()
+        client.register('get_bool', False)
+        config = bandsaw.Config(client)
+        self.assertEqual(config.suppress_alerts, False)
+        client.verify()
+
+    def test_get_suppress_minutes(self):
+        """Check we can determine default minutes to suppress alerts"""
+        client = Mock()
+        client.register('get_int', 5)
+        config = bandsaw.Config(client)
+        self.assertEqual(config.suppress_minutes, 5)
+        client.verify()
+
+    def test_get_filters(self):
+        """Check we can load existing filters"""
+        client = Mock()
+        client.register('get_list', ['Name 1', 'Name 2'])
+        client.register('get_list', ['Pattern 1', 'Pattern 2'])
+        client.register('get_list', [True, False])
+        config = bandsaw.Config(client)
+        filter1, filter2 = config.filters
+        client.verify()
+
+        self.assertEqual(filter1.name, 'Name 1')
+        self.assert_(filter1.pattern.search('Pattern 1'))
+        self.assertEqual(filter1.alert, True)
+        
+        self.assertEqual(filter2.name, 'Name 2')
+        self.assert_(filter2.pattern.search('Pattern 2'))
+        self.assertEqual(filter2.alert, False)
         
 
 if __name__ == '__main__':

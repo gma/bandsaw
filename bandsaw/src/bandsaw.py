@@ -8,7 +8,9 @@ import select
 import time
 
 import pygtk; pygtk.require('2.0')
+import gconf
 import gnome
+import gnome.ui
 import gobject
 import gtk
 import gtk.glade
@@ -16,37 +18,57 @@ import gtk.glade
 
 class Config:
 
-    FILE = '../etc/bandsaw.conf'
-    FILTER_PREFIX = 'Filter '
-    GENERAL = 'General'
-    MAX_MESSAGES_KEPT = 'keep-messages'
-    MIN_ALERT_TIME = 'minimum-alert-time'
-    NAMED_PIPE = 'named-pipe'
-    PATTERN_ITEM = 'pattern'
-    ALERT_ITEM = 'alert'
+    BASE_KEY = '/apps/bandsaw'
 
-    def __init__(self):
-        self.parser = ConfigParser.SafeConfigParser()
-        self.parser.read(Config.FILE)
+    MESSAGES_KEPT = 'messages_kept'
+    SUPPRESS_ALERTS = 'suppress_alerts'
+    SUPPRESS_MINUTES = 'suppress_minutes'
+    NAMED_PIPE = 'named_pipe'
 
-    def get_max_messages_kept(self):
-        return self.parser.get(Config.GENERAL, Config.MAX_MESSAGES_KEPT)
+    FILTER_NAMES = 'filter_names'
+    FILTER_PATTERNS = 'filter_patterns'
+    FILTER_ALERTS = 'filter_alerts'
+    
+    def __init__(self, client):
+        self.client = client
 
-    def get_minimum_alert_time(self):
-        return self.parser.getboolean(Config.GENERAL, Config.MIN_ALERT_TIME)
+    def make_key(self, key):
+        return '/'.join((Config.BASE_KEY, key))
 
-    def get_named_pipe(self):
-        return self.parser.get(Config.GENERAL, Config.NAMED_PIPE)
+    def _get_named_pipe(self):
+        return self.client.get_string(self.make_key(Config.NAMED_PIPE))
 
-    def get_filters(self):
+    named_pipe = property(_get_named_pipe)
+    
+    def _get_messages_kept(self):
+        return self.client.get_int(self.make_key(Config.MESSAGES_KEPT))
+
+    messages_kept = property(_get_messages_kept)
+
+    def _get_suppress_alerts(self):
+        return self.client.get_bool(self.make_key(Config.SUPPRESS_ALERTS))
+
+    suppress_alerts = property(_get_suppress_alerts)
+
+    def _get_suppress_minutes(self):
+        return self.client.get_int(self.make_key(Config.SUPPRESS_MINUTES))
+
+    suppress_minutes = property(_get_suppress_minutes)
+
+    def _get_filters(self):
+        names = self.client.get_list(
+            self.make_key(Config.FILTER_NAMES), gconf.VALUE_STRING)
+        patterns = self.client.get_list(
+            self.make_key(Config.FILTER_PATTERNS), gconf.VALUE_STRING)
+        alerts = self.client.get_list(
+            self.make_key(Config.FILTER_ALERTS), gconf.VALUE_BOOL)
         filters = []
-        for section in self.parser.sections():
-            if section.startswith(Config.FILTER_PREFIX):
-                name = section.split(' ', 1)[1]
-                pattern = self.parser.get(section, Config.PATTERN_ITEM)
-                alert = self.parser.getboolean(section, Config.ALERT_ITEM)
-                filters.append(Filter(name, pattern, alert))
+        for i in range(len(names)):
+            filter = Filter(names[i], patterns[i], alerts[i])
+            filters.append(filter)
         return filters
+
+    filters = property(_get_filters)
         
 
 class WidgetWrapper(object):
@@ -206,7 +228,7 @@ class LogTreeView(gtk.TreeView):
             return False
         seconds_per_minute = 60
         minutes = (time.time() - self.last_alert_time) / seconds_per_minute
-        return minutes >= self.config.get_minimum_alert_time()
+        return minutes >= self.config.suppress_minutes
 
     def raise_alert(self, filter, message):
         self.last_alert_time = time.time()
@@ -215,7 +237,7 @@ class LogTreeView(gtk.TreeView):
         
     def process_line(self, line):
         message = LogMessage(line)
-        for filter in self.config.get_filters():
+        for filter in self.config.filters:
             if filter.matches(message.text):
                 self.add_message(message)
                 if self.should_raise_alert(filter, message):
@@ -265,8 +287,9 @@ class MainWindow(Window):
 
     def __init__(self, config):
         Window.__init__(self, 'app1')
+        self.config = config
         self.monitor_id = None
-        self.log_view = LogTreeView(config)
+        self.log_view = LogTreeView(self.config)
         self.log_view.setup()
         self.scrolledwindow1.add(self.log_view)
         self.log_view.show()
@@ -288,7 +311,7 @@ class MainWindow(Window):
                 return gtk.TRUE
 
     def monitor_syslog(self):
-        fifo_path = '/var/log/bandsaw.fifo'
+        fifo_path = self.config.named_pipe
         fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
         fifo = os.fdopen(fd)
         self.monitor_id = gtk.input_add(
@@ -299,8 +322,8 @@ class MainWindow(Window):
 
 
 def main():
-    gnome.init('Band Saw', '0.1')
-    config = Config()
+    gnome.program_init('Band Saw', '0.1')
+    config = Config(gconf.client_get_default())
     window = MainWindow(config)
     window.show()
     gtk.main()
