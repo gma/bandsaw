@@ -109,58 +109,44 @@ class Config(object):
         self.client.set_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL, alerts)
 
     filters = property(_get_filters, _set_filters)
+
+    def is_first_run(self):
+        return self.named_pipe is None
         
 
-class WidgetWrapper(object):
+class LogMessage:
 
-    def __init__(self, root_widget):
-        self._root_widget_name = root_widget
-        self._xml = gtk.glade.XML('bandsaw.glade', root_widget)
-        self.connect_signals(self)
-
-    def _get_root_widget(self):
-        return getattr(self, self._root_widget_name)
-
-    root_widget = property(_get_root_widget)
-
-    def __getattr__(self, name):
-        widget = self._xml.get_widget(name)
-        if widget is None:
-            raise AttributeError, name
-        return widget
+    regex = r'([^\s]+\s+[^\s]+\s+[^\s]+)\s+([^\s]+)\s+([^\s]+):\s(.*)'
+    pattern = re.compile(regex)
     
-    def connect_signals(self, obj):
-        for name in obj.__class__.__dict__.keys():
-            if hasattr(obj, name):
-                candidate_callback = getattr(obj, name)
-                if callable(candidate_callback):
-                    self._xml.signal_connect(name, candidate_callback)
+    def __init__(self, line):
+        self.match = LogMessage.pattern.match(line)
 
+    def _get_message_part(self, index):
+        try:
+            return self.match.groups()[index]
+        except AttributeError:
+            return ''
 
-class Window(WidgetWrapper):
+    def _get_date(self):
+        return self._get_message_part(0)
 
-    def show(self):
-        self.root_widget.show()
+    date = property(_get_date)
+    
+    def _get_hostname(self):
+        return self._get_message_part(1)
 
-    def destroy(self):
-        self.root_widget.destroy()
+    hostname = property(_get_hostname)
 
+    def _get_process(self):
+        return self._get_message_part(2)
 
-class Dialog(Window):
+    process = property(_get_process)
 
-    def run(self):
-        return self.root_widget.run()
+    def _get_text(self):
+        return self._get_message_part(3)
 
-
-class ErrorDialog(Dialog):
-
-    def __init__(self, parent, primary, secondary):
-        Dialog.__init__(self, 'error_dialog')
-        self.label1.set_markup(self.get_markup(primary, secondary))
-
-    def get_markup(self, primary, secondary):
-        return '<span weight="bold" size="larger">%s</span>\n\n%s' % \
-               (primary, secondary)
+    text = property(_get_text)
 
 
 class Filter:
@@ -191,62 +177,101 @@ class FilterSet(list):
         self[self.index(filter)] = filter
 
 
-class FilterDialog(Dialog):
+class WidgetWrapper(object):
 
-    def __init__(self, parent, title, filter=Filter()):
-        Dialog.__init__(self, 'filter_dialog')
-        self.root_widget.set_transient_for(parent.root_widget)
-        self.root_widget.set_title(title)
-        self.filter = filter
-        self.setup_widgets()
+    def __init__(self, root_widget):
+        self._root_widget_name = root_widget
+        self._xml = gtk.glade.XML('bandsaw.glade', root_widget)
+        self.connect_signals(self)
 
-    def setup_widgets(self):
-        self.setup_size_group()
-        self.name_entry.set_text(self.filter.name)
-        self.pattern_entry.set_text(self.filter.pattern)
-        self.checkbutton1.set_active(self.filter.alert)
+    def _get_root_widget(self):
+        return getattr(self, self._root_widget_name)
 
-    def setup_size_group(self):
-        size_group = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        size_group.add_widget(self.name_label)
-        size_group.add_widget(self.pattern_label)
+    root_widget = property(_get_root_widget)
 
-    def _get_name(self):
-        return self.name_entry.get_text().strip()
+    def __getattr__(self, name):
+        widget = self._xml.get_widget(name)
+        if widget is None:
+            raise AttributeError, name
+        return widget
+    
+    def connect_signals(self, obj):
+        for name in obj.__class__.__dict__.keys():
+            if hasattr(obj, name):
+                candidate_callback = getattr(obj, name)
+                if callable(candidate_callback):
+                    self._xml.signal_connect(name, candidate_callback)
 
-    name = property(_get_name)
 
-    def _get_pattern(self):
-        return self.pattern_entry.get_text().strip()
+class Window(WidgetWrapper):
 
-    pattern = property(_get_pattern)
+    def show(self):
+        self.root_widget.show_all()
 
-    def _get_raise_alert(self):
-        return self.checkbutton1.get_active()
+    def destroy(self):
+        self.root_widget.destroy()
 
-    raise_alert = property(_get_raise_alert)
 
-    def user_input_ok(self):
-        return self.name and self.pattern
+class Dialog(Window):
 
-    def on_filter_dialog_response(self, widget, event, *args):
-        if event != gtk.RESPONSE_OK:
-            return
-        if self.name and self.pattern:
-            self.filter.name = self.name
-            self.filter.pattern = self.pattern
-            self.filter.alert = self.raise_alert
+    def run(self):
+        return self.root_widget.run()
+
+
+class WelcomeDruid(Window):
+
+    def __init__(self, config):
+        Window.__init__(self, 'druid_window')
+        self.config = config
+        self.set_defaults()
+
+    def set_defaults(self):
+        try:
+            filename = os.path.join(os.environ['HOME'], '.bandsaw.fifo')
+            self.filename_entry.set_text(filename)
+        except KeyError:
+            pass
+
+    def on_druidpage_pipe_next(self, *args):
+        filename = self.filename_entry.get_text()
+        if len(filename) > 0:
+            self.config.named_pipe = filename
         else:
-            if not self.name:
-                message = 'Filter has no name'
-            else:
-                message = 'Filter has no pattern'
-            self.root_widget.emit_stop_by_name('response')
-            dialog = ErrorDialog(self, message,
-                                 'You must specify a name and a pattern.')
+            dialog = ErrorDialog('Please specify a filename')
             dialog.run()
             dialog.destroy()
+            return gtk.TRUE
+
+    def on_druidpagefinish1_finish(self, *args):
+        self.destroy()
+        window = MainWindow(self.config)
+        window.show()
+
+    def on_druidpage_cancel(self, *args):
+        gtk.mainquit()
+
+    def on_druid_window_delete_event(self, *args):
+        gtk.mainquit()
         
+
+class AboutDialog(Dialog):
+    
+    def __init__(self):
+        Dialog.__init__(self, 'about_dialog')
+        
+
+class ErrorDialog(Dialog):
+
+    def __init__(self, primary, secondary=''):
+        Dialog.__init__(self, 'error_dialog')
+        self.label1.set_markup(self.get_markup(primary, secondary))
+
+    def get_markup(self, primary, secondary):
+        markup = '<span weight="bold" size="larger">%s</span>' % primary
+        if secondary:
+            markup += '\n\n%s' % secondary
+        return markup
+
 
 class PreferencesDialog(Dialog):
 
@@ -369,40 +394,61 @@ class PreferencesDialog(Dialog):
             self.on_edit_button_clicked()
 
 
-class LogMessage:
+class FilterDialog(Dialog):
 
-    regex = r'([^\s]+\s+[^\s]+\s+[^\s]+)\s+([^\s]+)\s+([^\s]+):\s(.*)'
-    pattern = re.compile(regex)
-    
-    def __init__(self, line):
-        self.match = LogMessage.pattern.match(line)
+    def __init__(self, parent, title, filter=Filter()):
+        Dialog.__init__(self, 'filter_dialog')
+        self.root_widget.set_transient_for(parent.root_widget)
+        self.root_widget.set_title(title)
+        self.filter = filter
+        self.setup_widgets()
 
-    def _get_message_part(self, index):
-        try:
-            return self.match.groups()[index]
-        except AttributeError:
-            return ''
+    def setup_widgets(self):
+        self.setup_size_group()
+        self.name_entry.set_text(self.filter.name)
+        self.pattern_entry.set_text(self.filter.pattern)
+        self.checkbutton1.set_active(self.filter.alert)
 
-    def _get_date(self):
-        return self._get_message_part(0)
+    def setup_size_group(self):
+        size_group = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        size_group.add_widget(self.name_label)
+        size_group.add_widget(self.pattern_label)
 
-    date = property(_get_date)
-    
-    def _get_hostname(self):
-        return self._get_message_part(1)
+    def _get_name(self):
+        return self.name_entry.get_text().strip()
 
-    hostname = property(_get_hostname)
+    name = property(_get_name)
 
-    def _get_process(self):
-        return self._get_message_part(2)
+    def _get_pattern(self):
+        return self.pattern_entry.get_text().strip()
 
-    process = property(_get_process)
+    pattern = property(_get_pattern)
 
-    def _get_text(self):
-        return self._get_message_part(3)
+    def _get_raise_alert(self):
+        return self.checkbutton1.get_active()
 
-    text = property(_get_text)
+    raise_alert = property(_get_raise_alert)
 
+    def user_input_ok(self):
+        return self.name and self.pattern
+
+    def on_filter_dialog_response(self, widget, event, *args):
+        if event != gtk.RESPONSE_OK:
+            return
+        if self.name and self.pattern:
+            self.filter.name = self.name
+            self.filter.pattern = self.pattern
+            self.filter.alert = self.raise_alert
+        else:
+            if not self.name:
+                message = 'Filter has no name'
+            else:
+                message = 'Filter has no pattern'
+            self.root_widget.emit_stop_by_name('response')
+            dialog = ErrorDialog(message, 'Please specify a name and a pattern.')
+            dialog.run()
+            dialog.destroy()
+        
 
 class AlertDialog(Dialog):
 
@@ -551,12 +597,6 @@ class Menu:
         dialog.run()
 
 
-class AboutDialog(Dialog):
-    
-    def __init__(self):
-        Dialog.__init__(self, 'about_dialog')
-        
-
 class MainWindow(Window):
 
     def __init__(self, config):
@@ -598,7 +638,10 @@ class MainWindow(Window):
 def main():
     gnome.program_init('Band Saw', '0.1')
     config = Config(gconf.client_get_default())
-    window = MainWindow(config)
+    if config.is_first_run():
+        window = WelcomeDruid(config)
+    else:
+        window = MainWindow(config)
     window.show()
     gtk.main()
 
