@@ -1,14 +1,18 @@
 TODO
 ----
 
-  - prevent second alert from opening when 2 queued up and second ignored.
+- Prevent second alert from opening when 2 queued up and second ignored.
 
-  - ensure that spin button changes affect GConf when value is typed.
+- Redo filter prefs screenshot in help.
 
-  - only modify General config params when moving out of widget.
+- Ensure that spin button changes affect GConf when value is typed.
 
-  - fix auto scrolling performance issues.
+- Only modify General config params when moving out of widget.
 
-  - listen for notification changes from GConf.
+- Make sure named pipe can be changed and is checked for IOErrors.
+
+- Fix auto scrolling performance issues.
+
+- Listen for notification changes from GConf.
 
 $Id$

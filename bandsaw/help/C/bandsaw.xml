@@ -43,7 +43,7 @@
     not specified, the publisher/author is the same for all versions of the 
     document.  -->
     <publisher> 
-      <publishername> GNOME Documentation Project </publishername> 
+      <publishername>Graham Ashton</publishername> 
     </publisher> 
 
     &legal;
@@ -152,10 +152,10 @@
     <title>Introduction</title> 
     <para>
 
-      &app; is designed to help you monitor the system log files for
-      messages that interest you, alerting you when interesting events
-      occur. You can define filters to control which messages are
-      displayed on screen, and which ones display alerts.
+      &app; helps you monitor the system log files for messages that
+      interest you, alerting you when certain messages occur. You can
+      define filters to control which messages are displayed on
+      screen, and which ones display alerts.
 
     </para>
     <para>
@@ -164,8 +164,7 @@
       in all Linux distributions and UNIX variants). Syslog can be
       configured to forward messages to other computers; by <link
       linkend="bandsaw-config-syslog">configuring syslog</link>
-      appropriately you can monitor multiple computers from a single
-      instance of &app;.
+      appropriately &app; can monitor several computers at once.
 
     </para>
     
@@ -191,8 +190,8 @@
 	create a named pipe (otherwise known as a FIFO) for it to
 	monitor. The default path is
 	<filename>~/.bandsaw.fifo</filename>, but you may change it to
-	anything you wish. To make the named pipe, type the following
-	command at the command line, then press <keycap>Return</keycap>:
+	anything you wish. Type the following at the command line
+	and press <keycap>Return</keycap>:
 
       </para>
 
@@ -202,13 +201,12 @@
 
       <para>
 
-	Once you have made the FIFO you will need to configure your
-	syslog server accordingly. The configuration commands vary
-	between different servers (and you should refer to your
-	server's documentation for full details), but here is an
-	example for <application>sysklogd</application>. It specifies
-	that all messages of priority notice and higher should be
-	written to &app;'s FIFO.
+	Now you need to configure your syslog server accordingly. The
+	configuration commands vary between different servers (refer
+	to your server's documentation for full details), but here is
+	an example for <application>sysklogd</application>. It
+	specifies that all messages of priority notice and higher
+	should be written to &app;'s FIFO.
 
       </para>
 
@@ -218,8 +216,10 @@
 
       <para>
 	
-	Much more complicated configurations are possible, and it can
-	pay to become familiar with the server's configuration file.
+	Append the configuration to the
+	<filename>syslog.conf</filename> file and restart the syslog
+	server. More flexible configurations are possible; it can pay
+	to become familiar with the format of the configuration file.
 
       </para>
 
@@ -240,7 +240,7 @@
 	    <para>Choose 
 	      <menuchoice>
     		<guisubmenu>System Tools</guisubmenu>
-    		<guimenuitem>System Log Monitor</guimenuitem>
+    		<guimenuitem>Band Saw Log Monitor</guimenuitem>
 	      </menuchoice>.
 	    </para>
 	  </listitem>
@@ -267,10 +267,10 @@
 
 	The first time you start <application>&app;</application> you
 	will be asked to specify the location to the named pipe that
-	you have configured syslog to write to (see <xref
-	linkend="bandsaw-config-syslog"/>). You may either accept the
-	default (<filename>~/.bandsaw.fifo</filename>) or specify a
-	different path entirely.
+	syslog writes to (see <xref
+	linkend="bandsaw-config-syslog"/>). You may accept the default
+	(<filename>~/.bandsaw.fifo</filename>) or specify another
+	path.
 
       </para>
 
@@ -307,13 +307,14 @@
       <!-- for example, the items on the menubar and on the toolbar. This section is optional. -->
 
       <para>
-	The main area of the &app; window is used to display all the
-	log messages that match any of the filters that you
-	define. New messages are added to the bottom of the view as
-	they arrive from syslog. If the <link
-	linkend="bandsaw-prefs-general">maximum number of
-	messages</link> is exceeded then the old messages will be
-	automatically removed from the top of the view.
+	The main area of the &app; window is called the
+	<emphasis>message view</emphasis>. It displays the messages
+	that match the filters you define. New messages are added to
+	the bottom of the message view as they arrive from syslog. If
+	the <link linkend="bandsaw-prefs-general">maximum number of
+	messages</link> is reached the oldest messages will be
+	automatically removed from the top of the view as new ones are
+	added to the bottom.
       </para>
     </sect2>
   </sect1>
@@ -345,10 +346,9 @@
 
     <para>
 
-      By default all messages will just be shown in the main window,
-      but you may control the behaviour by <link
-      linkend="bandsaw-prefs-filters">configuring your own
-      filters</link>.
+      The default filter will cause all messages to be shown in the
+      message view. You may control the behaviour by <link
+      linkend="bandsaw-prefs-filters">configuring</link> new filters.
 
     </para>
 
@@ -372,8 +372,8 @@
 	</listitem>
 	<listitem>
 	  <para>
-	    You may also remove individual messages by selecting them
-	    with the mouse or cursor keys and choosing
+	    To remove individual messages select them with the mouse
+	    or cursor keys and choose
 	    <menuchoice>
 	      <shortcut>
 		<keycap>Delete</keycap>
@@ -424,7 +424,8 @@
 
       <para>
 	When an incoming message matches a filter that has been
-	configured to raise alerts &app; will display an alert dialog.
+	configured to raise an alert &app; will display an alert
+	dialog.
       </para>
 
       <figure id="alert-fig"> 
@@ -485,9 +486,7 @@
       <para>
 	The dialog also provides the option to <guilabel>Ignore
 	alerts</guilabel> for a configurable number of minutes. This
-	feature allows you to resolve problems uninterrupted if you
-	are unfortunate enough to be receiving a continuous stream of
-	log messages!
+	feature allows you to work freely despite heavy log traffic.
       </para>
     </sect2> 
   </sect1>
@@ -495,13 +494,15 @@
   <!-- Use this section to describe how to customize the application. -->
   <sect1 id="bandsaw-prefs"> 
     <title>Preferences</title> 
-    <para>To configure &app;, choose 
+    <para>
+      To configure &app;, choose 
       <menuchoice> 
 	<guimenu>Edit</guimenu> 
 	<guimenuitem>Preferences</guimenuitem> 
-      </menuchoice>. The 
-      <guilabel>Preferences</guilabel> dialog contains the following tabbed
-      sections:</para> 
+      </menuchoice>.
+      The <guilabel>Preferences</guilabel> dialog contains the
+      following tabbed sections:
+    </para> 
     <itemizedlist> 
       <listitem>
 	<para> 
@@ -565,7 +566,57 @@
     <!-- ============= Customization Subsection ===================== -->
     <!-- Another tabbed section on the Preferences dialog. -->
     <sect2 id="bandsaw-prefs-filters">
-      <title>Filters</title> 
+      <title>Filters</title>
+
+      <para>
+	Each filter defines:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <emphasis>A name</emphasis> &mdash; used to identify the
+	    filter in the alert and <guilabel>Preferences</guilabel>
+	    dialogs.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    <emphasis>A pattern</emphasis> &mdash; a
+	    <ulink url="http://www.regular-expressions.info/"
+	    type="http">regular expression</ulink>, used to
+	    determine whether a message matches the filter.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    <emphasis>Whether or not it should raise alerts</emphasis>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	&app; processes incoming messages by comparing them to the
+	filters that you define, in the order that they appear in the
+	<guilabel>Preferences</guilabel> dialog. If a message matches
+	a filter no further processing will be carried out for that
+	message.
+      </para>
+
+      <tip>
+	<para>
+	  Filters that raise alerts should come
+	  <emphasis>before</emphasis> filters that don't.
+	</para>
+      </tip>
+
+      <caution>
+	<para>
+	  If you remove all your filters then &app; will never display
+	  any log messages.
+	</para>
+      </caution>
+
       <figure id="prefs-filters-fig"> 
 	<title>Filter Preferences</title> 
 	<screenshot> 
@@ -583,173 +634,143 @@
 	  </mediaobject>
 	</screenshot>
       </figure>
-<!--       <variablelist>  -->
-<!-- 	<varlistentry>  -->
-<!-- 	  <term>  -->
-<!-- 	    <guilabel>Named pipe</guilabel> -->
-<!-- 	  </term>  -->
 
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    To create a new filter click the
+	    <guibutton>Add</guibutton> button and complete the
+	    <guilabel>Add Filter</guilabel> dialog (see <xref
+	    linkend="bandsaw-prefs-filter-add-edit"/>).
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    To edit an existing filter select it in the list and click
+	    the <guibutton>Edit</guibutton> button. Modify the fields
+	    in the <guilabel>Edit Filter</guilabel> dialog (see <xref
+	    linkend="bandsaw-prefs-filter-add-edit"/>). You may also
+	    display the <guilabel>Edit Filter</guilabel> dialog by
+	    double clicking on the name of a filter.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    To remove a filter select it in and click the
+	    <guibutton>Remove</guibutton> button.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    To change the order of the filters select them and click
+	    the <guibutton>Up</guibutton> and
+	    <guibutton>Down</guibutton> buttons.
+	  </para>
+	</listitem>
+      </itemizedlist>
 
+      <sect3 id="bandsaw-prefs-filter-add-edit"> 
+	<title>Adding and Editing Filters</title> 
 
-      <para>You can set the following viewer preferences: 
-	<itemizedlist> 
-	  <listitem> 
-	    <para> 
-	      <xref linkend="myapp-viewer-prefs-image-window"/></para> 
-	  </listitem> 
-	  <listitem> 
-	    <para> 
-	      <xref linkend="myapp-viewer-prefs-full-screen"/></para> 
-	  </listitem> 
-	</itemizedlist>
-      </para> 
-      <sect3 id="myapp-viewer-prefs-image-window"> 
-	<title>Image Windows</title> 
-	<para>The 
-	  <guilabel>Image Windows</guilabel> group contains the preferences
-	  that you can set to view images in image windows.</para> 
-	<variablelist> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Use scrollbars</guilabel> </term> 
-	    <listitem> 
-	      <para>Use this drop-down list box to specify when to use
-		scrollbars to scroll through an image. Select one of
-		the following options:</para> 
-	      <itemizedlist> 
-		<listitem> 
-		  <para> 
-		    <guilabel>Never</guilabel> </para> 
-		  <para>This option never displays scrollbars. You can use the
-		    arrow keys on the keyboard or the mouse to scroll
-		    through the image. </para>  
-		</listitem> 
-		<listitem> 
-		  <para> 
-		    <guilabel>Only if image does not fit</guilabel> </para> 
-		  <para>This option displays scrollbars when the image is
-		    larger than the image window.</para> 
-		</listitem> 
-	      </itemizedlist> 
-	      <para>Default: 
-		<guilabel>Never</guilabel>.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Pick window size and zoom factor
-		automatically</guilabel> </term> 
-	    <listitem> 
-	      <para>Select this option to resize the image window to fit the
-		image or to resize the image to fit the image
-		window. If the image is small, 
-		&app; resizes the image window to fit the image. If
-		the image is large, &app; resizes the image to fit
-		the image window. </para> 
-	      <para>Default: unselected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Open images in a new window</guilabel> </term> 
-	    <listitem> 
-	      <para>Select this option to open a new
-		&app; window each time you open an image. If you do
-		not select this option, &app; replaces the existing
-		image with the new image when you open an image. </para> 
-	      <para>Default: unselected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	</variablelist> 
-      </sect3> 
-      <sect3 id="myapp-viewer-prefs-full-screen"> 
-	<title>Full Screen</title> 
-	<para>The 
-	  <guilabel>Full Screen</guilabel> group contains the preferences that
-	  you can set to view images in full screen mode.</para> 
-	<variablelist> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Use scrollbars</guilabel> </term> 
-	    <listitem> 
-	      <para>Use this drop-down list box to specify when to use
-		scrollbars to scroll through an image. Select one of the following
-		options:</para> 
-	      <itemizedlist> 
-		<listitem> 
-		  <para> 
-		    <guilabel>Never</guilabel> </para> 
-		  <para>This option never displays scrollbars. You can use the
-		    arrow keys on the keyboard or the mouse to scroll
-		    through the image. </para>  
-		</listitem> 
-		<listitem> 
-		  <para> 
-		    <guilabel>Only if image does not fit</guilabel> </para> 
-		  <para>This option displays scrollbars when the image is
-		    larger than the full screen. </para> 
-		</listitem> 
-	      </itemizedlist> 
-	      <para>Default: 
-		<guilabel>Never</guilabel>.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Use 1:1 zoom factor</guilabel> </term> 
-	    <listitem> 
-	      <para>Select this option to use the 1:1 zoom factor when you open
-		an image. The 1:1 zoom factor displays the image at
-		its actual size. </para>  
-	      <para>Default: selected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Use same zoom factor as image window</guilabel> </term>
-	    
-	    <listitem> 
-	      <para>Select this option to use the same zoom factor that the
-		application uses to display the image in an image
-		window. </para>  
-	      <para>Default: unselected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Fit all images to screen</guilabel> </term> 
-	    <listitem> 
-	      <para>Select this option to resize images to fill the full screen
-		when you open the images in full screen mode. </para> 
-	      <para>Default: unselected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Fit standard-sized images to screen</guilabel> </term> 
-	    <listitem> 
-	      <para>Select this option to automatically resize images
-		that are the same size as standard screens so that the
-		images fill the full screen when you open them in full
-		screen mode. If you select this option, &app; ignores
-		the settings for the previous three options when you
-		open an image that is the same size as a standard
-		screen.  Examples of standard screen sizes are 640 x
-		480 pixels, 1024 x 768 pixels, and so on. </para>
-	      <para>Default: unselected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	  <varlistentry> 
-	    <term> 
-	      <guilabel>Put a bevel around the edge of the screen</guilabel>
-	    </term> 
-	    <listitem> 
-	      <para>Select this option to display a 3D beveled border around
-		the full screen view of an image. </para> 
-	      <para>Default: unselected.</para> 
-	    </listitem> 
-	  </varlistentry> 
-	</variablelist> 
+	<para>
+	  The <guilabel>Add Filter</guilabel> and <guilabel>Edit
+	  Filter</guilabel> dialogs contain the same settings, and
+	  differ only in name.
+	</para>
+
+	<figure id="prefs-filter-add-fig"> 
+	  <title>Add Filter dialog</title> 
+	  <screenshot> 
+	    <mediaobject> 
+	      <imageobject>
+		<imagedata fileref="figures/prefs-filter-add.png" 
+		  format="PNG"/> 
+	      </imageobject>
+	      <textobject> 
+		<phrase>
+		  
+		  Shows the Add Filter Dialog, prompting for filter
+		  name, pattern and whether the filter should raise an
+		  alert.
+
+		</phrase>
+	      </textobject>
+	    </mediaobject>
+	  </screenshot>
+	</figure>
+	
+	<variablelist>
+	  <varlistentry>
+	    <term><guilabel>Name</guilabel></term>
+	    <listitem>
+	      <para>
+		The name identifies the filter in the alert and
+		<guilabel>Preferences</guilabel> dialogs. It is
+		compulsory.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><guilabel>Pattern</guilabel></term>
+	    <listitem>
+	      <para>
+		The pattern defines the filter. It is a Perl 5
+		compatible regular expression used to test each log
+		message. You do not need to understand regular
+		expressions in order to use &app;; a simple text string
+		is a valid regular expression.
+	      </para>
+	      <para>
+		When writing regular expressions for &app; note that
+		they are case sensitive. Examples of suitable regular
+		expressions include:
+	      </para>
+	      <itemizedlist>
+		<listitem>
+		  <para>
+		    <replaceable>Error</replaceable> &mdash; matches
+		    the word "Error", occurring anywhere in the
+		    message.
+		  </para>
+		</listitem>
+		<listitem>
+		  <para>
+		    <replaceable>[5-9]\d+\.\dM$</replaceable> &mdash;
+		    matches two or more digits (the first of which
+		    must be between 5 and 9 inclusive), followed by a
+		    full stop, a single digit and the letter M,
+		    occurring at the end of the message.
+		  </para>
+		</listitem>
+	      </itemizedlist>
+	      <para>
+		More information on writing regular expressions is
+		  <ulink url="http://www.regular-expressions.info/"
+		  type="http">available online</ulink>.
+	      </para>
+	      <tip>
+		<para>
+		  If you need to create a filter that matches all
+		  messages set the pattern to
+		  <replaceable>.</replaceable> (a single full
+		  stop). This is the same pattern as the default
+		  filter (Everything).
+		</para>
+	      </tip>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><guilabel>Raise alerts</guilabel></term>
+	    <listitem>
+	      <para>
+		Select <guilabel>Raise alerts</guilabel> if you would
+		like messages that match the filter to be displayed
+		immediately in an alert dialog. Such messages will
+		also be displayed in the message view.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
       </sect3> 
     </sect2> 
   </sect1>
@@ -770,9 +791,9 @@
     <para>
       &app; was written by Graham Ashton
       (<email>ashtong@users.sourceforge.net</email>). To find more
-      information about &app;, please visit the <ulink
-      url="http://bandsaw.sourceforge.net/" type="http">Band Saw Web
-      page</ulink>.
+      information about &app;, please visit the &app; <ulink
+      url="http://bandsaw.sourceforge.net/" type="http">web
+      site</ulink>.
     </para>
 
     <!--
