@@ -9,7 +9,7 @@
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>bool</list_type>
-      <default>[]</default>
+      <default>[False]</default>
       <locale name="C">
          <short>Whether the filters raise alerts</short>
       </locale>
@@ -21,7 +21,7 @@
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>string</list_type>
-      <default>[]</default>
+      <default>[Everything]</default>
       <locale name="C">
          <short>The names of the filters</short>
       </locale>
@@ -33,7 +33,7 @@
       <owner>bandsaw</owner>
       <type>list</type>
       <list_type>string</list_type>
-      <default>[]</default>
+      <default>[.]</default>
       <locale name="C">
          <short>The regular expressions that define the filters</short>
       </locale>
