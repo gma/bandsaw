@@ -1,7 +1,7 @@
 AC_INIT(src/bandsaw.py)
 
 dnl AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(bandsaw, 0.1.1)
+AM_INIT_AUTOMAKE(bandsaw, 0.2.0)
 
 AM_MAINTAINER_MODE
 
