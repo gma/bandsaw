@@ -27,7 +27,7 @@ import select
 import sys
 import time
 
-import pygtk; pygtk.require('2.0')
+import pygtk; pygtk.require("2.0")
 import gconf
 import gnome
 import gnome.ui
@@ -36,27 +36,29 @@ import gtk
 import gtk.gdk
 import gtk.glade
 
+import bandsawconfig
 
-__VERSION__ = '@VERSION@'
 
-TESTING = 'TESTING'
+__VERSION__ = bandsawconfig.VERSION
+
+TESTING = "TESTING"
 
 
 class Config(object):
 
-    BASE_KEY = '/apps/bandsaw'
+    BASE_KEY = "/apps/bandsaw"
 
-    MESSAGES_KEPT = '/'.join((BASE_KEY, 'messages_kept'))
-    NAMED_PIPE = '/'.join((BASE_KEY, 'named_pipe'))
+    MESSAGES_KEPT = "/".join((BASE_KEY, "messages_kept"))
+    NAMED_PIPE = "/".join((BASE_KEY, "named_pipe"))
 
-    ALERTS_KEY = '/'.join((BASE_KEY, 'alerts'))
-    IGNORE_ALERTS = '/'.join((ALERTS_KEY, 'ignore'))
-    IGNORE_TIMEOUT = '/'.join((ALERTS_KEY, 'ignore_timeout'))
+    ALERTS_KEY = "/".join((BASE_KEY, "alerts"))
+    IGNORE_ALERTS = "/".join((ALERTS_KEY, "ignore"))
+    IGNORE_TIMEOUT = "/".join((ALERTS_KEY, "ignore_timeout"))
     
-    FILTERS_KEY = '/'.join((BASE_KEY, 'filters'))
-    FILTER_ALERTS = '/'.join((FILTERS_KEY, 'alerts'))
-    FILTER_NAMES = '/'.join((FILTERS_KEY, 'names'))
-    FILTER_PATTERNS = '/'.join((FILTERS_KEY, 'patterns'))
+    FILTERS_KEY = "/".join((BASE_KEY, "filters"))
+    FILTER_ALERTS = "/".join((FILTERS_KEY, "alerts"))
+    FILTER_NAMES = "/".join((FILTERS_KEY, "names"))
+    FILTER_PATTERNS = "/".join((FILTERS_KEY, "patterns"))
 
     def __init__(self, client):
         self.client = client
@@ -141,9 +143,9 @@ class Config(object):
         return self.named_pipe is None
         
 
-class LogMessage:
+class LogMessage(object):
 
-    regex = r'([^\s]+\s+[^\s]+\s+[^\s]+)\s+([^\s]+)\s+([^\s]+):\s(.*)'
+    regex = r"([^\s]+\s+[^\s]+\s+[^\s]+)\s+([^\s]+)\s+([^\s]+):\s(.*)"
     pattern = re.compile(regex)
     
     def __init__(self, line):
@@ -153,7 +155,7 @@ class LogMessage:
         try:
             return self.match.groups()[index]
         except AttributeError:
-            return ''
+            return ""
 
     def _get_date(self):
         return self._get_message_part(0)
@@ -176,9 +178,9 @@ class LogMessage:
     text = property(_get_text)
 
 
-class Filter:
+class Filter(object):
 
-    def __init__(self, name='', pattern='', alert=False):
+    def __init__(self, name="", pattern="", alert=False):
         self.name = name
         self.pattern = pattern
         self.alert = alert
@@ -201,7 +203,7 @@ class FilterSet(list):
         self.move_filter(index, +1)
 
     def update(self, filter):
-        self[self.index(filter)] = filter
+        self[self.index(filter)] = filter  # TODO: find out why necessary
 
 
 class AlertQueue(list):
@@ -254,10 +256,9 @@ class WidgetWrapper(object):
 
     def __init__(self, root_widget, wrapper=None):
         self._root_widget_name = root_widget
-        gladedir = os.path.dirname(sys.argv[0])
         if wrapper is None:
-            self._xml = gtk.glade.XML(os.path.join(gladedir, 'bandsaw.glade'),
-                                      root_widget)
+            glade_file = os.path.join(bandsawconfig.GLADEDIR, "bandsaw.glade")
+            self._xml = gtk.glade.XML(glade_file, root_widget)
         else:
             self._xml = wrapper._xml
         self.connect_signals(self)
@@ -282,7 +283,7 @@ class WidgetWrapper(object):
 
 
 def set_icon(window):
-    icon_file = os.path.join('@pixmapsdir@', '@iconfile@')
+    icon_file = os.path.join(bandsawconfig.PIXMAPSDIR, bandsawconfig.ICONFILE)
     if os.path.exists(icon_file):
         pixbuf = gtk.gdk.pixbuf_new_from_file(icon_file)
         window.set_icon(pixbuf)
@@ -317,13 +318,13 @@ class Dialog(Window):
 class WelcomeDruid(Window):
 
     def __init__(self, config):
-        Window.__init__(self, 'druid_window')
+        Window.__init__(self, "druid_window")
         self.config = config
         self.set_defaults()
 
     def set_defaults(self):
         try:
-            filename = os.path.join(os.environ['HOME'], '.bandsaw.fifo')
+            filename = os.path.join(os.environ["HOME"], ".bandsaw.fifo")
             self.filename_entry.set_text(filename)
         except KeyError:
             pass
@@ -331,19 +332,19 @@ class WelcomeDruid(Window):
     def on_druidpage_pipe_next(self, *args):
         filename = self.filename_entry.get_text()
         if len(filename) == 0:
-            dialog = ErrorDialog('Please specify a filename')
+            dialog = ErrorDialog("Please specify a filename")
             dialog.run()
             dialog.destroy()
-            return gtk.TRUE
+            return True
         elif not os.path.exists(filename):
             dialog = ErrorDialog(
-                'File not found',
+                "File not found",
                 "'%s' could not be found. Please specify the full path to "
                 "a named pipe.\n\nRun 'mkfifo /path/to/fifo' from a "
                 "terminal to create a new named pipe." % filename)
             dialog.run()
             dialog.destroy()
-            return gtk.TRUE
+            return True
         self.config.named_pipe = filename
 
     def on_druidpagefinish1_finish(self, *args):
@@ -352,22 +353,22 @@ class WelcomeDruid(Window):
         window.show()
 
     def on_druidpage_cancel(self, *args):
-        gtk.mainquit()
+        gtk.main_quit()
 
     def on_druid_window_delete_event(self, *args):
-        gtk.mainquit()
+        gtk.main_quit()
         
 
 class ErrorDialog(Dialog):
 
-    def __init__(self, primary, secondary=''):
-        Dialog.__init__(self, 'error_dialog')
+    def __init__(self, primary, secondary=""):
+        Dialog.__init__(self, "error_dialog")
         self.label1.set_markup(self.get_markup(primary, secondary))
 
     def get_markup(self, primary, secondary):
         markup = '<span weight="bold" size="larger">%s</span>' % primary
         if secondary:
-            markup += '\n\n%s' % secondary
+            markup += "\n\n%s" % secondary
         return markup
 
 
@@ -376,7 +377,7 @@ class PreferencesDialog(Dialog):
     NAME_COLUMN = 0
     
     def __init__(self, config):
-        Dialog.__init__(self, 'preferences_dialog')
+        Dialog.__init__(self, "preferences_dialog")
         self.config = config
         self.setup_general()
         self.setup_filters()
@@ -391,9 +392,9 @@ class PreferencesDialog(Dialog):
         renderer = gtk.CellRendererText()
         column = gtk.TreeViewColumn(None, renderer, text=self.NAME_COLUMN)
         self.treeview1.append_column(column)
-        self.treeview1.set_headers_visible(gtk.FALSE)
+        self.treeview1.set_headers_visible(False)
         selection = self.treeview1.get_selection()
-        selection.connect('changed', self.on_filter_selection_changed)
+        selection.connect("changed", self.on_filter_selection_changed)
 
     def first_row_selected(self, selection):
         list_store, iter = selection.get_selected()
@@ -407,7 +408,7 @@ class PreferencesDialog(Dialog):
     def on_filter_selection_changed(self, selection, *args):
         list_store, iter = selection.get_selected()
         if iter is None:
-            sensitive = gtk.FALSE
+            sensitive = False
             self.up_button.set_sensitive(sensitive)
             self.down_button.set_sensitive(sensitive)
         else:
@@ -415,7 +416,7 @@ class PreferencesDialog(Dialog):
             self.up_button.set_sensitive(sensitive)
             sensitive = not self.last_row_selected(selection)
             self.down_button.set_sensitive(sensitive)
-            sensitive = gtk.TRUE
+            sensitive = True
         self.edit_button.set_sensitive(sensitive)
         self.remove_button.set_sensitive(sensitive)
             
@@ -439,7 +440,7 @@ class PreferencesDialog(Dialog):
         return list_store.get_path(iter)[0]
 
     def on_add_button_clicked(self, *args):
-        dialog = FilterDialog(self, 'Add Filter')
+        dialog = FilterDialog(self, "Add Filter")
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
             filters = self.config.filters
@@ -450,7 +451,7 @@ class PreferencesDialog(Dialog):
 
     def on_edit_button_clicked(self, *args):
         filter = self.config.filters[self.get_selected_filter_index()]
-        dialog = FilterDialog(self, 'Edit Filter', filter)
+        dialog = FilterDialog(self, "Edit Filter", filter)
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
             filters = self.config.filters
@@ -496,7 +497,7 @@ class PreferencesDialog(Dialog):
 class FilterDialog(Dialog):
 
     def __init__(self, parent, title, filter=Filter()):
-        Dialog.__init__(self, 'filter_dialog')
+        Dialog.__init__(self, "filter_dialog")
         self.root_widget.set_transient_for(parent.root_widget)
         self.root_widget.set_title(title)
         self.filter = filter
@@ -532,10 +533,10 @@ class FilterDialog(Dialog):
         return self.name and self.pattern
 
     def reset(self):
-        self.name_entry.set_text('')
+        self.name_entry.set_text("")
         self.name_entry.grab_focus()
-        self.pattern_entry.set_text('')
-        self.checkbutton1.set_active(gtk.FALSE)
+        self.pattern_entry.set_text("")
+        self.checkbutton1.set_active(False)
 
     def on_filter_dialog_response(self, widget, event, *args):
         if event != gtk.RESPONSE_OK:
@@ -548,12 +549,12 @@ class FilterDialog(Dialog):
             self.reset()
         else:
             if not self.name:
-                message = 'Filter has no name'
+                message = "Filter has no name"
             else:
-                message = 'Filter has no pattern'
-            self.root_widget.emit_stop_by_name('response')
+                message = "Filter has no pattern"
+            self.root_widget.emit_stop_by_name("response")
             dialog = ErrorDialog(message,
-                                 'Please specify a name and a pattern.')
+                                 "Please specify a name and a pattern.")
             dialog.run()
             dialog.destroy()
 
@@ -561,7 +562,7 @@ class FilterDialog(Dialog):
 class AlertDialog(Dialog):
 
     def __init__(self, queue, config, filter, message):
-        Dialog.__init__(self, 'alert_dialog')
+        Dialog.__init__(self, "alert_dialog")
         self.alert_queue = queue
         self.config = config
         self.setup_widgets(filter, message)
@@ -569,7 +570,7 @@ class AlertDialog(Dialog):
     def setup_widgets(self, filter, message):
         # TODO: escape text
         self.label1.set_markup('<span weight="bold" size="larger">'
-                               '%s from %s</span>\n\n%s' %
+                               "%s from %s</span>\n\n%s" %
                                (filter.name, message.hostname, message.text))
         self.checkbutton1.set_active(self.config.ignore_alerts)
         self.ignore_timeout.set_value(self.config.ignore_timeout)
@@ -608,14 +609,14 @@ class FilteredListStore(gtk.ListStore):
 
     def make(list_store, column, text):
         new_store = FilteredListStore(list_store, column, text)
-        iter = list_store.get_iter_first()
-        while iter is not None:
-            if text in list_store.get_value(iter, column):
+        gtk_iter = list_store.get_iter_first()
+        while gtk_iter is not None:
+            if text in list_store.get_value(gtk_iter, column):
                 row = []
                 for i in range(list_store.get_n_columns()):
-                    row.append(list_store.get_value(iter, i))
+                    row.append(list_store.get_value(gtk_iter, i))
                 new_store.append(row)
-            iter = list_store.iter_next(iter)
+            gtk_iter = list_store.iter_next(gtk_iter)
         return new_store
 
     make = staticmethod(make)
@@ -623,10 +624,10 @@ class FilteredListStore(gtk.ListStore):
 
 class SearchTools(WidgetWrapper):
 
-    SEARCH_BY_MESSAGE = 3
+    SEARCH_BY_MESSAGE = 0
 
     def __init__(self, main_window, message_view):
-        WidgetWrapper.__init__(self, 'search_tools', main_window)
+        WidgetWrapper.__init__(self, "search_tools", main_window)
         self.message_view = message_view
         self.setup_widgets()
 
@@ -637,23 +638,32 @@ class SearchTools(WidgetWrapper):
         self.find_button.activate()
 
     def on_search_text_changed(self, *args):
-        self.find_button.set_sensitive(gtk.TRUE)
+        self.find_button.set_sensitive(True)
+
+    def get_search_column(self):
+        menu_column_mapping = { 0: 3, 1: 2, 2: 1, 3: 0 }
+        return menu_column_mapping[self.search_type.get_history()]
 
     def on_find_button_clicked(self, *args):
         model = self.message_view.get_unfiltered_model()
-        column = self.search_type.get_history()
+        column = self.get_search_column()
         text = self.search_text.get_text()
         filtered_model = FilteredListStore.make(model, column, text)
         # TODO: consider refactoring to put the following in method on view
+        auto_scroll = self.message_view.is_scrolled_down()
         self.message_view.set_model(filtered_model)
-        self.message_view.scroll_down()
+        if auto_scroll:
+            self.message_view.scroll_down()
         self.message_view.update_message_count()
 
     def on_clear_button_clicked(self, *args):
+        auto_scroll = self.message_view.is_scrolled_down()
         self.message_view.clear_filter()
-        self.search_text.set_text('')
+        self.search_text.set_text("")
         self.search_text.grab_focus()
-        self.find_button.set_sensitive(gtk.FALSE)
+        self.find_button.set_sensitive(False)
+        if auto_scroll:
+            self.message_view.scroll_down()
         self.message_view.update_message_count()
 
 
@@ -688,14 +698,13 @@ class MessageView(gtk.TreeView):
         model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                               gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.set_unfiltered_model(model)
-        self.add_column('Date', MessageView.DATE_COLUMN)
-        self.add_column('Host', MessageView.HOST_COLUMN)
-        self.add_column('Process', MessageView.PROCESS_COLUMN)
-        self.add_column('Message', MessageView.MESSAGE_COLUMN)
+        self.add_column("Date", MessageView.DATE_COLUMN)
+        self.add_column("Host", MessageView.HOST_COLUMN)
+        self.add_column("Process", MessageView.PROCESS_COLUMN)
+        self.add_column("Message", MessageView.MESSAGE_COLUMN)
         selection = self.get_selection()
         selection.set_mode(gtk.SELECTION_MULTIPLE)
-        selection.connect('changed', self.on_selection_changed)
-        
+        selection.connect("changed", self.on_selection_changed)
         self.show()
 
     def clear_filter(self):
@@ -718,21 +727,24 @@ class MessageView(gtk.TreeView):
     def select_all(self):
         self.get_selection().select_all()
 
-    def scroll_down(self):
-#         if self.is_scrolled_down():
-        adjustment = self.get_parent().get_vadjustment()
-        upper = adjustment.get_property('upper')
-        page_size = adjustment.get_property('page_size')
-        bottom = upper - page_size
-        adjustment.set_value(upper)
-        adjustment.changed()
-
     def is_scrolled_down(self):
         adjustment = self.get_parent().get_vadjustment()
-        value = adjustment.get_value()
-        page_size = adjustment.get_property('page_size')
-        upper = adjustment.get_property('upper')
-        return value + page_size >= upper
+        position = adjustment.value + adjustment.page_size
+        print "val + page: %s\tupper: %s" % (position, adjustment.upper)
+        return int(position) >= int(adjustment.upper)
+
+    def scroll_down(self):
+        # TODO: connect to row-inserted signal and then (if scrolled
+        # down scroll and scroll not scheduled) schedule a scroll. Do
+        # it with an idle_add.
+
+        # muntyan_: the point here is: scheduled function may or may
+        # not be called before treeview revalidates, but it will be
+        # called after all the rows are inserted, and scroll_to_* will
+        # install another idle which will do correct thing
+        
+        last_row_path = (self.get_model().iter_n_children(None) - 1,)
+        self.scroll_to_cell(last_row_path)
 
     def count_rows_in_model(self, model):
         count = [0]
@@ -756,15 +768,18 @@ class MessageView(gtk.TreeView):
     
     def remove_first_row(self):
         list_store = self.get_model()
-        iter = list_store.get_iter_first()
-        if iter:
+        iter_first = list_store.get_iter_first()
+        if iter_first:
             list_store.remove(iter)
 
     def append_message_to_models(self, message):
+        auto_scroll = self.is_scrolled_down()
         row = (message.date, message.hostname, message.process, message.text)
         if self.get_model() != self.get_unfiltered_model():
             self.get_unfiltered_model().append(row)
         self.get_model().append(row)
+        if auto_scroll:
+            self.scroll_down()
         
     def update_message_count(self):
         total_messages = self.count_all_messages()
@@ -776,16 +791,16 @@ class MessageView(gtk.TreeView):
 
     def add_message(self, message):
         self.append_message_to_models(message)
-        self.scroll_down()
         self.update_message_count()
         
     def process_line(self, line):
         message = LogMessage(line)
-        for filter in self.config.filters:
-            if filter.matches(message.text):
+        for message_filter in self.config.filters:
+            if message_filter.matches(message.text):
+                print "process_line(): calling add_message()"
                 self.add_message(message)
-                if filter.alert:
-                    self.alert_queue.append(filter, message)
+                if message_filter.alert:
+                    self.alert_queue.append(message_filter, message)
                 break
 
     def clear(self):
@@ -798,17 +813,18 @@ class MessageView(gtk.TreeView):
         self.get_selection().selected_foreach(delete)
         for iter in selected:
             self.get_model().remove(iter)
+        # TODO: fix next line so it works if last line selected
 #         self.get_selection().select_iter(selected[-1])
 
 
-class Menu:
+class Menu(object):
 
     def __init__(self, config, message_view):
         self.config = config
         self.message_view = message_view
 
     def on_quit1_activate(self, *args):
-        gtk.mainquit()
+        gtk.main_quit()
 
     def on_delete_selected1_activate(self, *args):
         self.message_view.delete_selected()
@@ -826,16 +842,17 @@ class Menu:
 
     def on_contents1_activate(self, *args):
         global program
-        gnome.help_display_desktop(program, 'bandsaw', 'bandsaw.xml', 'index')
+        gnome.help_display_desktop(program, "bandsaw", "bandsaw.xml", "index")
 
     def on_about1_activate(self, *args):
-        copyright = u'Copyright \xa9 2004 Graham Ashton'
-        comments = 'A log monitoring and alerting tool'
-        authors = ['Graham Ashton <ashtong@users.sourceforge.net>']
+        copyright = u"Copyright \xa9 2004-2005 Graham Ashton"
+        comments = "A log monitoring and alerting tool"
+        authors = ["Graham Ashton <ashtong@users.sf.net>"]
         documenters = []
         translators = None
-        logo = gtk.gdk.pixbuf_new_from_file('../pixmaps/bandsaw.png')
-        dialog = gnome.ui.About('Band Saw', __VERSION__, copyright, comments,
+        logo_file = os.path.join(bandsawconfig.PIXMAPSDIR, "bandsaw.png")
+        logo = gtk.gdk.pixbuf_new_from_file(logo_file)
+        dialog = gnome.ui.About("Band Saw", __VERSION__, copyright, comments,
                                 authors, documenters, translators, logo)
         set_icon(dialog)
         dialog.show()
@@ -844,23 +861,23 @@ class Menu:
 class StatusBar(WidgetWrapper):
 
     def __init__(self, main_window):
-        WidgetWrapper.__init__(self, 'appbar', main_window)
+        WidgetWrapper.__init__(self, "appbar", main_window)
         self.setup()
 
     def setup(self):
         self.set_message_count(0, None)
 
     def set_message_count(self, total, shown):
-        status = '%s messages' % total
+        status = "%s messages" % total
         if shown is not None:
-            status += ' (%s shown)' % shown
+            status += " (%s shown)" % shown
         self.appbar.set_status(status)
         
 
 class MainWindow(Window):
 
     def __init__(self, config):
-        Window.__init__(self, 'app1')
+        Window.__init__(self, "app1")
         self.config = config
         self.monitor_id = None
         status_bar = StatusBar(self)
@@ -881,28 +898,28 @@ class MainWindow(Window):
 
     def setup_menu(self):
         menu = Menu(self.config, self.message_view)
-        self.delete_selected1.set_sensitive(gtk.FALSE)
+        self.delete_selected1.set_sensitive(False)
         self.connect_signals(menu)
 
     def on_syslog_readable(self, fifo, condition):
         try:
             line = fifo.readline()
-            if line == '':  # fifo closed by syslog
+            if line == "":  # fifo closed by syslog
                 raise IOError
         except IOError:
-            gtk.input_remove(self.monitor_id)
+            gobject.source_remove(self.monitor_id)
             self.monitor_syslog()
-            return gtk.FALSE
+            return False
         else:
             self.message_view.process_line(line)
-            return gtk.TRUE
+            return True
 
     def monitor_syslog(self):
         fifo_path = self.config.named_pipe
         try:
             fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
         except OSError, e:
-            dialog = ErrorDialog('Unable to open file',
+            dialog = ErrorDialog("Unable to open file",
                                  "The file '%s' cannot be read. Please check "
                                  "the permissions and try again." % fifo_path)
             dialog.run()
@@ -910,11 +927,11 @@ class MainWindow(Window):
             sys.exit()
         else:
             fifo = os.fdopen(fd)
-            self.monitor_id = gtk.input_add(
+            self.monitor_id = gobject.io_add_watch(
                 fifo, gtk.gdk.INPUT_READ, self.on_syslog_readable)
         
     def on_app1_delete_event(self, *args):
-        gtk.mainquit()
+        gtk.main_quit()
 
 
 def main():
@@ -927,6 +944,6 @@ def main():
     gtk.main()
 
 
-if __name__ == '__main__':
-    program = gnome.program_init('bandsaw', __VERSION__)
+if __name__ == "__main__":
+    program = gnome.program_init("bandsaw", __VERSION__)
     main()
