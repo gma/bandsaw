@@ -14,6 +14,13 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">False</property>
 
   <child internal-child="vbox">
@@ -35,6 +42,7 @@
 	      <property name="label">gtk-close</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-7</property>
 	      <signal name="clicked" handler="on_closebutton1_clicked" last_modification_time="Fri, 30 Jul 2004 18:44:13 GMT"/>
 	    </widget>
@@ -84,6 +92,9 @@
 		      <property name="rules_hint">False</property>
 		      <property name="reorderable">False</property>
 		      <property name="enable_search">True</property>
+		      <property name="fixed_height_mode">False</property>
+		      <property name="hover_selection">False</property>
+		      <property name="hover_expand">False</property>
 		      <signal name="row_activated" handler="on_treeview1_row_activated" last_modification_time="Fri, 02 Jul 2004 08:19:29 GMT"/>
 		      <signal name="toggle_cursor_row" handler="on_treeview1_toggle_cursor_row" last_modification_time="Fri, 02 Jul 2004 08:22:20 GMT"/>
 		    </widget>
@@ -110,6 +121,7 @@
 		      <property name="label">gtk-add</property>
 		      <property name="use_stock">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_add_button_clicked" last_modification_time="Thu, 01 Jul 2004 07:14:12 GMT"/>
 		    </widget>
 		  </child>
@@ -123,6 +135,7 @@
 		      <property name="label" translatable="yes">_Edit</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_edit_button_clicked" last_modification_time="Thu, 01 Jul 2004 07:14:15 GMT"/>
 		    </widget>
 		  </child>
@@ -136,6 +149,7 @@
 		      <property name="label">gtk-remove</property>
 		      <property name="use_stock">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_remove_button_clicked" last_modification_time="Thu, 01 Jul 2004 07:14:08 GMT"/>
 		    </widget>
 		  </child>
@@ -149,6 +163,7 @@
 		      <property name="label">gtk-go-up</property>
 		      <property name="use_stock">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_up_button_clicked" last_modification_time="Thu, 01 Jul 2004 07:14:18 GMT"/>
 		    </widget>
 		  </child>
@@ -162,6 +177,7 @@
 		      <property name="label">gtk-go-down</property>
 		      <property name="use_stock">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
 		      <signal name="clicked" handler="on_down_button_clicked" last_modification_time="Thu, 01 Jul 2004 07:14:21 GMT"/>
 		    </widget>
 		  </child>
@@ -192,6 +208,10 @@
 	      <property name="yalign">0.5</property>
 	      <property name="xpad">0</property>
 	      <property name="ypad">0</property>
+	      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	      <property name="width_chars">-1</property>
+	      <property name="single_line_mode">False</property>
+	      <property name="angle">0</property>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -225,6 +245,10 @@
 		      <property name="yalign">0.5</property>
 		      <property name="xpad">0</property>
 		      <property name="ypad">0</property>
+		      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		      <property name="width_chars">-1</property>
+		      <property name="single_line_mode">False</property>
+		      <property name="angle">0</property>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -252,6 +276,10 @@
 			  <property name="yalign">0.5</property>
 			  <property name="xpad">0</property>
 			  <property name="ypad">0</property>
+			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			  <property name="width_chars">-1</property>
+			  <property name="single_line_mode">False</property>
+			  <property name="angle">0</property>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -280,6 +308,10 @@
 			      <property name="xpad">0</property>
 			      <property name="ypad">0</property>
 			      <property name="mnemonic_widget">named_pipe_entry</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -298,7 +330,7 @@
 			      <property name="max_length">0</property>
 			      <property name="text" translatable="yes"></property>
 			      <property name="has_frame">True</property>
-			      <property name="invisible_char" translatable="yes">*</property>
+			      <property name="invisible_char">*</property>
 			      <property name="activates_default">False</property>
 			    </widget>
 			    <packing>
@@ -349,6 +381,10 @@
 		      <property name="yalign">0.5</property>
 		      <property name="xpad">0</property>
 		      <property name="ypad">0</property>
+		      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		      <property name="width_chars">-1</property>
+		      <property name="single_line_mode">False</property>
+		      <property name="angle">0</property>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -376,6 +412,10 @@
 			  <property name="yalign">0.5</property>
 			  <property name="xpad">0</property>
 			  <property name="ypad">0</property>
+			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			  <property name="width_chars">-1</property>
+			  <property name="single_line_mode">False</property>
+			  <property name="angle">0</property>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -403,6 +443,10 @@
 			      <property name="yalign">0.5</property>
 			      <property name="xpad">0</property>
 			      <property name="ypad">0</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -418,6 +462,10 @@
 			      <property name="yalign">0.5</property>
 			      <property name="xscale">1</property>
 			      <property name="yscale">1</property>
+			      <property name="top_padding">0</property>
+			      <property name="bottom_padding">0</property>
+			      <property name="left_padding">0</property>
+			      <property name="right_padding">0</property>
 
 			      <child>
 				<widget class="GtkSpinButton" id="messages_kept">
@@ -481,6 +529,10 @@
 	      <property name="yalign">0.5</property>
 	      <property name="xpad">0</property>
 	      <property name="ypad">0</property>
+	      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	      <property name="width_chars">-1</property>
+	      <property name="single_line_mode">False</property>
+	      <property name="angle">0</property>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -507,6 +559,13 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="enable_layout_config">True</property>
   <signal name="delete_event" handler="on_app1_delete_event" last_modification_time="Wed, 30 Jun 2004 19:15:23 GMT"/>
 
@@ -523,6 +582,8 @@
 	  <child>
 	    <widget class="GtkMenuBar" id="menubar2">
 	      <property name="visible">True</property>
+	      <property name="pack_direction">GTK_PACK_DIRECTION_LTR</property>
+	      <property name="child_pack_direction">GTK_PACK_DIRECTION_LTR</property>
 
 	      <child>
 		<widget class="GtkMenuItem" id="file2">
@@ -672,8 +733,12 @@
 		  <property name="visible">True</property>
 		  <property name="xalign">0</property>
 		  <property name="yalign">0.5</property>
-		  <property name="xscale">0</property>
+		  <property name="xscale">1</property>
 		  <property name="yscale">1</property>
+		  <property name="top_padding">0</property>
+		  <property name="bottom_padding">0</property>
+		  <property name="left_padding">0</property>
+		  <property name="right_padding">0</property>
 
 		  <child>
 		    <widget class="GtkHBox" id="search_tools">
@@ -691,20 +756,11 @@
 			    <widget class="GtkMenu" id="menu1">
 
 			      <child>
-				<widget class="GtkMenuItem" id="date_contains1">
+				<widget class="GtkMenuItem" id="message_contains1">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">Date contains</property>
+				  <property name="label" translatable="yes">Message contains</property>
 				  <property name="use_underline">True</property>
-				  <signal name="activate" handler="on_date_contains1_activate" last_modification_time="Sun, 01 Aug 2004 10:55:15 GMT"/>
-				</widget>
-			      </child>
-
-			      <child>
-				<widget class="GtkMenuItem" id="host_contains1">
-				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">Host contains</property>
-				  <property name="use_underline">True</property>
-				  <signal name="activate" handler="on_host_contains1_activate" last_modification_time="Sun, 01 Aug 2004 10:55:15 GMT"/>
+				  <signal name="activate" handler="on_message_contains1_activate" last_modification_time="Sun, 01 Aug 2004 10:55:15 GMT"/>
 				</widget>
 			      </child>
 
@@ -718,11 +774,20 @@
 			      </child>
 
 			      <child>
-				<widget class="GtkMenuItem" id="message_contains1">
+				<widget class="GtkMenuItem" id="host_contains1">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">Message contains</property>
+				  <property name="label" translatable="yes">Host contains</property>
 				  <property name="use_underline">True</property>
-				  <signal name="activate" handler="on_message_contains1_activate" last_modification_time="Sun, 01 Aug 2004 10:55:15 GMT"/>
+				  <signal name="activate" handler="on_host_contains1_activate" last_modification_time="Sun, 01 Aug 2004 10:55:15 GMT"/>
+				</widget>
+			      </child>
+
+			      <child>
+				<widget class="GtkMenuItem" id="date_contains1">
+				  <property name="visible">True</property>
+				  <property name="label" translatable="yes">Date contains</property>
+				  <property name="use_underline">True</property>
+				  <signal name="activate" handler="on_date_contains1_activate" last_modification_time="Sun, 01 Aug 2004 10:55:15 GMT"/>
 				</widget>
 			      </child>
 			    </widget>
@@ -745,7 +810,7 @@
 			  <property name="max_length">0</property>
 			  <property name="text" translatable="yes"></property>
 			  <property name="has_frame">True</property>
-			  <property name="invisible_char" translatable="yes">*</property>
+			  <property name="invisible_char">*</property>
 			  <property name="activates_default">False</property>
 			  <signal name="changed" handler="on_search_text_changed" last_modification_time="Sun, 01 Aug 2004 12:12:42 GMT"/>
 			  <signal name="activate" handler="on_search_text_activate" last_modification_time="Tue, 03 Aug 2004 21:16:04 GMT"/>
@@ -771,6 +836,7 @@
 			      <property name="label" translatable="yes">Find</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
 			      <signal name="clicked" handler="on_find_button_clicked" last_modification_time="Sun, 01 Aug 2004 12:12:50 GMT"/>
 			    </widget>
 			    <packing>
@@ -787,6 +853,7 @@
 			      <property name="label" translatable="yes">_Clear</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
 			      <signal name="clicked" handler="on_clear_button_clicked" last_modification_time="Sun, 01 Aug 2004 12:12:54 GMT"/>
 			    </widget>
 			    <packing>
@@ -870,6 +937,13 @@
   <property name="modal">False</property>
   <property name="resizable">False</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="on_alert_dialog_delete_event" last_modification_time="Fri, 30 Jul 2004 18:09:17 GMT"/>
 
   <child>
@@ -923,6 +997,10 @@ Error message details...</property>
 		  <property name="yalign">0</property>
 		  <property name="xpad">0</property>
 		  <property name="ypad">0</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
@@ -944,6 +1022,7 @@ Error message details...</property>
 		      <property name="label" translatable="yes">_Ignore alerts for</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
 		      <property name="active">False</property>
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
@@ -988,6 +1067,10 @@ Error message details...</property>
 		      <property name="yalign">0.5</property>
 		      <property name="xpad">0</property>
 		      <property name="ypad">0</property>
+		      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		      <property name="width_chars">-1</property>
+		      <property name="single_line_mode">False</property>
+		      <property name="angle">0</property>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -1034,6 +1117,7 @@ Error message details...</property>
 	      <property name="label">gtk-ok</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <signal name="clicked" handler="on_okbutton1_clicked" last_modification_time="Wed, 30 Jun 2004 19:13:36 GMT"/>
 	    </widget>
 	  </child>
@@ -1056,6 +1140,13 @@ Error message details...</property>
   <property name="modal">False</property>
   <property name="resizable">False</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">False</property>
   <signal name="response" handler="on_filter_dialog_response" last_modification_time="Thu, 01 Jul 2004 12:18:51 GMT"/>
 
@@ -1078,6 +1169,7 @@ Error message details...</property>
 	      <property name="label">gtk-cancel</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-6</property>
 	    </widget>
 	  </child>
@@ -1090,6 +1182,7 @@ Error message details...</property>
 	      <property name="label">gtk-ok</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-5</property>
 	      <signal name="clicked" handler="on_okbutton1_clicked" last_modification_time="Thu, 01 Jul 2004 07:19:45 GMT"/>
 	    </widget>
@@ -1130,6 +1223,10 @@ Error message details...</property>
 		  <property name="xpad">0</property>
 		  <property name="ypad">0</property>
 		  <property name="mnemonic_widget">name_entry</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
@@ -1147,7 +1244,7 @@ Error message details...</property>
 		  <property name="max_length">0</property>
 		  <property name="text" translatable="yes"></property>
 		  <property name="has_frame">True</property>
-		  <property name="invisible_char" translatable="yes">*</property>
+		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
 		</widget>
 		<packing>
@@ -1184,6 +1281,10 @@ Error message details...</property>
 		  <property name="xpad">0</property>
 		  <property name="ypad">0</property>
 		  <property name="mnemonic_widget">pattern_entry</property>
+		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+		  <property name="width_chars">-1</property>
+		  <property name="single_line_mode">False</property>
+		  <property name="angle">0</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
@@ -1201,7 +1302,7 @@ Error message details...</property>
 		  <property name="max_length">0</property>
 		  <property name="text" translatable="yes"></property>
 		  <property name="has_frame">True</property>
-		  <property name="invisible_char" translatable="yes">*</property>
+		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
 		</widget>
 		<packing>
@@ -1225,6 +1326,7 @@ Error message details...</property>
 	      <property name="label" translatable="yes">_Raise alerts</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <property name="active">False</property>
 	      <property name="inconsistent">False</property>
 	      <property name="draw_indicator">True</property>
@@ -1254,6 +1356,13 @@ Error message details...</property>
   <property name="modal">False</property>
   <property name="resizable">False</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <property name="has_separator">False</property>
 
   <child internal-child="vbox">
@@ -1275,6 +1384,7 @@ Error message details...</property>
 	      <property name="label">gtk-close</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <property name="response_id">-7</property>
 	    </widget>
 	  </child>
@@ -1324,6 +1434,10 @@ Error message details...</property>
 	      <property name="yalign">0</property>
 	      <property name="xpad">0</property>
 	      <property name="ypad">0</property>
+	      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	      <property name="width_chars">-1</property>
+	      <property name="single_line_mode">False</property>
+	      <property name="angle">0</property>
 	    </widget>
 	    <packing>
 	      <property name="padding">0</property>
@@ -1350,6 +1464,13 @@ Error message details...</property>
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
   <signal name="delete_event" handler="on_druid_window_delete_event" last_modification_time="Tue, 13 Jul 2004 06:16:35 GMT"/>
 
   <child>
@@ -1365,7 +1486,7 @@ Error message details...</property>
 	  <property name="visible">True</property>
 	  <property name="position">GNOME_EDGE_START</property>
 	  <property name="title" translatable="yes">Welcome to Band Saw</property>
-	  <property name="text" translatable="yes">Before you can use Band Saw for the first time you need to provide some default configuration. Please click Forward to continue.</property>
+	  <property name="text" translatable="yes">Before using Band Saw for the first time you need to configure your logging software. Please click Forward to continue.</property>
 	  <signal name="cancel" handler="on_druidpage_cancel" last_modification_time="Tue, 13 Jul 2004 12:00:38 GMT"/>
 	</widget>
       </child>
@@ -1392,6 +1513,10 @@ Error message details...</property>
 		  <property name="yalign">0.5</property>
 		  <property name="xscale">0</property>
 		  <property name="yscale">1</property>
+		  <property name="top_padding">0</property>
+		  <property name="bottom_padding">0</property>
+		  <property name="left_padding">0</property>
+		  <property name="right_padding">0</property>
 
 		  <child>
 		    <widget class="GtkVBox" id="vbox7">
@@ -1404,7 +1529,7 @@ Error message details...</property>
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Band Saw reads log message from a named pipe (otherwise known as a FIFO). You will need to make the pipe with the mkfifo command and then configure your logging software to write to it.
 
-Type &quot;man mkfifo&quot; for more information on creating FIFOs.</property>
+Type &quot;man mkfifo&quot; in a terminal for more information on creating FIFOs.</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1414,6 +1539,10 @@ Type &quot;man mkfifo&quot; for more information on creating FIFOs.</property>
 			  <property name="yalign">0.5</property>
 			  <property name="xpad">0</property>
 			  <property name="ypad">0</property>
+			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			  <property name="width_chars">-1</property>
+			  <property name="single_line_mode">False</property>
+			  <property name="angle">0</property>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -1442,6 +1571,10 @@ Type &quot;man mkfifo&quot; for more information on creating FIFOs.</property>
 			      <property name="xpad">0</property>
 			      <property name="ypad">0</property>
 			      <property name="mnemonic_widget">filename_entry</property>
+			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+			      <property name="width_chars">-1</property>
+			      <property name="single_line_mode">False</property>
+			      <property name="angle">0</property>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -1459,7 +1592,7 @@ Type &quot;man mkfifo&quot; for more information on creating FIFOs.</property>
 			      <property name="max_length">0</property>
 			      <property name="text" translatable="yes"></property>
 			      <property name="has_frame">True</property>
-			      <property name="invisible_char" translatable="yes">*</property>
+			      <property name="invisible_char">*</property>
 			      <property name="activates_default">False</property>
 			    </widget>
 			    <packing>

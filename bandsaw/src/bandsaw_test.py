@@ -397,7 +397,7 @@ class AlertDialogTest(AlertTest):
         config.ignore_alerts = False
         config.ignore_timeout = 5
         dialog = bandsaw.AlertDialog(queue, config, self.filter, self.message)
-        dialog.checkbutton1.set_active(gtk.TRUE)
+        dialog.checkbutton1.set_active(True)
         dialog.on_okbutton1_clicked()
         queue.verify()        
 
@@ -409,7 +409,7 @@ class AlertDialogTest(AlertTest):
         config.ignore_alerts = False
         config.ignore_timeout = 5
         dialog = bandsaw.AlertDialog(queue, config, self.filter, self.message)
-        dialog.checkbutton1.set_active(gtk.FALSE)
+        dialog.checkbutton1.set_active(False)
         dialog.on_okbutton1_clicked()
         queue.verify()
 
