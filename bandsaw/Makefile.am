@@ -48,7 +48,7 @@ distuninstallcheck_listfiles = find . -type f -print | \
 # Process the pixmaps directory
 
 pixmapsdir = $(datadir)/pixmaps
-pixmaps_DATA = pixmaps/bandsaw.png
+#pixmaps_DATA = pixmaps/bandsaw.png
 
 # Process the src directory
 
@@ -87,7 +87,7 @@ EXTRA_DIST = \
 	$(bin_SCRIPTS) \
 	$(dist_scripts) \
 	$(glade_DATA) \
-	$(pixmaps_DATA) \
+	#$(pixmaps_DATA) \
 	$(python_in_files) \
 	$(schema_in_files) \
 	$(Desktop_in_files) \
