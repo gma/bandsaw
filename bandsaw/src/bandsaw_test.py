@@ -188,6 +188,20 @@ class GConfTest(unittest.TestCase):
         client.verify()
 
 
+class ConfigObserverTest(unittest.TestCase):
+
+    def test_messages_kept_observable(self):
+        """Check we can observe changes to number of messages kept"""
+        client = Mock()
+        client.expects(once()).set_int(eq(bandsaw.Config.MESSAGES_KEPT), eq(1))
+        config = bandsaw.Config(client)
+        observer = Mock()
+        observer.expects(once()).update(eq(config.MESSAGES_KEPT))
+        config.add_observer(config.MESSAGES_KEPT, observer)
+        config.messages_kept = 1
+        observer.verify()
+
+
 class LogMessageTest(unittest.TestCase):
 
     def setUp(self):
@@ -374,7 +388,7 @@ class AlertQueueTest(AlertTest):
         self.assertEqual(queue.alert_displayed, False)
 
     def test_append_no_dialog_alerts_not_ignored(self):
-        """Check messages not queued when no dialog, alrets not ignored"""
+        """Check messages not queued when no dialog, alerts not ignored"""
         config = Mock()
         config.ignore_alerts = False
         config.ignore_timeout = 5
@@ -392,7 +406,7 @@ class AlertDialogTest(AlertTest):
     def test_queue_cleared_if_ignored(self):
         """Check that the queue is cleared if alerts are ignored"""
         queue = Mock()
-        queue.expects(once()).clear()
+        queue.expects(once()).remove_all_alerts()
         config = Mock()
         config.ignore_alerts = False
         config.ignore_timeout = 5
@@ -404,7 +418,7 @@ class AlertDialogTest(AlertTest):
     def test_show_next_alert(self):
         """Check next alert displayed if alerts not ignored"""
         queue = Mock()
-        queue.expects(once()).pop()
+        queue.expects(once()).remove_current_alert()
         config = Mock()
         config.ignore_alerts = False
         config.ignore_timeout = 5

@@ -443,6 +443,7 @@
 			      <property name="yalign">0.5</property>
 			      <property name="xpad">0</property>
 			      <property name="ypad">0</property>
+			      <property name="mnemonic_widget">messages_kept</property>
 			      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
 			      <property name="width_chars">-1</property>
 			      <property name="single_line_mode">False</property>
@@ -477,7 +478,7 @@
 				  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 				  <property name="snap_to_ticks">False</property>
 				  <property name="wrap">False</property>
-				  <property name="adjustment">0 0 10000 10 100 100</property>
+				  <property name="adjustment">0 0 1000 10 100 100</property>
 				  <signal name="value_changed" handler="on_messages_kept_value_changed" last_modification_time="Fri, 30 Jul 2004 18:31:27 GMT"/>
 				</widget>
 			      </child>
@@ -943,7 +944,7 @@
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
-  <property name="urgency_hint">False</property>
+  <property name="urgency_hint">True</property>
   <signal name="delete_event" handler="on_alert_dialog_delete_event" last_modification_time="Fri, 30 Jul 2004 18:09:17 GMT"/>
 
   <child>
@@ -1357,8 +1358,8 @@ Error message details...</property>
   <property name="resizable">False</property>
   <property name="destroy_with_parent">False</property>
   <property name="decorated">True</property>
-  <property name="skip_taskbar_hint">False</property>
-  <property name="skip_pager_hint">False</property>
+  <property name="skip_taskbar_hint">True</property>
+  <property name="skip_pager_hint">True</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>

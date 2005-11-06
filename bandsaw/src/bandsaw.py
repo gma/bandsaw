@@ -67,6 +67,14 @@ class Config(object):
         self._ignore_alerts = None
         self._ignore_timeout = None
         self._filters = None
+        self._observers = {}
+
+    def add_observer(self, key, observer):
+        self._observers.setdefault(key, []).append(observer)
+
+    def _notify_observers(self, key):
+        for observer in self._observers.get(key, []):
+            observer.update(key)
 
     def _get_named_pipe(self):
         if self._named_pipe is None:
@@ -77,6 +85,7 @@ class Config(object):
         value = value.strip()
         self.client.set_string(Config.NAMED_PIPE, value)
         self._named_pipe = None
+        self._notify_observers(Config.NAMED_PIPE)
 
     named_pipe = property(_get_named_pipe, _set_named_pipe)
     
@@ -88,6 +97,7 @@ class Config(object):
     def _set_messages_kept(self, value):
         self.client.set_int(Config.MESSAGES_KEPT, int(value))
         self._messages_kept = None
+        self._notify_observers(Config.MESSAGES_KEPT)
 
     messages_kept = property(_get_messages_kept, _set_messages_kept)
 
@@ -99,6 +109,7 @@ class Config(object):
     def _set_ignore_alerts(self, value):
         self.client.set_bool(Config.IGNORE_ALERTS, value)
         self._ignore_alerts = None
+        self._notify_observers(Config.IGNORE_ALERTS)
 
     ignore_alerts = property(_get_ignore_alerts, _set_ignore_alerts)
 
@@ -110,6 +121,7 @@ class Config(object):
     def _set_ignore_timeout(self, value):
         self.client.set_int(Config.IGNORE_TIMEOUT, int(value))
         self._ignore_timeout = None
+        self._notify_observers(Config.IGNORE_TIMEOUT)
 
     ignore_timeout = property(_get_ignore_timeout, _set_ignore_timeout)
 
@@ -136,6 +148,7 @@ class Config(object):
             Config.FILTER_PATTERNS, gconf.VALUE_STRING, patterns)
         self.client.set_list(Config.FILTER_ALERTS, gconf.VALUE_BOOL, alerts)
         self._filters = None
+        self._notify_observers(Config.FILTERS_KEY)
 
     filters = property(_get_filters, _set_filters)
 
@@ -203,7 +216,8 @@ class FilterSet(list):
         self.move_filter(index, +1)
 
     def update(self, filter):
-        self[self.index(filter)] = filter  # TODO: find out why necessary
+        # TODO: find out why necessary, then refactor to explain it
+        self[self.index(filter)] = filter  
 
 
 class AlertQueue(list):
@@ -213,18 +227,19 @@ class AlertQueue(list):
         self.config = config
         self.alert_displayed = False
         self.last_alert_time = 0
-        self.alert_dialog = None  # to make it available to tests
+        self.alert_dialog = None  # make it available to tests
     
-    def ignore_timeout_elapsed(self):
+    def within_ignore_timeout(self):
         seconds_per_minute = 60
         minutes = (time.time() - self.last_alert_time) / seconds_per_minute
-        return minutes >= self.config.ignore_timeout
+        return not (minutes >= self.config.ignore_timeout)
 
     def should_raise_alert(self, filter):
-        if not self.alert_displayed:
+        if self.alert_displayed:
+            return False
+        else:
             ignored = self.config.ignore_alerts
-            return not (ignored and not self.ignore_timeout_elapsed())
-        return False
+            return not (ignored and self.within_ignore_timeout())
 
     def raise_alert(self, filter, message):
         self.last_alert_time = time.time()
@@ -239,7 +254,6 @@ class AlertQueue(list):
             self.raise_alert(filter, message)
 
     def pop(self):
-        self.alert_displayed = False
         try:
             filter, message = list.pop(self, 0)
             if self.should_raise_alert(filter):
@@ -250,6 +264,14 @@ class AlertQueue(list):
     def clear(self):
         while len(self) > 0:
             self.pop()
+
+    def remove_current_alert(self):
+        self.alert_displayed = False
+        self.pop()
+
+    def remove_all_alerts(self):
+        self.alert_displayed = False
+        self.clear()
         
 
 class WidgetWrapper(object):
@@ -291,9 +313,17 @@ def set_icon(window):
 
 class Window(WidgetWrapper):
 
-    def __init__(self, root_widget):
+    def __init__(self, root_widget, parent=None):
         WidgetWrapper.__init__(self, root_widget)
+        if parent is not None:
+            self.root_widget.set_transient_for(parent)
         set_icon(self.root_widget)
+
+    def set_transient_for_main_window(self):
+        for window in gtk.window_list_toplevels():
+            if window.name == MainWindow.NAME:
+                self.root_widget.set_transient_for(window)
+                break
 
     def _are_running_tests(self):
         return TESTING in os.environ
@@ -332,13 +362,13 @@ class WelcomeDruid(Window):
     def on_druidpage_pipe_next(self, *args):
         filename = self.filename_entry.get_text()
         if len(filename) == 0:
-            dialog = ErrorDialog("Please specify a filename")
+            dialog = ErrorDialog(self.root_widget, "Please specify a filename")
             dialog.run()
             dialog.destroy()
             return True
         elif not os.path.exists(filename):
             dialog = ErrorDialog(
-                "File not found",
+                self.root_widget, "File not found",
                 "'%s' could not be found. Please specify the full path to "
                 "a named pipe.\n\nRun 'mkfifo /path/to/fifo' from a "
                 "terminal to create a new named pipe." % filename)
@@ -361,8 +391,8 @@ class WelcomeDruid(Window):
 
 class ErrorDialog(Dialog):
 
-    def __init__(self, primary, secondary=""):
-        Dialog.__init__(self, "error_dialog")
+    def __init__(self, parent, primary, secondary=""):
+        Dialog.__init__(self, "error_dialog", parent)
         self.label1.set_markup(self.get_markup(primary, secondary))
 
     def get_markup(self, primary, secondary):
@@ -553,7 +583,7 @@ class FilterDialog(Dialog):
             else:
                 message = "Filter has no pattern"
             self.root_widget.emit_stop_by_name("response")
-            dialog = ErrorDialog(message,
+            dialog = ErrorDialog(self.root_widget, message,
                                  "Please specify a name and a pattern.")
             dialog.run()
             dialog.destroy()
@@ -563,11 +593,14 @@ class AlertDialog(Dialog):
 
     def __init__(self, queue, config, filter, message):
         Dialog.__init__(self, "alert_dialog")
+        self.set_transient_for_main_window()
+        self.root_widget
         self.alert_queue = queue
         self.config = config
         self.setup_widgets(filter, message)
 
     def setup_widgets(self, filter, message):
+        self.root_widget.set_title("%s Alert" % filter.name)
         # TODO: escape text
         self.label1.set_markup('<span weight="bold" size="larger">'
                                "%s from %s</span>\n\n%s" %
@@ -575,11 +608,8 @@ class AlertDialog(Dialog):
         self.checkbutton1.set_active(self.config.ignore_alerts)
         self.ignore_timeout.set_value(self.config.ignore_timeout)
 
-    def destroy(self):
-        Dialog.destroy(self)
-        
     def on_alert_dialog_delete_event(self, *args):
-        self.alert_queue.pop()
+        self.alert_queue.remove_current_alert()
         self.destroy()
 
     def on_ignore_timeout_value_changed(self, *args):
@@ -588,9 +618,9 @@ class AlertDialog(Dialog):
     def on_okbutton1_clicked(self, *args):
         self.config.ignore_alerts = self.checkbutton1.get_active()
         if self.checkbutton1.get_active():
-            self.alert_queue.clear()
+            self.alert_queue.remove_all_alerts()
         else:
-            self.alert_queue.pop()
+            self.alert_queue.remove_current_alert()
         self.destroy()
 
 
@@ -641,29 +671,20 @@ class SearchTools(WidgetWrapper):
         self.find_button.set_sensitive(True)
 
     def get_search_column(self):
+        # TODO: convert numbers to named constants
         menu_column_mapping = { 0: 3, 1: 2, 2: 1, 3: 0 }
         return menu_column_mapping[self.search_type.get_history()]
 
     def on_find_button_clicked(self, *args):
-        model = self.message_view.get_unfiltered_model()
-        column = self.get_search_column()
         text = self.search_text.get_text()
-        filtered_model = FilteredListStore.make(model, column, text)
-        # TODO: consider refactoring to put the following in method on view
-        auto_scroll = self.message_view.is_scrolled_down()
-        self.message_view.set_model(filtered_model)
-        if auto_scroll:
-            self.message_view.scroll_down()
-        self.message_view.update_message_count()
+        column = self.get_search_column()
+        self.message_view.filter_by_text_in_column(text, column)
 
     def on_clear_button_clicked(self, *args):
-        auto_scroll = self.message_view.is_scrolled_down()
         self.message_view.clear_filter()
         self.search_text.set_text("")
         self.search_text.grab_focus()
         self.find_button.set_sensitive(False)
-        if auto_scroll:
-            self.message_view.scroll_down()
         self.message_view.update_message_count()
 
 
@@ -676,12 +697,18 @@ class MessageView(gtk.TreeView):
 
     def __init__(self, config, status_bar):
         gtk.TreeView.__init__(self)
+        config.add_observer(config.MESSAGES_KEPT, self)
         self.config = config
         self.status_bar = status_bar
         self.alert_queue = AlertQueue(config)
         self._observers = []
         self._unfiltered_model = None
+        self._about_to_scroll_down = False
 
+    def update(self, key):
+        if key == self.config.MESSAGES_KEPT:
+            self.discard_old_messages()
+        
     def get_unfiltered_model(self):
         return self._unfiltered_model
 
@@ -697,6 +724,7 @@ class MessageView(gtk.TreeView):
     def setup(self):
         model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
                               gobject.TYPE_STRING, gobject.TYPE_STRING)
+        model.connect("row-inserted", self.auto_scroll_down)
         self.set_unfiltered_model(model)
         self.add_column("Date", MessageView.DATE_COLUMN)
         self.add_column("Host", MessageView.HOST_COLUMN)
@@ -707,9 +735,16 @@ class MessageView(gtk.TreeView):
         selection.connect("changed", self.on_selection_changed)
         self.show()
 
+    def filter_by_text_in_column(self, text, column):
+        model = self.get_unfiltered_model()
+        filtered_model = FilteredListStore.make(model, column, text)
+        self.set_model(filtered_model)
+        self.auto_scroll_down()
+        self.update_message_count()
+
     def clear_filter(self):
         self.set_model(self._unfiltered_model)
-        self.scroll_down()
+        self.auto_scroll_down()
 
     def on_selection_changed(self, selection):
         selected = [False]
@@ -730,21 +765,27 @@ class MessageView(gtk.TreeView):
     def is_scrolled_down(self):
         adjustment = self.get_parent().get_vadjustment()
         position = adjustment.value + adjustment.page_size
-        print "val + page: %s\tupper: %s" % (position, adjustment.upper)
-        return int(position) >= int(adjustment.upper)
+        sticky_range = 10  # pixels
+        return int(position) + sticky_range >= int(adjustment.upper)
 
     def scroll_down(self):
-        # TODO: connect to row-inserted signal and then (if scrolled
-        # down scroll and scroll not scheduled) schedule a scroll. Do
-        # it with an idle_add.
+        num_rows = self.get_model().iter_n_children(None)
+        if num_rows > 0:
+            last_row_path = (num_rows - 1,)
+            self.scroll_to_cell(last_row_path)
+
+    def auto_scroll_down(self, *args):
+        # This method is connected to the row-inserted signal.
+        #
+        # TODO: only add idle handler if scroll not already scheduled
 
         # muntyan_: the point here is: scheduled function may or may
         # not be called before treeview revalidates, but it will be
         # called after all the rows are inserted, and scroll_to_* will
         # install another idle which will do correct thing
-        
-        last_row_path = (self.get_model().iter_n_children(None) - 1,)
-        self.scroll_to_cell(last_row_path)
+
+        if self.is_scrolled_down():
+            gobject.idle_add(self.scroll_down)
 
     def count_rows_in_model(self, model):
         count = [0]
@@ -770,34 +811,32 @@ class MessageView(gtk.TreeView):
         list_store = self.get_model()
         iter_first = list_store.get_iter_first()
         if iter_first:
-            list_store.remove(iter)
+            list_store.remove(iter_first)
 
     def append_message_to_models(self, message):
-        auto_scroll = self.is_scrolled_down()
         row = (message.date, message.hostname, message.process, message.text)
         if self.get_model() != self.get_unfiltered_model():
             self.get_unfiltered_model().append(row)
         self.get_model().append(row)
-        if auto_scroll:
-            self.scroll_down()
         
     def update_message_count(self):
         total_messages = self.count_all_messages()
         shown_messages = self.count_shown_messages()
-        if total_messages > self.config.messages_kept:
-            self.remove_first_row()
-            total_messages -= 1
         self.status_bar.set_message_count(total_messages, shown_messages)
+
+    def discard_old_messages(self):
+        while self.count_all_messages() > self.config.messages_kept:
+            self.remove_first_row()
+        self.update_message_count()
 
     def add_message(self, message):
         self.append_message_to_models(message)
-        self.update_message_count()
+        self.discard_old_messages()
         
     def process_line(self, line):
         message = LogMessage(line)
         for message_filter in self.config.filters:
             if message_filter.matches(message.text):
-                print "process_line(): calling add_message()"
                 self.add_message(message)
                 if message_filter.alert:
                     self.alert_queue.append(message_filter, message)
@@ -847,10 +886,11 @@ class Menu(object):
     def on_about1_activate(self, *args):
         copyright = u"Copyright \xa9 2004-2005 Graham Ashton"
         comments = "A log monitoring and alerting tool"
-        authors = ["Graham Ashton <ashtong@users.sf.net>"]
+        authors = ["Graham Ashton <ashtong@users.sourceforge.net>"]
         documenters = []
         translators = None
-        logo_file = os.path.join(bandsawconfig.PIXMAPSDIR, "bandsaw.png")
+        logo_file = os.path.join(bandsawconfig.PIXMAPSDIR,
+                                 bandsawconfig.ICONFILE)
         logo = gtk.gdk.pixbuf_new_from_file(logo_file)
         dialog = gnome.ui.About("Band Saw", __VERSION__, copyright, comments,
                                 authors, documenters, translators, logo)
@@ -876,6 +916,8 @@ class StatusBar(WidgetWrapper):
 
 class MainWindow(Window):
 
+    NAME = "app1"  # must match name of widget in glade file
+
     def __init__(self, config):
         Window.__init__(self, "app1")
         self.config = config
@@ -892,6 +934,9 @@ class MainWindow(Window):
         self.message_view.observe_selection(self)
         SearchTools(self, self.message_view)
         self.monitor_syslog()
+
+    def set_transient_for_main_window(self):
+        pass
 
     def selection_changed(self, have_selection):
         self.delete_selected1.set_sensitive(have_selection)
@@ -919,7 +964,7 @@ class MainWindow(Window):
         try:
             fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
         except OSError, e:
-            dialog = ErrorDialog("Unable to open file",
+            dialog = ErrorDialog(self.root_widget, "Unable to open file",
                                  "The file '%s' cannot be read. Please check "
                                  "the permissions and try again." % fifo_path)
             dialog.run()
