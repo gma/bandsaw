@@ -8,11 +8,12 @@ edit = sed \
 	-e 's,@pixmapsdir\@,$(pixmapsdir),g' \
 	-e 's,@VERSION\@,$(VERSION),g'
 
+pixmapsdir = $(datadir)/pixmaps
+
 # Required to allow editing with sed.
 distcheck-hook:
 	find $(distdir) -type d -name src -maxdepth 1 -exec chmod ug+w {} \;
 
-# DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
 DISTCHECK_CONFIGURE_FLAGS = --disable-scrollkeeper
 PYTHON = python
 
@@ -23,7 +24,7 @@ Desktop_in_files = $(srcdir)/data/bandsaw.desktop.in
 Desktop_DATA = $(Desktop_in_files:.desktop.in=.desktop)
 
 schemadir = $(GCONF_SCHEMA_FILE_DIR)
-schema_in_files = data/bandsaw.schemas
+schema_in_files = $(srcdir)/data/bandsaw.schemas
 schema_DATA = $(schema_in_files)
 
 if GCONF_SCHEMAS_INSTALL
@@ -41,8 +42,6 @@ scrollkeeper_files = COPYING-DOCS xmldocs.make omf.make
 # Even though scrollkeeper files aren't uninstalled, don't fail when
 # running "make distcheck".
 distuninstallcheck_listfiles = find . -type f -print | grep -v scrollkeeper
-# distuninstallcheck_listfiles = find . -type f -print | \
-# 	grep -v '^\./var/scrollkeeper'
 
 # Process the src directory
 
@@ -64,7 +63,7 @@ dist_scripts = src/bandsaw.py
 
 all: $(python_files) bandsaw
 
-CLEANFILES = bandsaw $(python_files)
+CLEANFILES = bandsaw $(python_files) $(Desktop_data)
 
 # Run unit tests via "make check"
 TESTS_ENVIRONMENT = $(PYTHON)

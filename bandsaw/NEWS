@@ -1,3 +1,6 @@
+0.2.0-dev:
+	Added the find tools.
+
 0.1.1:
 	Removed "make check" from installation instructions in README.
 
