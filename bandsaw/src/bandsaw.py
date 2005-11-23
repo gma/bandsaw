@@ -279,7 +279,11 @@ class WidgetWrapper(object):
     def __init__(self, root_widget, wrapper=None):
         self._root_widget_name = root_widget
         if wrapper is None:
-            glade_file = os.path.join(bandsawconfig.GLADEDIR, "bandsaw.glade")
+            if self.are_running_tests:
+                gladedir = os.path.dirname(__file__)
+            else:
+                gladedir = bandsawconfig.GLADEDIR
+            glade_file = os.path.join(gladedir, "bandsaw.glade")
             self._xml = gtk.glade.XML(glade_file, root_widget)
         else:
             self._xml = wrapper._xml
@@ -296,6 +300,11 @@ class WidgetWrapper(object):
             raise AttributeError, name
         return widget
     
+    def _are_running_tests(self):
+        return TESTING in os.environ
+
+    are_running_tests = property(_are_running_tests)
+
     def connect_signals(self, obj):
         for name in obj.__class__.__dict__.keys():
             if hasattr(obj, name):
@@ -325,13 +334,8 @@ class Window(WidgetWrapper):
                 self.root_widget.set_transient_for(window)
                 break
 
-    def _are_running_tests(self):
-        return TESTING in os.environ
-
-    testing = property(_are_running_tests)
-
     def show(self):
-        if not self.testing:
+        if not self.are_running_tests:
             self.root_widget.show_all()
 
     def destroy(self):
@@ -341,7 +345,7 @@ class Window(WidgetWrapper):
 class Dialog(Window):
 
     def run(self):
-        if not self.testing:
+        if not self.are_running_tests:
             return self.root_widget.run()
 
 
