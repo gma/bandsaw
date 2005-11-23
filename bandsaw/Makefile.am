@@ -12,8 +12,8 @@ edit = sed \
 distcheck-hook:
 	find $(distdir) -type d -name src -maxdepth 1 -exec chmod ug+w {} \;
 
-DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
-# DISTCHECK_CONFIGURE_FLAGS = --disable-scrollkeeper
+# DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
+DISTCHECK_CONFIGURE_FLAGS = --disable-scrollkeeper
 PYTHON = python
 
 # Process the data directory
@@ -37,18 +37,12 @@ endif
 SUBDIRS = help
 
 scrollkeeper_files = COPYING-DOCS xmldocs.make omf.make
-distuninstallcheck_listfiles = find . -type f -print | \
-	grep -v '^\./var/scrollkeeper'
 
 # Even though scrollkeeper files aren't uninstalled, don't fail when
 # running "make distcheck".
-distuninstallcheck_listfiles = find . -type f -print | \
-	grep -v '^\./var/scrollkeeper'
-
-# Process the pixmaps directory
-
-pixmapsdir = $(datadir)/pixmaps
-#pixmaps_DATA = pixmaps/bandsaw.png
+distuninstallcheck_listfiles = find . -type f -print | grep -v scrollkeeper
+# distuninstallcheck_listfiles = find . -type f -print | \
+# 	grep -v '^\./var/scrollkeeper'
 
 # Process the src directory
 
@@ -68,10 +62,6 @@ glade_DATA = $(srcdir)/src/bandsaw.glade
 
 dist_scripts = src/bandsaw.py
 
-bandsaw: src/bandsaw.py
-	cp src/bandsaw.py bandsaw
-	chmod +x bandsaw
-
 all: $(python_files) bandsaw
 
 CLEANFILES = bandsaw $(python_files)
@@ -87,7 +77,6 @@ EXTRA_DIST = \
 	$(bin_SCRIPTS) \
 	$(dist_scripts) \
 	$(glade_DATA) \
-	#$(pixmaps_DATA) \
 	$(python_in_files) \
 	$(schema_in_files) \
 	$(Desktop_in_files) \
