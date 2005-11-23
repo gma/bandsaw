@@ -3,8 +3,8 @@
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
   <!ENTITY appversion "@VERSION@">
-  <!ENTITY manrevision "2.0">
-  <!ENTITY date "July 2004">
+  <!ENTITY manrevision "2.1">
+  <!ENTITY date "November 2005">
   <!ENTITY app "<application>Band Saw</application>">
   <!-- Information about the entities
        The legal.xml file contains legal information, there is no need to edit the file. 
@@ -319,8 +319,8 @@
     </sect2>
   </sect1>
   <!-- ================ Usage ================================ -->
-  <!-- Use this section to describe how to use the application to perform the tasks for 
-  which the application is designed. -->
+  <!-- Use this section to describe how to use the application to
+  perform the tasks for which the application is designed. -->
   <sect1 id="bandsaw-usage"> 
     <title>Usage</title>
     <para>
@@ -417,6 +417,23 @@
 	</para>
       </tip>
 
+      <para>
+
+	It is often useful to be able to filter the messages so that
+	you can only see (for example) messages received from a single
+	server, or messages created by a single program. You can
+	choose to limit the view so that only messages that match your
+	search criteria are shown by using the "Find Tools"
+	immediately beneath the menu bar.
+
+      </para>
+      <para>
+
+	Choose the column that you wish filter, enter the text that
+	you wish to search for and click <guibutton>Find</guibutton>.
+
+      </para>
+
     </sect2> 
     <!-- ================ Usage Subsection ================================ -->
     <sect2 id="bandsaw-alert-dialogs"> 
@@ -467,7 +484,7 @@
 	      The name of the host that created the message
 	    </emphasis>
 	    &mdash;
-	    "hoopoo" in this example.
+	    "bobcat" in this example.
 	  </para>
 	</listitem>
 	<listitem>
@@ -504,65 +521,15 @@
       following tabbed sections:
     </para> 
     <itemizedlist> 
-      <listitem>
-	<para> 
-	  <xref linkend="bandsaw-prefs-general"/></para> 
-      </listitem> 
       <listitem> 
 	<para> 
 	  <xref linkend="bandsaw-prefs-filters"/></para> 
       </listitem> 
+      <listitem>
+	<para> 
+	  <xref linkend="bandsaw-prefs-general"/></para> 
+      </listitem> 
     </itemizedlist>
-    <!-- =============== Customization Subsection ================ -->
-    <!-- Use a new section to describe different tabbed sections on the Settings or Preferences
-    dialog. -->
-    <sect2 id="bandsaw-prefs-general"> 
-      <title>General</title>
-      <figure id="prefs-general-fig"> 
-	<title>General Preferences</title> 
-	<screenshot> 
-	  <mediaobject> 
-	    <imageobject>
-	      <imagedata fileref="figures/prefs-general.png" format="PNG"/> 
-	    </imageobject>
-	    <textobject> 
-	      <phrase>
-
-		Shows the General Preferences.
-
-	      </phrase>
-	    </textobject>
-	  </mediaobject>
-	</screenshot>
-      </figure>
-      <variablelist> 
-	<varlistentry> 
-	  <term> 
-	    <guilabel>Named pipe</guilabel>
-	  </term> 
-	  <listitem> 
-	    <para>
-	      Use this setting to modify the path to the named pipe
-	      (or FIFO) that is being written to by your syslog server.
-	      The FIFO must exist, and be accessible by the user account 
-	      that is running &app;.
-	    </para>
-	  </listitem>
-	</varlistentry> 
-	<varlistentry> 
-	  <term> 
-	    <guilabel>Maximum messages kept</guilabel>
-	  </term> 
-	  <listitem> 
-	    <para>
-	      Use this spin button to control the maximum number of
-	      log messages that can be kept in the message view. The
-	      larger the number the greater the resources required.
-	    </para>
-	  </listitem> 
-	</varlistentry> 
-      </variablelist> 
-    </sect2>
     <!-- ============= Customization Subsection ===================== -->
     <!-- Another tabbed section on the Preferences dialog. -->
     <sect2 id="bandsaw-prefs-filters">
@@ -773,6 +740,56 @@
 	</variablelist>
       </sect3> 
     </sect2> 
+    <!-- =============== Customization Subsection ================ -->
+    <!-- Use a new section to describe different tabbed sections on the Settings or Preferences
+    dialog. -->
+    <sect2 id="bandsaw-prefs-general"> 
+      <title>General</title>
+      <figure id="prefs-general-fig"> 
+	<title>General Preferences</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/prefs-general.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows the General Preferences.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+      <variablelist> 
+	<varlistentry> 
+	  <term> 
+	    <guilabel>Named pipe</guilabel>
+	  </term> 
+	  <listitem> 
+	    <para>
+	      Use this setting to modify the path to the named pipe
+	      (or FIFO) that is being written to by your syslog server.
+	      The FIFO must exist, and be accessible by the user account 
+	      that is running &app;.
+	    </para>
+	  </listitem>
+	</varlistentry> 
+	<varlistentry> 
+	  <term> 
+	    <guilabel>Maximum messages kept</guilabel>
+	  </term> 
+	  <listitem> 
+	    <para>
+	      Use this spin button to control the maximum number of
+	      log messages that can be kept in the message view. The
+	      larger the number the greater the resources required.
+	    </para>
+	  </listitem> 
+	</varlistentry> 
+      </variablelist> 
+    </sect2>
   </sect1>
   <!-- ============= Bugs ================================== -->
   <!-- This section is optional and is commented out by default. 
