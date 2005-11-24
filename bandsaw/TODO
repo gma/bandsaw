@@ -3,10 +3,6 @@ TODO
 
 - Add Help button to welcome druid and preferences dialog.
 
-- Redo filter prefs screenshot in help.
-
-- Update help to reflect new prefs tabs, search and status bar.
-
 - Add notification area support.
 
 - Re-open pipe when path changed, checking for IOErrors.
