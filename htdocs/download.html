@@ -21,14 +21,13 @@
       <h1>Download</h1>
 
       <p>
-	Band Saw 0.1.1 packages are now available for <a href="http://sourceforge.net/project/showfiles.php?group_id=112430&package_id=121663&release_id=257701">download</a>.
+	Band Saw 0.2.0 packages are now available:
       <p>
-
-      <p>
-	Alternatively, the latest code is always <a
-        href="http://sourceforge.net/cvs/?group_id=112430">available
-        from CVS</a>.
-      </p>
+      <ul>
+	<li>
+          <a href="http://prdownloads.sourceforge.net/bandsaw/bandsaw-0.2.0.tar.gz?download">bandsaw-0.2.0.tar.gz</a>
+        </li>
+      </ul>
 
       <h2>Requirements</h2>
 
@@ -52,15 +51,29 @@
       <h2>Installation</h2>
 
       <p>
-	Installation is simple, but please read the <a
-	href="http://cvs.sourceforge.net/viewcvs.py/bandsaw/bandsaw/README">README</a>
-	file included with the source code. It is important that
-	you <strong>specify the correct prefix when configuring the
-	package</strong> or you may find that some things don't work
-	correctly on your system (e.g. default configuration
-	parameters, installation of the user manual, etc.).
+	Installation is simple:
       </p>
-            
+
+      <pre>
+	$ ./configure
+        $ make
+        $ su -
+        # make install</pre>
+
+      <p>
+	Please read the <a
+	href="http://cvs.sourceforge.net/viewcvs.py/bandsaw/bandsaw/README">README</a>
+	file included with the source code for more details. It is
+	important that you <strong>specify the correct prefix when
+	configuring the package</strong> or you may find that some
+	things don't work correctly on your system (e.g. default
+	configuration parameters, installation of the user manual,
+	etc.). For example, when installing on my Ubuntu Breezy
+	workstation I run the configure command as follows:
+      </p>
+      <pre>
+	$ ./configure --prefix=/usr --sysconfdir=/etc</pre>
+
     </div>
 
     <!--#include virtual="ssi/copyright.html" -->
