@@ -17,7 +17,9 @@
 # $Id$
 
 
+ALERTICON = "@alerticon@"
 GLADEDIR = "@gladedir@"
-ICONFILE = "@iconfile@"
+LOGICON = "@logicon@"
+LOGOICON = "@logoicon@"
 PIXMAPSDIR = "@pixmapsdir@"
 VERSION = "@VERSION@"
