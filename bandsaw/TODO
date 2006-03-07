@@ -1,6 +1,8 @@
 TODO
 ----
 
+- Stop flashing when log window brought to foreground.
+
 - Add Help button to welcome druid and preferences dialog.
 
 - Add notification area support.

@@ -28,6 +28,7 @@ import sys
 import time
 
 import pygtk; pygtk.require("2.0")
+import egg.trayicon
 import gconf
 import gnome
 import gnome.ui
@@ -50,10 +51,7 @@ class Config(object):
 
     MESSAGES_KEPT = "/".join((BASE_KEY, "messages_kept"))
     NAMED_PIPE = "/".join((BASE_KEY, "named_pipe"))
-
     ALERTS_KEY = "/".join((BASE_KEY, "alerts"))
-    IGNORE_ALERTS = "/".join((ALERTS_KEY, "ignore"))
-    IGNORE_TIMEOUT = "/".join((ALERTS_KEY, "ignore_timeout"))
     
     FILTERS_KEY = "/".join((BASE_KEY, "filters"))
     FILTER_ALERTS = "/".join((FILTERS_KEY, "alerts"))
@@ -64,8 +62,6 @@ class Config(object):
         self.client = client
         self._named_pipe = None
         self._messages_kept = None
-        self._ignore_alerts = None
-        self._ignore_timeout = None
         self._filters = None
         self._observers = {}
 
@@ -100,30 +96,6 @@ class Config(object):
         self._notify_observers(Config.MESSAGES_KEPT)
 
     messages_kept = property(_get_messages_kept, _set_messages_kept)
-
-    def _get_ignore_alerts(self):
-        if self._ignore_alerts is None:
-            self._ignore_alerts = self.client.get_bool(Config.IGNORE_ALERTS)
-        return self._ignore_alerts
-
-    def _set_ignore_alerts(self, value):
-        self.client.set_bool(Config.IGNORE_ALERTS, value)
-        self._ignore_alerts = None
-        self._notify_observers(Config.IGNORE_ALERTS)
-
-    ignore_alerts = property(_get_ignore_alerts, _set_ignore_alerts)
-
-    def _get_ignore_timeout(self):
-        if self._ignore_timeout is None:
-            self._ignore_timeout = self.client.get_int(Config.IGNORE_TIMEOUT)
-        return self._ignore_timeout
-
-    def _set_ignore_timeout(self, value):
-        self.client.set_int(Config.IGNORE_TIMEOUT, int(value))
-        self._ignore_timeout = None
-        self._notify_observers(Config.IGNORE_TIMEOUT)
-
-    ignore_timeout = property(_get_ignore_timeout, _set_ignore_timeout)
 
     def _get_filters(self):
         if self._filters is None:
@@ -220,60 +192,6 @@ class FilterSet(list):
         self[self.index(filter)] = filter  
 
 
-class AlertQueue(list):
-
-    def __init__(self, config):
-        list.__init__(self)
-        self.config = config
-        self.alert_displayed = False
-        self.last_alert_time = 0
-        self.alert_dialog = None  # make it available to tests
-    
-    def within_ignore_timeout(self):
-        seconds_per_minute = 60
-        minutes = (time.time() - self.last_alert_time) / seconds_per_minute
-        return not (minutes >= self.config.ignore_timeout)
-
-    def should_raise_alert(self, filter):
-        if self.alert_displayed:
-            return False
-        else:
-            ignored = self.config.ignore_alerts
-            return not (ignored and self.within_ignore_timeout())
-
-    def raise_alert(self, filter, message):
-        self.last_alert_time = time.time()
-        self.alert_displayed = True
-        self.alert_dialog = AlertDialog(self, self.config, filter, message)
-        self.alert_dialog.show()
-
-    def append(self, filter, message):
-        if self.alert_displayed:
-            list.append(self, (filter, message))
-        elif self.should_raise_alert(filter):
-            self.raise_alert(filter, message)
-
-    def pop(self):
-        try:
-            filter, message = list.pop(self, 0)
-            if self.should_raise_alert(filter):
-                self.raise_alert(filter, message)
-        except IndexError:
-            pass
-
-    def clear(self):
-        while len(self) > 0:
-            self.pop()
-
-    def remove_current_alert(self):
-        self.alert_displayed = False
-        self.pop()
-
-    def remove_all_alerts(self):
-        self.alert_displayed = False
-        self.clear()
-        
-
 class WidgetWrapper(object):
 
     def __init__(self, root_widget, wrapper=None):
@@ -313,11 +231,80 @@ class WidgetWrapper(object):
                     self._xml.signal_connect(name, candidate_callback)
 
 
+def img_path(filename):
+    return os.path.join(bandsawconfig.PIXMAPSDIR, filename)
+
+
 def set_icon(window):
-    icon_file = os.path.join(bandsawconfig.PIXMAPSDIR, bandsawconfig.ICONFILE)
-    if os.path.exists(icon_file):
-        pixbuf = gtk.gdk.pixbuf_new_from_file(icon_file)
+    if os.path.exists(img_path(bandsawconfig.LOGOICON)):
+        pixbuf = gtk.gdk.pixbuf_new_from_file(img_path(bandsawconfig.LOGOICON))
         window.set_icon(pixbuf)
+
+
+class FlashingNotifier(object):
+
+    def __init__(self, onicon, officon, interval=500):
+        self.on_icon = onicon
+        self.off_icon = officon
+        self.interval = interval
+        self.timeout = None
+        self.is_flashing = False
+        self.clicked_callback = None
+        self.clicked_callback_data = ()
+        self.trayicon = self.setup_widgets()
+        self.stop_flashing()
+
+    def on_button_press_event(self, widget, event):
+        if self.clicked_callback is not None:
+            self.clicked_callback(*self.clicked_callback_data)
+
+    def setup_widgets(self):
+        trayicon = egg.trayicon.TrayIcon("BandSawTrayIcon")
+        eventbox = gtk.EventBox()
+        image = gtk.Image()
+        eventbox.add(image)
+        eventbox.connect("button-press-event", self.on_button_press_event)
+        trayicon.add(eventbox)
+        return trayicon
+
+    def set_clicked_callback(self, callback, *args):
+        self.clicked_callback = callback
+        self.clicked_callback_data = args
+
+    def _get_eventbox(self):
+        return self.trayicon.get_children()[0]
+
+    eventbox = property(_get_eventbox)
+
+    def _get_image(self):
+        return self.eventbox.get_children()[0]
+
+    image = property(_get_image)
+
+    def _flash_on(self):
+        self.image.set_from_file(self.on_icon)
+        self.is_flashing = True
+
+    def _flash_off(self):
+        self.image.set_from_file(self.off_icon)
+        self.is_flashing = False
+
+    def _flash(self, *args):
+        if self.is_flashing:
+            self._flash_off()
+        else:
+            self._flash_on()
+        return True
+        
+    def start_flashing(self):
+        if self.timeout is None:
+            self.timeout = gobject.timeout_add(self.interval, self._flash)
+
+    def stop_flashing(self):
+        if self.timeout is not None:
+            gobject.source_remove(self.timeout)
+        self._flash_off()
+        self.timeout = None
 
 
 class Window(WidgetWrapper):
@@ -383,8 +370,6 @@ class WelcomeDruid(Window):
 
     def on_druidpagefinish1_finish(self, *args):
         self.destroy()
-        window = MainWindow(self.config)
-        window.show()
 
     def on_druidpage_cancel(self, *args):
         gtk.main_quit()
@@ -593,41 +578,6 @@ class FilterDialog(Dialog):
             dialog.destroy()
 
 
-class AlertDialog(Dialog):
-
-    def __init__(self, queue, config, filter, message):
-        Dialog.__init__(self, "alert_dialog")
-        self.set_transient_for_main_window()
-        self.root_widget
-        self.alert_queue = queue
-        self.config = config
-        self.setup_widgets(filter, message)
-
-    def setup_widgets(self, filter, message):
-        self.root_widget.set_title("%s Alert" % filter.name)
-        # TODO: escape text
-        self.label1.set_markup('<span weight="bold" size="larger">'
-                               "%s from %s</span>\n\n%s" %
-                               (filter.name, message.hostname, message.text))
-        self.checkbutton1.set_active(self.config.ignore_alerts)
-        self.ignore_timeout.set_value(self.config.ignore_timeout)
-
-    def on_alert_dialog_delete_event(self, *args):
-        self.alert_queue.remove_current_alert()
-        self.destroy()
-
-    def on_ignore_timeout_value_changed(self, *args):
-        self.config.ignore_timeout = self.ignore_timeout.get_value()
-
-    def on_okbutton1_clicked(self, *args):
-        self.config.ignore_alerts = self.checkbutton1.get_active()
-        if self.checkbutton1.get_active():
-            self.alert_queue.remove_all_alerts()
-        else:
-            self.alert_queue.remove_current_alert()
-        self.destroy()
-
-
 class FilteredListStore(gtk.ListStore):
 
     def __init__(self, list_store, column, text):
@@ -699,12 +649,12 @@ class MessageView(gtk.TreeView):
     PROCESS_COLUMN = 2
     MESSAGE_COLUMN = 3
 
-    def __init__(self, config, status_bar):
+    def __init__(self, config, notifier, status_bar):
         gtk.TreeView.__init__(self)
         config.add_observer(config.MESSAGES_KEPT, self)
         self.config = config
+        self.notifier = notifier
         self.status_bar = status_bar
-        self.alert_queue = AlertQueue(config)
         self._observers = []
         self._unfiltered_model = None
         self._about_to_scroll_down = False
@@ -737,7 +687,6 @@ class MessageView(gtk.TreeView):
         selection = self.get_selection()
         selection.set_mode(gtk.SELECTION_MULTIPLE)
         selection.connect("changed", self.on_selection_changed)
-        self.show()
 
     def filter_by_text_in_column(self, text, column):
         model = self.get_unfiltered_model()
@@ -836,14 +785,17 @@ class MessageView(gtk.TreeView):
     def add_message(self, message):
         self.append_message_to_models(message)
         self.discard_old_messages()
-        
+
+    def toplevel_has_focus(self):
+        return self.get_toplevel().has_toplevel_focus()
+    
     def process_line(self, line):
         message = LogMessage(line)
         for message_filter in self.config.filters:
             if message_filter.matches(message.text):
                 self.add_message(message)
-                if message_filter.alert:
-                    self.alert_queue.append(message_filter, message)
+                if (not self.toplevel_has_focus()) and message_filter.alert:
+                    self.notifier.start_flashing()
                 break
 
     def clear(self):
@@ -888,14 +840,12 @@ class Menu(object):
         gnome.help_display_desktop(program, "bandsaw", "bandsaw.xml", "index")
 
     def on_about1_activate(self, *args):
-        copyright = u"Copyright \xa9 2004-2005 Graham Ashton"
+        copyright = u"Copyright \xa9 2004-2006 Graham Ashton"
         comments = "A log monitoring and alerting tool"
         authors = ["Graham Ashton <ashtong@users.sourceforge.net>"]
         documenters = []
         translators = None
-        logo_file = os.path.join(bandsawconfig.PIXMAPSDIR,
-                                 bandsawconfig.ICONFILE)
-        logo = gtk.gdk.pixbuf_new_from_file(logo_file)
+        logo = gtk.gdk.pixbuf_new_from_file(img_path(bandsawconfig.LOGOICON))
         dialog = gnome.ui.About("Band Saw", __VERSION__, copyright, comments,
                                 authors, documenters, translators, logo)
         set_icon(dialog)
@@ -927,8 +877,30 @@ class MainWindow(Window):
         self.config = config
         self.monitor_id = None
         status_bar = StatusBar(self)
-        self.message_view = MessageView(self.config, status_bar)
+        self.x_coord = 0
+        self.y_coord = 0
+        self.notifier = self.create_tray_icon()
+        self.message_view = MessageView(self.config, self.notifier, status_bar)
         self.setup_widgets()
+
+    def create_tray_icon(self):
+        notifier = FlashingNotifier(
+            img_path(bandsawconfig.ALERTICON), img_path(bandsawconfig.LOGICON))
+
+        def on_click():
+            # TODO: move this callback to subclass of FlashingNotifier?
+            # What would we do with the window object?
+            if self.root_widget.has_toplevel_focus():
+                self.x_coord, self.y_coord = self.root_widget.get_position()
+                self.root_widget.hide()
+            else:
+                self.root_widget.present()
+                self.root_widget.move(self.x_coord, self.y_coord)
+                notifier.stop_flashing()
+
+        notifier.set_clicked_callback(on_click)
+        notifier.trayicon.show_all()
+        return notifier
 
     def setup_widgets(self):
         self.message_view.setup()
@@ -987,9 +959,9 @@ def main():
     config = Config(gconf.client_get_default())
     if config.is_first_run():
         window = WelcomeDruid(config)
+        window.show()
     else:
         window = MainWindow(config)
-    window.show()
     gtk.main()
 
 

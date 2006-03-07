@@ -3,12 +3,12 @@
 AUTOMAKE_OPTIONS = check-news dist-bzip2 std-options
 
 edit = sed \
+	-e 's,@alerticon\@,$(alerticon),g' \
 	-e 's,@gladedir\@,$(gladedir),g' \
-	-e 's,@iconfile\@,$(iconfile),g' \
+	-e 's,@logicon\@,$(logicon),g' \
+	-e 's,@logoicon\@,$(logoicon),g' \
 	-e 's,@pixmapsdir\@,$(pixmapsdir),g' \
 	-e 's,@VERSION\@,$(VERSION),g'
-
-pixmapsdir = $(datadir)/pixmaps
 
 # Required to allow editing with sed.
 distcheck-hook:
@@ -42,6 +42,14 @@ scrollkeeper_files = COPYING-DOCS xmldocs.make omf.make
 # Even though scrollkeeper files aren't uninstalled, don't fail when
 # running "make distcheck".
 distuninstallcheck_listfiles = find . -type f -print | grep -v scrollkeeper
+
+# Process the pixmaps directory
+
+pixmapsdir = $(datadir)/pixmaps/bandsaw
+pixmaps_DATA = \
+	$(srcdir)/pixmaps/bandsaw-alert.png \
+	$(srcdir)/pixmaps/bandsaw-log.png \
+	$(srcdir)/pixmaps/bandsaw-logo.png
 
 # Process the src directory
 
@@ -79,4 +87,5 @@ EXTRA_DIST = \
 	$(python_in_files) \
 	$(schema_in_files) \
 	$(Desktop_in_files) \
-	$(scrollkeeper_files)
+	$(scrollkeeper_files) \
+	$(pixmaps_DATA)
