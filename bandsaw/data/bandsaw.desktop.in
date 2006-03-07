@@ -5,6 +5,6 @@ Comment=Monitor the system log files for interesting events
 Exec=bandsaw
 Terminal=false
 Type=Application
-Icon=@iconfile@
+Icon=@logoicon@
 StartupNotify=true
 Categories=GNOME;Application;System;

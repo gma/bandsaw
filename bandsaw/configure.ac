@@ -1,5 +1,5 @@
 AC_INIT(src/bandsaw.py)
-AM_INIT_AUTOMAKE(bandsaw, 0.2.0-dev, ashtong@users.sf.net)
+AM_INIT_AUTOMAKE(bandsaw, 0.3.0-dev, ashtong@users.sf.net)
 
 AM_MAINTAINER_MODE
 
@@ -21,7 +21,9 @@ AM_PATH_PYTHON(2.3)
 PKG_CHECK_MODULES(PYGTK, pygtk-2.0 gnome-python-2.0)
 
 AC_SUBST(VERSION)
-AC_SUBST(iconfile, gnome-log.png)
+AC_SUBST(alerticon, bandsaw-alert.png)
+AC_SUBST(logicon, bandsaw-log.png)
+AC_SUBST(logoicon, bandsaw-logo.png)
 
 AC_OUTPUT(
 help/Makefile
