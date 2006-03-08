@@ -875,13 +875,13 @@ class MainWindow(Window):
     def __init__(self, config):
         Window.__init__(self, "app1")
         self.config = config
-        self.monitor_id = None
         status_bar = StatusBar(self)
         self.x_coord = 0
         self.y_coord = 0
         self.notifier = self.create_tray_icon()
         self.message_view = MessageView(self.config, self.notifier, status_bar)
         self.setup_widgets()
+        self.monitor_syslog()
 
     def create_tray_icon(self):
         notifier = FlashingNotifier(
@@ -909,7 +909,6 @@ class MainWindow(Window):
         self.setup_menu()
         self.message_view.observe_selection(self)
         SearchTools(self, self.message_view)
-        self.monitor_syslog()
 
     def set_transient_for_main_window(self):
         pass
@@ -922,34 +921,43 @@ class MainWindow(Window):
         self.delete_selected1.set_sensitive(False)
         self.connect_signals(menu)
 
-    def on_syslog_readable(self, fifo, condition):
+    def read_pipe(self, fd, condition):
+
+        class EndOfFile(RuntimeError):
+            pass
+
+        end_of_line = "\n"
+
         try:
-            line = fifo.readline()
-            if line == "":  # fifo closed by syslog
-                raise IOError
-        except IOError:
-            gobject.source_remove(self.monitor_id)
+            fifo = os.fdopen(fd)
+            buf = fifo.read()
+            while True:
+                if buf == "":
+                    raise EndOfFile
+                lines = buf.split(end_of_line)
+                if buf.endswith(end_of_line):
+                    lines = lines[:-1]
+                    buf = lines[-1]
+                for line in lines:
+                    self.message_view.process_line(line)
+                buf += fifo.read()
+        except (EndOfFile, IOError), e:
             self.monitor_syslog()
             return False
-        else:
-            self.message_view.process_line(line)
-            return True
 
     def monitor_syslog(self):
-        fifo_path = self.config.named_pipe
         try:
-            fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
+            fd = os.open(self.config.named_pipe, os.O_RDONLY | os.O_NONBLOCK)
         except OSError, e:
             dialog = ErrorDialog(self.root_widget, "Unable to open file",
                                  "The file '%s' cannot be read. Please check "
-                                 "the permissions and try again." % fifo_path)
+                                 "the permissions and try again." %
+                                 self.config.named_pipe)
             dialog.run()
             dialog.destroy()
             sys.exit()
         else:
-            fifo = os.fdopen(fd)
-            self.monitor_id = gobject.io_add_watch(
-                fifo, gtk.gdk.INPUT_READ, self.on_syslog_readable)
+            gobject.io_add_watch(fd, gobject.IO_IN, self.read_pipe)
         
     def on_app1_delete_event(self, *args):
         gtk.main_quit()
