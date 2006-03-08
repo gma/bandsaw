@@ -40,9 +40,9 @@ but for most users the following should suffice:
 
 You should change the /usr prefix to match the path where your GNOME
 installation has been installed. The sysconfdir parameter should point
-to your gconf configuration files (e.g. /etc/gconf). If either path is
-incorrect you may find that the user manual and default configuration
-options are unavailable.
+to your gconf configuration files (they exist at /etc/gconf in this
+example). If either path is incorrect you may find that the user
+manual and default configuration options are unavailable.
 
 Support
 =======
