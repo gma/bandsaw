@@ -62,29 +62,5 @@
       </locale>
     </schema>
 
-    <!-- Alerts -->
-
-    <schema>
-      <key>/schemas/apps/bandsaw/alerts/ignore</key>
-      <applyto>/apps/bandsaw/alerts/ignore</applyto>
-      <owner>bandsaw</owner>
-      <type>bool</type>
-      <default>False</default>
-      <locale name="C">
-         <short>Whether alerts should be ignored for a period</short>
-      </locale>
-    </schema>
-
-    <schema>
-      <key>/schemas/apps/bandsaw/alerts/ignore_timeout</key>
-      <applyto>/apps/bandsaw/alerts/ignore_timeout</applyto>
-      <owner>bandsaw</owner>
-      <type>int</type>
-      <default>5</default>
-      <locale name="C">
-         <short>The number of minutes to ignore alerts for</short>
-      </locale>
-    </schema>
-
 </schemalist>
 </gconfschemafile>
