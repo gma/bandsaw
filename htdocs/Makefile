@@ -33,7 +33,7 @@ upload: .upload-root .upload-news .upload-ssi .upload-images \
 	@touch .upload-images
 
 
-.upload-screenshots: images/ss/*.png
+.upload-screenshots: images/ss/*.png images/ss/*.gif
 	#ssh $(REMOTE_USER)@$(REMOTE_HOST) mkdir -p $(REMOTE_DIR)/images/ss
 	scp $? $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_DIR)/images/ss
 	@touch .upload-screenshots
