@@ -35,6 +35,7 @@ The installation scripts are explained in detail in the INSTALL file,
 but for most users the following should suffice:
 
   $ ./configure --prefix=/usr --sysconfdir=/etc
+  $ make
   # make install
 
 You should change the /usr prefix to match the path where your GNOME
@@ -42,11 +43,6 @@ installation has been installed. The sysconfdir parameter should point
 to your gconf configuration files (e.g. /etc/gconf). If either path is
 incorrect you may find that the user manual and default configuration
 options are unavailable.
-
-If you are unsure where GNOME has been installed this command should
-tell you:
-
-  $ pkg-config --variable=prefix libgnome-2.0
 
 Support
 =======
