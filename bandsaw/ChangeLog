@@ -1,3 +1,91 @@
+2006-03-07  ashtong  <ashtong@users.sourceforge.net>
+
+	* Makefile.am, NEWS, TODO, configure.ac, data/bandsaw.desktop.in, pixmaps/bandsaw-alert.png, pixmaps/bandsaw-alert.png.bak, pixmaps/bandsaw-log.png, pixmaps/bandsaw-logo.png, src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py, src/bandsawconfig.py.in:
+	Merged notification icon code from the trayicon branch.
+
+	* pixmaps/bandsaw-alert.png, pixmaps/bandsaw-log.png, pixmaps/bandsaw-logo.png:
+	New file.
+
+	* Makefile.am, NEWS, TODO, configure.ac, data/bandsaw.desktop.in, pixmaps/bandsaw-alert.png, pixmaps/bandsaw-alert.png.bak, pixmaps/bandsaw-log.png, pixmaps/bandsaw-logo.png, src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py, src/bandsawconfig.py.in:
+	Replaced alert dialogs with a notification tray icon.
+
+2005-11-24  ashtong  <ashtong@users.sourceforge.net>
+
+	* TODO: Removed tasks relating to help.
+
+2005-11-23  ashtong  <ashtong@users.sourceforge.net>
+
+	* Makefile.am, NEWS: Got 'make distcheck' working again.
+
+	* help/bandsaw/C/bandsaw.xml.in:
+	Replaced broken link to forum (broken in Yelp, at least) with request to email.
+
+	* Makefile.am:
+	Slight tidy up, fixed distribution of bandsaw.desktop.in.
+
+	* src/bandsaw.py:
+	Use local (not installed) glade file when running all tests.
+
+	* help/bandsaw/C/bandsaw.xml.in, help/bandsaw/C/figures/alert-dialog.png, help/bandsaw/C/figures/main-window.png, help/bandsaw/C/figures/message-view.png, help/bandsaw/C/figures/prefs-filter-add.png, help/bandsaw/C/figures/prefs-filters.png, help/bandsaw/C/figures/prefs-general.png:
+	Updated manual for 0.2.0.
+
+2005-11-06  ashtong  <ashtong@users.sourceforge.net>
+
+	* TODO: Updated in light of recent work.
+
+	* src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py:
+	Fixes to auto scrolling behaviour.
+	Fixed bug where alert dialogs weren't redisplayed after timeout elapsed.
+	Automatically trim the messages in the view if messages_kept reduced.
+
+	* Makefile.am, pixmaps/bandsaw.png, pixmaps/bandsaw.svg:
+	Dropped home grown Band Saw logo in favour of gnome-log.png.
+
+2005-11-01  ashtong  <ashtong@users.sourceforge.net>
+
+	* Makefile.am, configure.ac: Improved configuration and build scripts.
+
+	* src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py, src/bandsawconfig.py.in:
+	Improvements to auto-scroll-on-log-message. Coding style fixes.
+
+	* pixmaps/bandsaw.png: Use standard gnome-log.png icon in about dialog.
+
+2004-09-28  ashtong  <ashtong@users.sourceforge.net>
+
+	* README: Updated recommended options for ./configure.
+
+2004-08-16  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.py: Renamed 'visible' to 'shown'.
+
+2004-08-04  ashtong  <ashtong@users.sourceforge.net>
+
+	* TODO: Added note about updates to user manual.
+
+	* src/bandsaw.py: Show number of messages visible in the status bar.
+
+2004-08-03  ashtong  <ashtong@users.sourceforge.net>
+
+	* src/bandsaw.glade, src/bandsaw.py:
+	Added message counter to status bar. Improved search UI.
+
+	* TODO: Added note about showing number of visible messages.
+
+	* src/bandsaw.glade, src/bandsaw.py, src/bandsaw_test.py:
+	Initial support for restricting the contents of the message view.
+
+	* configure.ac: Bumped version number to 0.2.0.
+
+	* TODO:
+	Added Geoff's suggestion for making named pipe if conditions allow.
+
+2004-08-02  ashtong  <ashtong@users.sourceforge.net>
+
+	* help/bandsaw/C/bandsaw.xml, help/bandsaw/C/bandsaw.xml.in:
+	Substitute version number into user manual.
+
+	* ChangeLog, NEWS, configure.ac: Bumped version number to 0.1.1.
+
 2004-08-01  ashtong  <ashtong@users.sourceforge.net>
 
 	* README: Removed "make check".
@@ -12,7 +100,8 @@
 	* help/bandsaw/C/bandsaw.xml: Fixed example syslog line width.
 
 	* README:
-	Heavily fleshed out, including installation instructions and support info.
+	Heavily fleshed out, including installation instructions and
+	support info.
 
 	* configure.ac: Check for gnome-python-2.0.
 
@@ -20,6 +109,33 @@
 	Renamed desktop entry to "Band Saw Log Monitor".
 
 2004-07-30  ashtong  <ashtong@users.sourceforge.net>
+
+	* TODO: Updated.
+
+	* src/bandsaw.glade: Fixed spin buttons.
+
+	* TODO, src/bandsaw.py:
+	Display the help browser when Help->Contents clicked.
+
+	* src/bandsaw.py: Fixed spin buttons.
+
+	* TODO:
+	Re-ordered General and Filter tabs in preferences dialog. Fixed
+	spin buttons.
+
+	* src/bandsaw.glade:
+	Re-ordered General and Filter tabs in preferences dialog.
+
+	* src/bandsaw.py, src/bandsaw_test.py:
+	Added unit tests for clearing the alert queue.
+
+	* src/bandsaw.glade:
+	Delete current message from alert queue when cancelling alert dialog.
+
+	* ChangeLog: Updated.
+
+	* help/C/bandsaw.xml, help/C/figures/alert-dialog.png, help/C/figures/main-window.png, help/C/figures/message-view.png, help/C/figures/prefs-filter-add.png, help/C/figures/prefs-filters.png, help/C/figures/prefs-general.png, help/C/legal.xml, help/bandsaw/C/Makefile.am, help/bandsaw/C/bandsaw-C.omf, help/bandsaw/C/bandsaw.xml, help/bandsaw/C/figures/alert-dialog.png, help/bandsaw/C/figures/main-window.png, help/bandsaw/C/figures/message-view.png, help/bandsaw/C/figures/prefs-filter-add.png, help/bandsaw/C/figures/prefs-filters.png, help/bandsaw/C/figures/prefs-general.png, help/bandsaw/C/legal.xml, help/bandsaw/Makefile.am, help/Makefile.am:
+	Moved user manual from help/C to help/bandsaw/C.
 
 	* TODO: Added TODO.
 
@@ -102,7 +218,8 @@
 	* src/bandsaw.py: Reset filter dialog's fields when closed.
 
 	* src/bandsaw.py, src/bandsaw_test.py:
-	Ensure that new config param values are retrievable after they've been set.
+	Ensure that new config param values are retrievable after they've
+	been set.
 
 	* src/bandsaw.py, src/bandsaw_test.py:
 	Only read config parameters from GConf at start up.
