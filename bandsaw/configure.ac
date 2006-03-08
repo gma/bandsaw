@@ -31,5 +31,4 @@ help/bandsaw/C/Makefile
 help/bandsaw/C/bandsaw.xml:help/bandsaw/C/bandsaw.xml.in
 Makefile
 bandsaw:src/bandsaw.py
-data/bandsaw.desktop
 )
