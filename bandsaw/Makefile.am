@@ -20,8 +20,14 @@ PYTHON = python
 # Process the data directory
 
 Desktopdir = $(datadir)/applications
+Desktop_files = data/bandsaw.desktop
 Desktop_in_files = $(srcdir)/data/bandsaw.desktop.in
 Desktop_DATA = $(Desktop_in_files:.desktop.in=.desktop)
+
+$(Desktop_files): Makefile $(Desktop_in_files)
+	rm -f $(srcdir)/$(Desktop_files) $(srcdir)/$(Desktop_files).tmp
+	$(edit) $(srcdir)/$(Desktop_in_files) >$(srcdir)/$(Desktop_files).tmp
+	mv $(srcdir)/$(Desktop_files).tmp $(srcdir)/$(Desktop_files)
 
 schemadir = $(GCONF_SCHEMA_FILE_DIR)
 schema_in_files = $(srcdir)/data/bandsaw.schemas
