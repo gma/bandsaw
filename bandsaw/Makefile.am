@@ -1,6 +1,6 @@
 # $Id$
 
-AUTOMAKE_OPTIONS = check-news dist-bzip2 std-options
+AUTOMAKE_OPTIONS = check-news std-options
 
 edit = sed \
 	-e 's,@alerticon\@,$(alerticon),g' \
