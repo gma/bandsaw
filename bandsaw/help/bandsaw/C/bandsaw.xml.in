@@ -152,12 +152,12 @@
       &app; helps you monitor the system log files for messages that
       interest you, alerting you when certain messages occur. You can
       define filters to control which messages are displayed on
-      screen, and which ones display alerts.
+      screen, and which ones generate alerts.
 
     </para>
     <para>
 
-      The system log files are written by a syslog server (available
+      The system log files are managed by a syslog server (available
       in all Linux distributions and UNIX variants). Syslog can be
       configured to forward messages to other computers; by <link
       linkend="bandsaw-config-syslog">configuring syslog</link>
@@ -281,27 +281,31 @@
 	</para>
       </note>
 
-      <figure id="main-window-fig"> 
-	<title>&app; Start Up Window</title> 
+      <!-- Include any descriptions of the GUI immediately after the screenshot of the main UI, -->
+      <!-- for example, the items on the menubar and on the toolbar. This section is optional. -->
+
+      <para>
+	After you have completed the initial welcome screens you will
+	see a new icon (that looks like a small log) in your
+	notification tray. Click the icon to display the main &app;
+	window.
+      </para>
+
+      <figure id="trayicon-icon-fig"> 
+	<title>&app; Notification Icon (the second icon from left)</title> 
 	<screenshot> 
 	  <mediaobject> 
 	    <imageobject>
-	      <imagedata fileref="figures/main-window.png" format="PNG"/> 
+	      <imagedata fileref="figures/trayicon.png" format="PNG"/> 
 	    </imageobject>
 	    <textobject> 
 	      <phrase>
-
-		Shows &app; main window. Contains titlebar, menubar,
-		and log message view.
-
+		The notification icon.
 	      </phrase>
 	    </textobject>
 	  </mediaobject>
 	</screenshot>
       </figure>
-
-      <!-- Include any descriptions of the GUI immediately after the screenshot of the main UI, -->
-      <!-- for example, the items on the menubar and on the toolbar. This section is optional. -->
 
       <para>
 	The main area of the &app; window is called the
@@ -313,6 +317,26 @@
 	automatically removed from the top of the view as new ones are
 	added to the bottom.
       </para>
+
+      <figure id="main-window-fig"> 
+	<title>&app; Log Window</title> 
+	<screenshot> 
+	  <mediaobject> 
+	    <imageobject>
+	      <imagedata fileref="figures/main-window.png" format="PNG"/> 
+	    </imageobject>
+	    <textobject> 
+	      <phrase>
+
+		Shows &app;'s log window. Contains titlebar, menubar,
+		and log message area.
+
+	      </phrase>
+	    </textobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+
     </sect2>
   </sect1>
   <!-- ================ Usage ================================ -->
@@ -326,27 +350,38 @@
       whether or not it should:
 
       <itemizedlist>
-	<listitem> 
-	  <para>Ignore the message</para>
-	</listitem>
 	<listitem>
-	  <para>Show the message in the message view</para>
+	  <para>Show the message in the message view.</para>
 	</listitem>
 	<listitem> 
 	  <para>
-	    Show the message in the message view
-	    <emphasis>and</emphasis> display an alert dialog
+	    Alert you to the presence of the new message by flashing
+	    the notification icon.
 	  </para>
 	</listitem> 
       </itemizedlist> 
     </para>
 
+    <figure id="trayicon-icon-animation-fig"> 
+      <title>The notification icon flashes to raise an alert</title> 
+      <screenshot> 
+	<mediaobject> 
+	  <imageobject>
+	    <imagedata fileref="figures/trayicon-animation.gif" format="GIF"/> 
+	  </imageobject>
+	  <textobject> 
+	    <phrase>
+	      The notification icon, flashing.
+	    </phrase>
+	  </textobject>
+	</mediaobject>
+      </screenshot>
+    </figure>
+
     <para>
-
-      The default filter will cause all messages to be shown in the
-      message view. You may control the behaviour by <link
+      By default all messages that are sent to your FIFO will be shown
+      in the message view. You may control the behaviour by <link
       linkend="bandsaw-prefs-filters">configuring</link> new filters.
-
     </para>
 
     <!-- ================ Usage Subsection ================================ -->
@@ -424,37 +459,19 @@
 	immediately beneath the menu bar.
 
       </para>
-      <para>
 
-	Choose the column that you wish filter, enter the text that
-	you wish to search for and click <guibutton>Find</guibutton>.
-
-      </para>
-
-    </sect2> 
-    <!-- ================ Usage Subsection ================================ -->
-    <sect2 id="bandsaw-alert-dialogs"> 
-      <title>Alert Dialogs</title> 
-
-      <para>
-	When an incoming message matches a filter that has been
-	configured to raise an alert &app; will display an alert
-	dialog.
-      </para>
-
-      <figure id="alert-fig"> 
-	<title>An Alert Dialog</title> 
+      <figure id="find-tools-fig"> 
+	<title>Finding specific messages</title> 
 	<screenshot> 
 	  <mediaobject> 
 	    <imageobject>
-	      <imagedata fileref="figures/alert-dialog.png" format="PNG"/> 
+	      <imagedata fileref="figures/find-tools.png" format="PNG"/> 
 	    </imageobject>
 	    <textobject> 
 	      <phrase>
 
-		Shows a &app; alert dialog, including the log message
-		text, the host where the messages was generated, and
-		options to ignore forthcoming alerts.
+		Shows &app; main window, restricting the view to show
+		just the messages that contain the word "test".
 
 	      </phrase>
 	    </textobject>
@@ -462,47 +479,18 @@
 	</screenshot>
       </figure>
 
+
       <para>
-	The alert dialog displays:
+
+	Choose the column that you wish to filter on from the drop
+	down menu (<guilabel>Message contains</guilabel> in the
+	example above), enter the text that you wish to search for and
+	click <guibutton>Find</guibutton>.
+
       </para>
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    <emphasis>
-	      The name of the filter that matched the message
-	    </emphasis>
-	    &mdash;
-	    "Error" in this example.
-	  </para>
-	</listitem>
-	<listitem>
-	  <para>
-	    <emphasis>
-	      The name of the host that created the message
-	    </emphasis>
-	    &mdash;
-	    "bobcat" in this example.
-	  </para>
-	</listitem>
-	<listitem>
-	  <para>
-	    <emphasis>
-	      The text of the log message
-	    </emphasis>
-	    &mdash;
-	    "ERROR: Something has gone wrong!" above.
-	  </para>
-	</listitem>
-      </itemizedlist>
-      <para>
-	Click the <guibutton>OK</guibutton> button to dismiss the alert.
-      </para>
-      <para>
-	The dialog also provides the option to <guilabel>Ignore
-	alerts</guilabel> for a configurable number of minutes. This
-	feature allows you to work freely despite heavy log traffic.
-      </para>
+
     </sect2> 
+    <!-- ================ Usage Subsection ================================ -->
   </sect1>
   <!-- ============= Customization ============================= -->
   <!-- Use this section to describe how to customize the application. -->
@@ -554,7 +542,9 @@
 	</listitem>
 	<listitem>
 	  <para>
-	    <emphasis>Whether or not it should raise alerts</emphasis>.
+	    <emphasis>Whether or not it should raise alerts</emphasis>
+	    &mdash; if a message matches on a filter that raises
+	    alerts the notification icon will flash.
 	  </para>
 	</listitem>
       </itemizedlist>
@@ -741,9 +731,10 @@
     <!-- Use a new section to describe different tabbed sections on the Settings or Preferences
     dialog. -->
     <sect2 id="bandsaw-prefs-general"> 
-      <title>General</title>
+      <title>Logging and Reporting</title>
+
       <figure id="prefs-general-fig"> 
-	<title>General Preferences</title> 
+	<title>Logging and Reporting</title> 
 	<screenshot> 
 	  <mediaobject> 
 	    <imageobject>
@@ -752,13 +743,14 @@
 	    <textobject> 
 	      <phrase>
 
-		Shows the General Preferences.
+		Shows the Logging and Reporting Preferences.
 
 	      </phrase>
 	    </textobject>
 	  </mediaobject>
 	</screenshot>
       </figure>
+
       <variablelist> 
 	<varlistentry> 
 	  <term> 
@@ -793,12 +785,20 @@
   You can use it to describe known bugs and limitations of the 
   program if there are any - please be frank and list all
   problems you know of. 
-  
-  <sect1 id="bandsaw-bugs">
-  <title>Known Bugs and Limitations</title>
-  <para> </para>
- </sect1>
   -->
+
+  <sect1 id="bandsaw-bugs">
+    <title>Known Bugs and Limitations</title>
+    <para>
+      
+      There are a few known problems with Band Saw, but not many. We
+      try hard to keep the bug count low. Please see the Bug Tracker,
+      linked from the <ulink url="http://bandsaw.sourceforge.net/"
+      type="http">Band Saw</ulink> web site for a full list of known
+      issues.
+
+    </para>
+  </sect1>
   <!-- ============= About ================================== -->
   <sect1 id="bandsaw-about"> 
     <title>About &app;</title> 
