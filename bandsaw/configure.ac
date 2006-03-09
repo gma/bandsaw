@@ -1,5 +1,5 @@
 AC_INIT(src/bandsaw.py)
-AM_INIT_AUTOMAKE(bandsaw, 0.3.0-dev, ashtong@users.sf.net)
+AM_INIT_AUTOMAKE(bandsaw, 0.3.0, ashtong@users.sf.net)
 
 AM_MAINTAINER_MODE
 
