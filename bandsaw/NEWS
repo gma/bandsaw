@@ -1,5 +1,6 @@
 0.3.0:
-	Use an icon in the notification tray when messages arrive.
+	Replace alert dialog with a flashing icon in the notification
+	tray.
 
 0.2.0:
 	Added the find tools.
