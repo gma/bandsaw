@@ -6,5 +6,5 @@ Exec=bandsaw
 Terminal=false
 Type=Application
 Icon=@pixmapsdir@/@logoicon@
-StartupNotify=true
+StartupNotify=false
 Categories=GNOME;Application;System;
