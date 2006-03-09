@@ -1,11 +1,37 @@
 TODO
 ----
 
-- Stop flashing when log window brought to foreground.
+Release 0.3.0 (focus on an early release of the trayicon):
 
-- Add Help button to welcome druid and preferences dialog.
+- Update the user manual. DONE
 
-- Add notification area support.
+- Fix bug 1445846.
+
+- Fix bug 1446103.
+
+For 0.3.1 (focus on incremental UI improvements):
+
+- Fix bug 1364795.
+
+- Add a menu to the notification icon, accessed with a right click.
+
+- Don't quit when closing the log window.
+
+- Remove the drop down menu from the search tools.
+
+- Stop notification icon flashing when log window is focused.
+
+- Use gconf to remember the last window position at startup.
+
+For 0.4.0 (focus on improved filtering):
+
+- Creation of filters used to ignore messageas.
+
+- Either make it more obvious that when a message matches a filter
+  processing is stopped, or allow each filter to control whether or
+  not it brings an end to processing.
+
+For later releases:
 
 - Re-open pipe when path changed, checking for IOErrors.
 
