@@ -21,58 +21,90 @@
       <h1>Download</h1>
 
       <p>
-	Band Saw 0.2.0 packages are now available:
+        Band Saw 0.3.0 packages are now available:
       <p>
       <ul>
-	<li>
-          <a href="http://prdownloads.sourceforge.net/bandsaw/bandsaw-0.2.0.tar.gz?download">bandsaw-0.2.0.tar.gz</a>
+        <li>
+          <a href="http://prdownloads.sourceforge.net/bandsaw/bandsaw-0.3.0.tar.gz?download">bandsaw-0.3.0.tar.gz</a>
         </li>
       </ul>
 
       <h2>Requirements</h2>
 
       <ul>
-	<li>
-	  <a href="http://www.python.org/2.3/">Python</a> (2.3 or later)
-	</li>
-	<li>
-	  <a href="http://www.gtk.org/download/">GTK+</a> (2.0 or later)
-	</li>
-	<li>
-	  <a href="http://pygtk.org/downloads.html">PyGTK and gnome-python</a>
-	</li>
+        <li>
+          <a href="http://www.python.org/2.3/">Python</a> (2.3 or later)
+        </li>
+        <li>
+          <a href="http://www.gtk.org/download/">GTK+</a>
+        </li>
+        <li>
+          <a href="http://pygtk.org/downloads.html">PyGTK and
+          gnome-python</a> (a recent release, including
+          GnomePythonExtras)
+        </li>
       </ul>
 
       <p>
-	It should run on any operating system that supports GNOME,
-	Python and named pipes (otherwise known as FIFOs).
+        It should run on any operating system that supports GNOME,
+        Python and named pipes (otherwise known as FIFOs).
       </p>
 
       <h2>Installation</h2>
 
       <p>
-	Installation is simple:
+        Installation is simple:
       </p>
 
       <pre>
-	$ ./configure
+        $ ./configure
         $ make
         $ su
         # make install</pre>
 
       <p>
-	Please read the <a
-	href="http://cvs.sourceforge.net/viewcvs.py/bandsaw/bandsaw/README">README</a>
-	file included with the source code for more details. It is
-	important that you <strong>specify the correct prefix when
-	configuring the package</strong> or you may find that some
-	things don't work correctly on your system (e.g. default
-	configuration parameters, installation of the user manual,
-	etc.). For example, when installing on my Ubuntu Breezy
-	workstation I run the configure command as follows:
+        Please read the <a
+        href="http://cvs.sourceforge.net/viewcvs.py/bandsaw/bandsaw/README">README</a>
+        file included with the source code for more details. It is
+        important that you <strong>specify the correct prefix when
+        configuring the package</strong> or you may find that some
+        things don't work correctly on your system (e.g. default
+        configuration parameters, installation of the user manual,
+        etc.). For example, when installing on my Ubuntu Breezy
+        workstation I run the configure command as follows:
       </p>
       <pre>
-	$ ./configure --prefix=/usr --sysconfdir=/etc</pre>
+        $ ./configure --prefix=/usr --sysconfdir=/etc</pre>
+
+      <p>
+        For some reason that is beyond me, the GNOME configuration
+        daemon doesn't immediately read the default configuration
+        settings unless you restart it. I therefore recommend that you
+        kill it before running Band Saw for the first time, to ensure
+        that it reads the default configuration files that you've just
+        installed, like so:
+      </p>
+      <pre>
+        $ killall gconfd-2</pre>
+      <p>
+        You will only need to kill it once. If anybody can explain how
+        this really ought to be handled, I'd much appreciate it.
+      </p>
+
+      <p>
+        Finally, <em>make sure that you have a notification tray
+        running your GNOME panel</em>. You can now run Band Saw either
+        from the command line, or using the icon that has been added
+        to your GNOME Applications menu. From the command line, just
+        type:
+      </p>
+      <pre>
+        $ bandsaw &</pre
+
+      <p>
+        I find it helps to run Band Saw from my GNOME session's
+        startup programs so that it runs automatically when I log in.
+      </p>
 
     </div>
 
