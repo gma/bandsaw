@@ -883,6 +883,9 @@ class MainWindow(Window):
         self.setup_widgets()
         self.monitor_syslog()
 
+    def remember_window_location(self):
+        self.x_coord, self.y_coord = self.root_widget.get_position()
+        
     def create_tray_icon(self):
         notifier = FlashingNotifier(
             img_path(bandsawconfig.ALERTICON), img_path(bandsawconfig.LOGICON))
@@ -891,11 +894,13 @@ class MainWindow(Window):
             # TODO: move this callback to subclass of FlashingNotifier?
             # What would we do with the window object?
             if self.root_widget.has_toplevel_focus():
-                self.x_coord, self.y_coord = self.root_widget.get_position()
+                self.remember_window_location()
                 self.root_widget.hide()
             else:
+                needs_moving = not self.root_widget.get_property("visible")
                 self.root_widget.present()
-                self.root_widget.move(self.x_coord, self.y_coord)
+                if needs_moving:
+                    self.root_widget.move(self.x_coord, self.y_coord)
                 notifier.stop_flashing()
 
         notifier.set_clicked_callback(on_click)
