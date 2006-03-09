@@ -369,6 +369,7 @@ class WelcomeDruid(Window):
         self.config.named_pipe = filename
 
     def on_druidpagefinish1_finish(self, *args):
+        window = MainWindow(self.config)
         self.destroy()
 
     def on_druidpage_cancel(self, *args):
