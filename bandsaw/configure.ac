@@ -17,7 +17,7 @@ SCROLLKEEPER_BUILD_REQUIRED=0.3.14
 dnl Test for Python
 AM_PATH_PYTHON(2.3)
 
-PKG_CHECK_MODULES(PYGTK, pygtk-2.0 gnome-python-2.0)
+PKG_CHECK_MODULES(PYGTK, pygobject-2.0 pygtk-2.0 gnome-python-2.0 gnome-python-extras-2.0)
 
 AC_SUBST(VERSION)
 AC_SUBST(alerticon, bandsaw-alert.png)
