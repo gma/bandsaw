@@ -301,16 +301,14 @@ class FilteredListStoreTest(unittest.TestCase):
         """Check we can make a filtered list store from an unfiltered one"""
         column = 0
         text = 'bc'
-        list_store = bandsaw.FilteredListStore.make(
-            self.list_store, column, text)
+        list_store = bandsaw.FilteredListStore.make(self.list_store, text)
         self.assertEqual(self.count_rows(list_store), 2)
         
     def test_append_matching_message(self):
         """Check matching messages are appended to list"""
         column = 0
         text = 'bc'
-        list_store = bandsaw.FilteredListStore.make(
-            self.list_store, column, text)
+        list_store = bandsaw.FilteredListStore.make(self.list_store, text)
         list_store.append(('bc',))
         self.assertEqual(self.count_rows(list_store), 3)        
 
@@ -318,8 +316,7 @@ class FilteredListStoreTest(unittest.TestCase):
         """Check non matching messages are not appended to list"""
         column = 0
         text = 'bc'
-        list_store = bandsaw.FilteredListStore.make(
-            self.list_store, column, text)
+        list_store = bandsaw.FilteredListStore.make(self.list_store, text)
         list_store.append(('dc',))
         self.assertEqual(self.count_rows(list_store), 2)
 
