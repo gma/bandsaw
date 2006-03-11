@@ -5,11 +5,15 @@ For 0.3.1 (focus on incremental UI improvements):
 
 - Fix bug 1364795. DONE
 
-- Add a menu to the notification icon, accessed with a right click.
+- Add a menu to the notification icon, accessed with a right click. DONE
 
-- Don't quit when closing the log window.
+- Don't quit when closing the log window. DONE
 
-- Remove the drop down menu from the search tools.
+- Remove log window menu, add select and delete buttons. DONE
+
+- Remove the drop down menu from the search tools. DONE
+
+- Add a tooltip to the tray icon.
 
 - Stop notification icon flashing when log window is focused.
 
