@@ -241,35 +241,88 @@ def set_icon(window):
         window.set_icon(pixbuf)
 
 
+class PopupMenu(gtk.Menu):
+
+    def __init__(self, config):
+        gtk.Menu.__init__(self)
+        self.config = config
+        self.setup_widgets()
+        
+    def setup_widgets(self):
+        item = gtk.MenuItem("Show Logs...")
+        item.show()
+        self.append(item)
+
+        item = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
+        item.connect("activate", self.on_preferences_activate)
+        item.show()
+        self.append(item)
+
+        item = gtk.ImageMenuItem(gtk.STOCK_HELP)
+        item.connect("activate", self.on_help_activate)
+        item.show()
+        self.append(item)
+
+        item = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
+        item.connect("activate", self.on_about_activate)
+        item.show()
+        self.append(item)
+
+        item = gtk.SeparatorMenuItem()
+        item.show()
+        self.append(item)
+
+        item = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        item.connect("activate", self.on_quit_activate)
+        item.show()
+        self.append(item)
+
+    def on_preferences_activate(self, *args):
+        dialog = PreferencesDialog(self.config)
+        dialog.run()
+        dialog.destroy()
+
+    def on_help_activate(self, *args):
+        global program
+        gnome.help_display_desktop(program, "bandsaw", "bandsaw.xml", "index")
+
+    def on_about_activate(self, *args):
+        copyright = u"Copyright \xa9 2004-2006 Graham Ashton"
+        comments = "A log monitoring and alerting tool"
+        authors = ["Graham Ashton <ashtong@users.sourceforge.net>"]
+        documenters = []
+        translators = None
+        logo = gtk.gdk.pixbuf_new_from_file(img_path(bandsawconfig.LOGOICON))
+        dialog = gnome.ui.About("Band Saw", __VERSION__, copyright, comments,
+                                authors, documenters, translators, logo)
+        set_icon(dialog)
+        dialog.show()
+        
+    def on_quit_activate(self, *args):
+        gtk.main_quit()
+
+
+class Menu(object):
+
+    def __init__(self, config, message_view):
+        self.config = config
+        self.message_view = message_view
+
+        self.message_view.select_all()
+
+
 class FlashingNotifier(object):
 
-    def __init__(self, onicon, officon, interval=500):
+    def __init__(self, onicon, officon, interval=500, menu=None):
         self.on_icon = onicon
         self.off_icon = officon
         self.interval = interval
+        self.menu = menu
         self.timeout = None
         self.is_flashing = False
-        self.clicked_callback = None
-        self.clicked_callback_data = ()
+        self.left_click_callback = None
         self.trayicon = self.setup_widgets()
         self.stop_flashing()
-
-    def on_button_press_event(self, widget, event):
-        if self.clicked_callback is not None:
-            self.clicked_callback(*self.clicked_callback_data)
-
-    def setup_widgets(self):
-        trayicon = egg.trayicon.TrayIcon("BandSawTrayIcon")
-        eventbox = gtk.EventBox()
-        image = gtk.Image()
-        eventbox.add(image)
-        eventbox.connect("button-press-event", self.on_button_press_event)
-        trayicon.add(eventbox)
-        return trayicon
-
-    def set_clicked_callback(self, callback, *args):
-        self.clicked_callback = callback
-        self.clicked_callback_data = args
 
     def _get_eventbox(self):
         return self.trayicon.get_children()[0]
@@ -280,6 +333,26 @@ class FlashingNotifier(object):
         return self.eventbox.get_children()[0]
 
     image = property(_get_image)
+
+    def setup_widgets(self):
+        trayicon = egg.trayicon.TrayIcon("BandSawTrayIcon")
+        eventbox = gtk.EventBox()
+        image = gtk.Image()
+        eventbox.add(image)
+        eventbox.connect("button-press-event", self.on_button_press_event)
+        trayicon.add(eventbox)
+        return trayicon
+
+    def on_button_press_event(self, widget, event):
+        left_button = 1
+        right_button = 3
+        if event.button == left_button and self.left_click_callback:
+            self.left_click_callback()
+        elif event.button == right_button:
+            self.menu.popup(None, None, None, event.button, event.time)
+
+    def set_left_click_callback(self, callback, *args):
+        self.left_click_callback = callback
 
     def _flash_on(self):
         self.image.set_from_file(self.on_icon)
@@ -581,26 +654,24 @@ class FilterDialog(Dialog):
 
 class FilteredListStore(gtk.ListStore):
 
-    def __init__(self, list_store, column, text):
+    def __init__(self, list_store, text):
         num_cols = list_store.get_n_columns()
         col_types = [list_store.get_column_type(n) for n in range(num_cols)]
         gtk.ListStore.__init__(self, *col_types)
-        self.filter_column = column
         self.filter_text = text
 
     def append(self, row):
-        if self.filter_text in row[self.filter_column]:
+        if self.filter_text in " ".join(row):
             gtk.ListStore.append(self, row)
 
-    def make(list_store, column, text):
-        new_store = FilteredListStore(list_store, column, text)
+    def make(list_store, text):
+        new_store = FilteredListStore(list_store, text)
         gtk_iter = list_store.get_iter_first()
         while gtk_iter is not None:
-            if text in list_store.get_value(gtk_iter, column):
-                row = []
-                for i in range(list_store.get_n_columns()):
-                    row.append(list_store.get_value(gtk_iter, i))
-                new_store.append(row)
+            row = []
+            for i in range(list_store.get_n_columns()):
+                row.append(list_store.get_value(gtk_iter, i))
+            new_store.append(row)
             gtk_iter = list_store.iter_next(gtk_iter)
         return new_store
 
@@ -609,37 +680,20 @@ class FilteredListStore(gtk.ListStore):
 
 class SearchTools(WidgetWrapper):
 
-    SEARCH_BY_MESSAGE = 0
-
     def __init__(self, main_window, message_view):
         WidgetWrapper.__init__(self, "search_tools", main_window)
         self.message_view = message_view
-        self.setup_widgets()
-
-    def setup_widgets(self):
-        self.search_type.set_history(SearchTools.SEARCH_BY_MESSAGE)
 
     def on_search_text_activate(self, *args):
         self.find_button.activate()
 
-    def on_search_text_changed(self, *args):
-        self.find_button.set_sensitive(True)
-
-    def get_search_column(self):
-        # TODO: convert numbers to named constants
-        menu_column_mapping = { 0: 3, 1: 2, 2: 1, 3: 0 }
-        return menu_column_mapping[self.search_type.get_history()]
-
     def on_find_button_clicked(self, *args):
         text = self.search_text.get_text()
-        column = self.get_search_column()
-        self.message_view.filter_by_text_in_column(text, column)
-
-    def on_clear_button_clicked(self, *args):
-        self.message_view.clear_filter()
-        self.search_text.set_text("")
+        if text == "":
+            self.message_view.clear_filter()
+        else:
+            self.message_view.filter_by_text(text)
         self.search_text.grab_focus()
-        self.find_button.set_sensitive(False)
         self.message_view.update_message_count()
 
 
@@ -689,9 +743,9 @@ class MessageView(gtk.TreeView):
         selection.set_mode(gtk.SELECTION_MULTIPLE)
         selection.connect("changed", self.on_selection_changed)
 
-    def filter_by_text_in_column(self, text, column):
+    def filter_by_text(self, text):
         model = self.get_unfiltered_model()
-        filtered_model = FilteredListStore.make(model, column, text)
+        filtered_model = FilteredListStore.make(model, text)
         self.set_model(filtered_model)
         self.auto_scroll_down()
         self.update_message_count()
@@ -817,46 +871,6 @@ class MessageView(gtk.TreeView):
 #         self.get_selection().select_iter(selected[-1])
 
 
-class Menu(object):
-
-    def __init__(self, config, message_view):
-        self.config = config
-        self.message_view = message_view
-
-    def on_quit1_activate(self, *args):
-        gtk.main_quit()
-
-    def on_delete_selected1_activate(self, *args):
-        self.message_view.delete_selected()
-
-    def on_clear1_activate(self, *args):
-        self.message_view.clear()
-
-    def on_select_all1_activate(self, *args):
-        self.message_view.select_all()
-
-    def on_preferences1_activate(self, *args):
-        dialog = PreferencesDialog(self.config)
-        dialog.run()
-        dialog.destroy()
-
-    def on_contents1_activate(self, *args):
-        global program
-        gnome.help_display_desktop(program, "bandsaw", "bandsaw.xml", "index")
-
-    def on_about1_activate(self, *args):
-        copyright = u"Copyright \xa9 2004-2006 Graham Ashton"
-        comments = "A log monitoring and alerting tool"
-        authors = ["Graham Ashton <ashtong@users.sourceforge.net>"]
-        documenters = []
-        translators = None
-        logo = gtk.gdk.pixbuf_new_from_file(img_path(bandsawconfig.LOGOICON))
-        dialog = gnome.ui.About("Band Saw", __VERSION__, copyright, comments,
-                                authors, documenters, translators, logo)
-        set_icon(dialog)
-        dialog.show()
-        
-
 class StatusBar(WidgetWrapper):
 
     def __init__(self, main_window):
@@ -890,25 +904,22 @@ class MainWindow(Window):
 
     def remember_window_location(self):
         self.x_coord, self.y_coord = self.root_widget.get_position()
+
+    def toggle_visibility(self):
+        if self.root_widget.has_toplevel_focus():
+            self.remember_window_location()
+            self.root_widget.hide()
+        else:
+            needs_moving = not self.root_widget.get_property("visible")
+            self.root_widget.present()
+            if needs_moving:
+                self.root_widget.move(self.x_coord, self.y_coord)
+            self.notifier.stop_flashing()
         
     def create_tray_icon(self):
-        notifier = FlashingNotifier(
-            img_path(bandsawconfig.ALERTICON), img_path(bandsawconfig.LOGICON))
-
-        def on_click():
-            # TODO: move this callback to subclass of FlashingNotifier?
-            # What would we do with the window object?
-            if self.root_widget.has_toplevel_focus():
-                self.remember_window_location()
-                self.root_widget.hide()
-            else:
-                needs_moving = not self.root_widget.get_property("visible")
-                self.root_widget.present()
-                if needs_moving:
-                    self.root_widget.move(self.x_coord, self.y_coord)
-                notifier.stop_flashing()
-
-        notifier.set_clicked_callback(on_click)
+        notifier = FlashingNotifier(img_path(bandsawconfig.ALERTICON),
+                                    img_path(bandsawconfig.LOGICON),
+                                    menu=PopupMenu(self.config))
         notifier.trayicon.show_all()
         return notifier
 
@@ -916,20 +927,27 @@ class MainWindow(Window):
         self.message_view.setup()
         self.scrolledwindow1.add(self.message_view)
         self.message_view.show()
-        self.setup_menu()
+        self.setup_buttons()
         self.message_view.observe_selection(self)
         SearchTools(self, self.message_view)
+        self.notifier.set_left_click_callback(self.toggle_visibility)
+
+    def on_select_button_clicked(self, *args):
+        self.message_view.select_all()
+
+    def on_delete_button_clicked(self, *args):
+        self.message_view.delete_selected()
 
     def set_transient_for_main_window(self):
         pass
 
     def selection_changed(self, have_selection):
-        self.delete_selected1.set_sensitive(have_selection)
+        self.delete_button.set_sensitive(have_selection)
 
-    def setup_menu(self):
-        menu = Menu(self.config, self.message_view)
-        self.delete_selected1.set_sensitive(False)
-        self.connect_signals(menu)
+    def setup_buttons(self):
+        self.select_button.connect("clicked", self.on_select_button_clicked)
+        self.delete_button.connect("clicked", self.on_delete_button_clicked)
+        self.delete_button.set_sensitive(False)
 
     def read_pipe(self, fd, condition):
 
@@ -970,7 +988,8 @@ class MainWindow(Window):
             gobject.io_add_watch(fd, gobject.IO_IN, self.read_pipe)
         
     def on_app1_delete_event(self, *args):
-        gtk.main_quit()
+        self.toggle_visibility()
+        return True
 
 
 def main():
