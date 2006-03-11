@@ -774,6 +774,9 @@ class MessageView(gtk.TreeView):
         self.get_model().append(row)
         
     def update_message_count(self):
+        # TODO: our model should automatically update the count, and
+        # the view should observe it. Some refactoring required;
+        # perhaps we need a subclass of ListStore that we can observe?
         total_messages = self.count_all_messages()
         shown_messages = self.count_shown_messages()
         self.status_bar.set_message_count(total_messages, shown_messages)
@@ -809,6 +812,7 @@ class MessageView(gtk.TreeView):
         self.get_selection().selected_foreach(delete)
         for iter in selected:
             self.get_model().remove(iter)
+        self.update_message_count()
         # TODO: fix next line so it works if last line selected
 #         self.get_selection().select_iter(selected[-1])
 
