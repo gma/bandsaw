@@ -249,10 +249,6 @@ class PopupMenu(gtk.Menu):
         self.setup_widgets()
         
     def setup_widgets(self):
-        item = gtk.MenuItem("Show Logs...")
-        item.show()
-        self.append(item)
-
         item = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
         item.connect("activate", self.on_preferences_activate)
         item.show()
@@ -300,15 +296,6 @@ class PopupMenu(gtk.Menu):
         
     def on_quit_activate(self, *args):
         gtk.main_quit()
-
-
-class Menu(object):
-
-    def __init__(self, config, message_view):
-        self.config = config
-        self.message_view = message_view
-
-        self.message_view.select_all()
 
 
 class FlashingNotifier(object):
@@ -861,8 +848,10 @@ class MessageView(gtk.TreeView):
         
     def delete_selected(self):
         selected = []
+
         def delete(model, path, iter):
             selected.append(iter)
+
         self.get_selection().selected_foreach(delete)
         for iter in selected:
             self.get_model().remove(iter)

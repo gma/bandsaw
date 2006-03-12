@@ -211,7 +211,7 @@ class BadLogMessageTest(unittest.TestCase):
         """Check the process details are empty string for bad input message"""
         message = bandsaw.LogMessage(self.line)
         self.assertEqual(message.process, '')
-        
+
     def test_message(self):
         """Check the message is empty string for bad input"""
         message = bandsaw.LogMessage(self.line)
