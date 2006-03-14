@@ -910,18 +910,22 @@ class MainWindow(Window):
         self.setup_widgets()
         self.monitor_syslog()
 
-    def remember_window_location(self):
-        self.x_coord, self.y_coord = self.root_widget.get_position()
+    def save_window_location(self):
+        if self.root_widget.get_property("visible"):
+            self.x_coord, self.y_coord = self.root_widget.get_position()
+
+    def restore_window_location(self):
+        self.root_widget.move(self.x_coord, self.y_coord)
 
     def toggle_visibility(self):
         if self.root_widget.has_toplevel_focus():
-            self.remember_window_location()
+            self.save_window_location()
             self.root_widget.hide()
         else:
             needs_moving = not self.root_widget.get_property("visible")
             self.root_widget.present()
             if needs_moving:
-                self.root_widget.move(self.x_coord, self.y_coord)
+                self.restore_window_location()
             self.message_view.clear_alert()
         
     def create_tray_icon(self):
