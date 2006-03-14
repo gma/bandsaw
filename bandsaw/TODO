@@ -13,7 +13,7 @@ For 0.3.1 (focus on incremental UI improvements):
 
 - Remove the drop down menu from the search tools. DONE
 
-- Add a tooltip to the tray icon.
+- Add a tooltip to the tray icon. DONE
 
 - Stop notification icon flashing when log window is focused.
 

@@ -300,15 +300,17 @@ class PopupMenu(gtk.Menu):
 
 class FlashingNotifier(object):
 
-    def __init__(self, onicon, officon, interval=500, menu=None):
+    def __init__(self, name, onicon, officon, interval=500, menu=None):
+        self.trayicon = egg.trayicon.TrayIcon(name)
         self.on_icon = onicon
         self.off_icon = officon
         self.interval = interval
         self.menu = menu
         self.timeout = None
         self.is_flashing = False
+        self.tips = gtk.Tooltips()
+        self.setup_widgets()
         self.left_click_callback = None
-        self.trayicon = self.setup_widgets()
         self.stop_flashing()
 
     def _get_eventbox(self):
@@ -322,13 +324,11 @@ class FlashingNotifier(object):
     image = property(_get_image)
 
     def setup_widgets(self):
-        trayicon = egg.trayicon.TrayIcon("BandSawTrayIcon")
         eventbox = gtk.EventBox()
         image = gtk.Image()
         eventbox.add(image)
         eventbox.connect("button-press-event", self.on_button_press_event)
-        trayicon.add(eventbox)
-        return trayicon
+        self.trayicon.add(eventbox)
 
     def on_button_press_event(self, widget, event):
         left_button = 1
@@ -340,6 +340,9 @@ class FlashingNotifier(object):
 
     def set_left_click_callback(self, callback, *args):
         self.left_click_callback = callback
+
+    def set_tool_tip(self, text):
+        self.tips.set_tip(self.eventbox, text)
 
     def _flash_on(self):
         self.image.set_from_file(self.on_icon)
@@ -700,6 +703,8 @@ class MessageView(gtk.TreeView):
         self._observers = []
         self._unfiltered_model = None
         self._about_to_scroll_down = False
+        self.unseen_alertable_messages = 0
+        self.clear_alert()
 
     def update(self, key):
         if key == self.config.MESSAGES_KEPT:
@@ -833,6 +838,20 @@ class MessageView(gtk.TreeView):
 
     def toplevel_has_focus(self):
         return self.get_toplevel().has_toplevel_focus()
+
+    def raise_alert(self):
+        self.unseen_alertable_messages += 1
+        self.notifier.start_flashing()
+        if self.unseen_alertable_messages == 1:
+            text = "There is 1 new alert"
+        else:
+            text = "There are %d new alerts" % self.unseen_alertable_messages
+        self.notifier.set_tool_tip(text)
+
+    def clear_alert(self):
+        self.unseen_alertable_messages = 0
+        self.notifier.stop_flashing()
+        self.notifier.set_tool_tip("There are no new alerts")
     
     def process_line(self, line):
         message = LogMessage(line)
@@ -840,7 +859,7 @@ class MessageView(gtk.TreeView):
             if message_filter.matches(message.text):
                 self.add_message(message)
                 if (not self.toplevel_has_focus()) and message_filter.alert:
-                    self.notifier.start_flashing()
+                    self.raise_alert()
                 break
 
     def clear(self):
@@ -903,10 +922,11 @@ class MainWindow(Window):
             self.root_widget.present()
             if needs_moving:
                 self.root_widget.move(self.x_coord, self.y_coord)
-            self.notifier.stop_flashing()
+            self.message_view.clear_alert()
         
     def create_tray_icon(self):
-        notifier = FlashingNotifier(img_path(bandsawconfig.ALERTICON),
+        notifier = FlashingNotifier("BandSawTrayIcon",
+                                    img_path(bandsawconfig.ALERTICON),
                                     img_path(bandsawconfig.LOGICON),
                                     menu=PopupMenu(self.config))
         notifier.trayicon.show_all()
