@@ -63,6 +63,28 @@
       </locale>
     </schema>
 
+    <schema>
+      <key>/schemas/apps/bandsaw/ui/log_window_width</key>
+      <applyto>/apps/bandsaw/ui/log_window_width</applyto>
+      <owner>bandsaw</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+         <short>The width of the log window</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/ui/log_window_height</key>
+      <applyto>/apps/bandsaw/ui/log_window_height</applyto>
+      <owner>bandsaw</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+         <short>The height of the log window</short>
+      </locale>
+    </schema>
+
     <!-- Behaviour settings -->
 
     <schema>

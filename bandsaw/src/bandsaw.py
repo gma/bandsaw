@@ -61,6 +61,8 @@ class Config(object):
     UI_KEY = "/".join((BASE_KEY, "ui"))
     LOG_WINDOW_X = "/".join((UI_KEY, "log_window_x"))
     LOG_WINDOW_Y = "/".join((UI_KEY, "log_window_y"))
+    LOG_WINDOW_WIDTH = "/".join((UI_KEY, "log_window_width"))
+    LOG_WINDOW_HEIGHT = "/".join((UI_KEY, "log_window_height"))
     
     def __init__(self, client):
         self.client = client
@@ -142,6 +144,17 @@ class Config(object):
 
     log_window_coords = property(_get_log_window_coords,
                                  _set_log_window_coords)
+
+    def _get_log_window_size(self):
+        width = self.client.get_int(Config.LOG_WINDOW_WIDTH)
+        height = self.client.get_int(Config.LOG_WINDOW_HEIGHT)
+        return width, height
+
+    def _set_log_window_size(self, size):
+        self.client.set_int(Config.LOG_WINDOW_WIDTH, size[0])
+        self.client.set_int(Config.LOG_WINDOW_HEIGHT, size[1])
+
+    log_window_size = property(_get_log_window_size, _set_log_window_size)
 
 
 class LogMessage(object):
@@ -929,9 +942,11 @@ class MainWindow(Window):
     def save_window_location(self):
         if self.root_widget.get_property("visible"):
             self.config.log_window_coords = self.root_widget.get_position()
+            self.config.log_window_size = self.root_widget.get_size()
 
     def restore_window_location(self):
         self.root_widget.move(*self.config.log_window_coords)
+        self.root_widget.resize(*self.config.log_window_size)
 
     def toggle_visibility(self):
         if self.root_widget.has_toplevel_focus():
@@ -939,9 +954,9 @@ class MainWindow(Window):
             self.root_widget.hide()
         else:
             needs_moving = not self.root_widget.get_property("visible")
-            self.root_widget.present()
             if needs_moving:
                 self.restore_window_location()
+            self.root_widget.present()
             self.message_view.clear_alert()
         
     def create_tray_icon(self):

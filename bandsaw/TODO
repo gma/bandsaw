@@ -17,7 +17,7 @@ For 0.3.1 (focus on incremental UI improvements):
 
 - Use GConf to remember the last window position at startup. DONE
 
-- Use GConf to remember the window size.
+- Use GConf to remember the window size. DONE
 
 - Stop notification icon flashing when log window is focused.
 
