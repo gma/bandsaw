@@ -15,7 +15,9 @@ For 0.3.1 (focus on incremental UI improvements):
 
 - Add a tooltip to the tray icon. DONE
 
-- Use gconf to remember the last window position at startup. DONE
+- Use GConf to remember the last window position at startup. DONE
+
+- Use GConf to remember the window size.
 
 - Stop notification icon flashing when log window is focused.
 
