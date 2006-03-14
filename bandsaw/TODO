@@ -15,9 +15,9 @@ For 0.3.1 (focus on incremental UI improvements):
 
 - Add a tooltip to the tray icon. DONE
 
-- Stop notification icon flashing when log window is focused.
+- Use gconf to remember the last window position at startup. DONE
 
-- Use gconf to remember the last window position at startup.
+- Stop notification icon flashing when log window is focused.
 
 - Display a sensible error message if the notification tray isn't
   running. Maybe even run the notification tray?

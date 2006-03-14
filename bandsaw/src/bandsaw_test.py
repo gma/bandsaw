@@ -145,6 +145,30 @@ class GConfTest(unittest.TestCase):
         config.filters
         client.verify()
 
+    def test_save_window_position(self):
+        """Check we can save the window position"""
+        x = 45
+        y = 83
+        client = Mock()
+        config = bandsaw.Config(client)
+        client.expects(once()).set_int(eq(bandsaw.Config.LOG_WINDOW_X), eq(x))
+        client.expects(once()).set_int(eq(bandsaw.Config.LOG_WINDOW_Y), eq(y))
+        config.log_window_coords = x, y
+        client.verify()
+
+    def test_read_window_position(self):
+        """Check we can read the window position"""
+        x = 127
+        y = 623
+        client = Mock()
+        config = bandsaw.Config(client)
+        client.expects(once()).get_int(
+            eq(bandsaw.Config.LOG_WINDOW_X)).will(return_value(x))
+        client.expects(once()).get_int(
+            eq(bandsaw.Config.LOG_WINDOW_Y)).will(return_value(y))
+        self.assertEqual(config.log_window_coords, (x, y))
+        client.verify()
+
 
 class ConfigObserverTest(unittest.TestCase):
 

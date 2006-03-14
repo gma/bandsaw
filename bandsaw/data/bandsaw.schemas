@@ -39,6 +39,30 @@
       </locale>
     </schema>
 
+    <!-- User Interface settings -->
+
+    <schema>
+      <key>/schemas/apps/bandsaw/ui/log_window_x</key>
+      <applyto>/apps/bandsaw/ui/log_window_x</applyto>
+      <owner>bandsaw</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+         <short>The location of the log window (horizontal)</short>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/bandsaw/ui/log_window_y</key>
+      <applyto>/apps/bandsaw/ui/log_window_y</applyto>
+      <owner>bandsaw</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+         <short>The location of the log window (vertical)</short>
+      </locale>
+    </schema>
+
     <!-- Behaviour settings -->
 
     <schema>
