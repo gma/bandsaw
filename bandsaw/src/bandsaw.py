@@ -58,6 +58,10 @@ class Config(object):
     FILTER_NAMES = "/".join((FILTERS_KEY, "names"))
     FILTER_PATTERNS = "/".join((FILTERS_KEY, "patterns"))
 
+    UI_KEY = "/".join((BASE_KEY, "ui"))
+    LOG_WINDOW_X = "/".join((UI_KEY, "log_window_x"))
+    LOG_WINDOW_Y = "/".join((UI_KEY, "log_window_y"))
+    
     def __init__(self, client):
         self.client = client
         self._named_pipe = None
@@ -126,7 +130,19 @@ class Config(object):
 
     def is_first_run(self):
         return self.named_pipe is None
-        
+
+    def _get_log_window_coords(self):
+        x = self.client.get_int(Config.LOG_WINDOW_X)
+        y = self.client.get_int(Config.LOG_WINDOW_Y)
+        return x, y
+
+    def _set_log_window_coords(self, coords):
+        self.client.set_int(Config.LOG_WINDOW_X, coords[0])
+        self.client.set_int(Config.LOG_WINDOW_Y, coords[1])
+
+    log_window_coords = property(_get_log_window_coords,
+                                 _set_log_window_coords)
+
 
 class LogMessage(object):
 
@@ -246,6 +262,7 @@ class PopupMenu(gtk.Menu):
     def __init__(self, config):
         gtk.Menu.__init__(self)
         self.config = config
+        self.quit_callback = None
         self.setup_widgets()
         
     def setup_widgets(self):
@@ -295,6 +312,8 @@ class PopupMenu(gtk.Menu):
         dialog.show()
         
     def on_quit_activate(self, *args):
+        if self.quit_callback is not None:
+            self.quit_callback()
         gtk.main_quit()
 
 
@@ -337,9 +356,6 @@ class FlashingNotifier(object):
             self.left_click_callback()
         elif event.button == right_button:
             self.menu.popup(None, None, None, event.button, event.time)
-
-    def set_left_click_callback(self, callback, *args):
-        self.left_click_callback = callback
 
     def set_tool_tip(self, text):
         self.tips.set_tip(self.eventbox, text)
@@ -912,10 +928,10 @@ class MainWindow(Window):
 
     def save_window_location(self):
         if self.root_widget.get_property("visible"):
-            self.x_coord, self.y_coord = self.root_widget.get_position()
+            self.config.log_window_coords = self.root_widget.get_position()
 
     def restore_window_location(self):
-        self.root_widget.move(self.x_coord, self.y_coord)
+        self.root_widget.move(*self.config.log_window_coords)
 
     def toggle_visibility(self):
         if self.root_widget.has_toplevel_focus():
@@ -929,10 +945,12 @@ class MainWindow(Window):
             self.message_view.clear_alert()
         
     def create_tray_icon(self):
+        popup_menu = PopupMenu(self.config)
+        popup_menu.quit_callback = self.save_window_location
         notifier = FlashingNotifier("BandSawTrayIcon",
                                     img_path(bandsawconfig.ALERTICON),
                                     img_path(bandsawconfig.LOGICON),
-                                    menu=PopupMenu(self.config))
+                                    menu=popup_menu)
         notifier.trayicon.show_all()
         return notifier
 
@@ -943,7 +961,7 @@ class MainWindow(Window):
         self.setup_buttons()
         self.message_view.observe_selection(self)
         SearchTools(self, self.message_view)
-        self.notifier.set_left_click_callback(self.toggle_visibility)
+        self.notifier.left_click_callback = self.toggle_visibility
 
     def on_select_button_clicked(self, *args):
         self.message_view.select_all()
