@@ -169,6 +169,32 @@ class GConfTest(unittest.TestCase):
         self.assertEqual(config.log_window_coords, (x, y))
         client.verify()
 
+    def test_save_window_size(self):
+        """Check we can save the window position"""
+        width = 450
+        height = 200
+        client = Mock()
+        config = bandsaw.Config(client)
+        client.expects(once()).set_int(
+            eq(bandsaw.Config.LOG_WINDOW_WIDTH), eq(width))
+        client.expects(once()).set_int(
+            eq(bandsaw.Config.LOG_WINDOW_HEIGHT), eq(height))
+        config.log_window_size = width, height
+        client.verify()
+
+    def test_read_window_size(self):
+        """Check we can save the window position"""
+        width = 450
+        height = 200
+        client = Mock()
+        config = bandsaw.Config(client)
+        client.expects(once()).get_int(
+            eq(bandsaw.Config.LOG_WINDOW_WIDTH)).will(return_value(width))
+        client.expects(once()).get_int(
+            eq(bandsaw.Config.LOG_WINDOW_HEIGHT)).will(return_value(height))
+        self.assertEqual(config.log_window_size, (width, height))
+        client.verify()
+        
 
 class ConfigObserverTest(unittest.TestCase):
 
