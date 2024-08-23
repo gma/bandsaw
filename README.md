@@ -15,7 +15,7 @@ Here's the main window, showing messages that contain the word "test":
 
 <img src="./htdocs/images/ss/bandsaw.png?raw=true" alt="Band Saw's main window" class="screenshot">
 
-We could configure filters that would ensure that any errors occurring within the system were brought to our attention. We could also define filters to ignore errors that we'd already dealth with, but for which the fix hadn't yet been deployed.
+We could configure filters that would ensure that any errors occurring within the system were brought to our attention. We could also define filters to ignore errors that we'd already dealth with, but for which the fix hadn't yet been deployed. This ensured that we weren't repeatedly exposed to error messaages that we'd already actioned, which could have led to a tendency to downplay the significance of a new alert.
 
 <img src="./htdocs/images/ss/preferences.png?raw=true" alt="Configuring Band Saw's filters" class="screenshot">
 
